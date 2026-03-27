@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enfibio Technologies — Engineering Intelligence for the Future</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   ENFIBIO TECHNOLOGIES — CYBERPUNK PORTFOLIO
+   Full Three.js City Explorer
+═══════════════════════════════════════════ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; background:#010208; }
+
+:root {
+  --bg:      #010208;
+  --bg2:     #02050f;
+  --cyan:    #00e5ff;
+  --pink:    #ff006e;
+  --amber:   #ff8c00;
+  --green:   #00ff88;
+  --purple:  #8b5cf6;
+  --white:   #ffffff;
+  --dim:     rgba(255,255,255,0.35);
+  --border:  rgba(0,229,255,0.2);
+  --panel:   rgba(1,2,8,0.92);
+  --mono:    'Share Tech Mono', monospace;
+  --display: 'Orbitron', sans-serif;
+  --body:    'Rajdhani', sans-serif;
+  --glow-cyan:  0 0 20px rgba(0,229,255,0.6), 0 0 60px rgba(0,229,255,0.2);
+  --glow-pink:  0 0 20px rgba(255,0,110,0.6), 0 0 60px rgba(255,0,110,0.2);
+}
+
+canvas#world { display:block; position:fixed; inset:0; z-index:0; }
+
+/* ── SCANLINES overlay ── */
+#scanlines {
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+}
+
+/* ── VIGNETTE ── */
+#vignette {
+  position:fixed; inset:0; z-index:2; pointer-events:none;
+  background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.7) 100%);
+}
+
+/* ── CHROMATIC ABERRATION border ── */
+#chroma {
+  position:fixed; inset:0; z-index:3; pointer-events:none;
+  border:1px solid rgba(0,229,255,0.06);
+  box-shadow: inset 0 0 120px rgba(255,0,110,0.04), inset 0 0 80px rgba(0,229,255,0.04);
+}
+
+/* ══════ LOADING SCREEN ══════ */
+#loading {
+  position:fixed; inset:0; z-index:1000;
+  background:var(--bg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  transition:opacity 1.2s ease;
+}
+#loading.fade { opacity:0; pointer-events:none; }
+
+.load-hexagon {
+  width:90px; height:90px;
+  margin-bottom:36px;
+  animation: hexspin 4s linear infinite;
+}
+@keyframes hexspin {
+  0%   { transform:rotate(0deg) scale(1); filter:drop-shadow(0 0 12px var(--cyan)); }
+  50%  { transform:rotate(180deg) scale(1.05); filter:drop-shadow(0 0 24px var(--pink)); }
+  100% { transform:rotate(360deg) scale(1); filter:drop-shadow(0 0 12px var(--cyan)); }
+}
+
+.load-bar-wrap {
+  width:260px; height:1px;
+  background:rgba(0,229,255,0.1);
+  position:relative; overflow:visible;
+}
+.load-bar-fill {
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--pink), var(--cyan));
+  transition:width .1s linear;
+  box-shadow: var(--glow-cyan);
+}
+.load-bar-cursor {
+  position:absolute; right:-1px; top:-3px;
+  width:2px; height:8px;
+  background:var(--cyan);
+  animation: blink .6s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+.load-status {
+  font-family:var(--mono); font-size:9px; letter-spacing:.4em;
+  color:rgba(0,229,255,0.5); margin-top:20px; min-height:16px;
+}
+.load-title {
+  font-family:var(--display); font-size:13px; letter-spacing:.5em;
+  color:rgba(255,255,255,0.25); margin-top:28px; font-weight:400;
+}
+.load-pct {
+  font-family:var(--display); font-size:10px; letter-spacing:.3em;
+  color:var(--cyan); margin-top:8px; font-weight:700;
+}
+
+/* ══════ TOP LOGO ══════ */
+#topbar {
+  position:fixed; top:0; left:0; right:0; height:56px;
+  z-index:100;
+  background:linear-gradient(180deg, rgba(1,2,8,0.95) 0%, transparent 100%);
+  display:flex; align-items:center; padding:0 28px;
+  animation: slidein 1s 1.8s both;
+}
+@keyframes slidein { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:none} }
+
+.logo-wrap { display:flex; align-items:center; gap:14px; }
+.logo-svg { flex-shrink:0; filter:drop-shadow(0 0 8px rgba(0,229,255,0.5)); }
+
+.logo-text { line-height:1; }
+.logo-name {
+  font-family:var(--display); font-size:15px; letter-spacing:.45em;
+  color:#fff; font-weight:700; display:block;
+}
+.logo-sub {
+  font-family:var(--mono); font-size:7px; letter-spacing:.22em;
+  color:rgba(255,255,255,0.28); display:block; margin-top:3px;
+}
+.logo-tag {
+  font-family:var(--mono); font-size:6px; letter-spacing:.2em;
+  color:rgba(0,229,255,0.45); display:block; margin-top:2px;
+}
+
+.topbar-right {
+  margin-left:auto; display:flex; align-items:center; gap:24px;
+}
+.nav-link {
+  font-family:var(--display); font-size:9px; letter-spacing:.3em; font-weight:600;
+  color:rgba(255,255,255,0.4); cursor:pointer; text-decoration:none;
+  transition:color .3s, text-shadow .3s; text-transform:uppercase;
+}
+.nav-link:hover { color:var(--cyan); text-shadow:var(--glow-cyan); }
+
+.nav-cta {
+  font-family:var(--mono); font-size:9px; letter-spacing:.3em;
+  color:var(--bg); background:var(--cyan); padding:7px 16px;
+  border:none; cursor:pointer; clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  transition:background .3s, box-shadow .3s; text-decoration:none; display:inline-block;
+}
+.nav-cta:hover { background:#fff; box-shadow:var(--glow-cyan); }
+
+/* ══════ SECTOR INDICATOR ══════ */
+#sector {
+  position:fixed; top:68px; right:28px; z-index:100;
+  text-align:right; animation: slidein 1s 2.2s both;
+}
+.sec-label { font-family:var(--mono); font-size:7px; letter-spacing:.35em; color:rgba(255,255,255,0.2); }
+.sec-name {
+  font-family:var(--display); font-size:12px; letter-spacing:.08em; font-weight:600;
+  color:rgba(255,255,255,0.6); margin-top:3px; transition:color .4s;
+}
+.sec-name.active { color:var(--cyan); text-shadow:var(--glow-cyan); }
+
+/* ══════ SPEEDOMETER ══════ */
+#speedometer {
+  position:fixed; bottom:32px; right:32px; z-index:100;
+  text-align:right; animation: slidein 1s 2s both;
+}
+#spd-val {
+  font-family:var(--display); font-size:44px; font-weight:900;
+  color:var(--cyan); line-height:1; letter-spacing:-.03em;
+  text-shadow:var(--glow-cyan);
+  transition:color .3s;
+}
+#spd-unit { font-family:var(--mono); font-size:8px; letter-spacing:.4em; color:rgba(255,255,255,0.2); }
+
+/* ══════ CONTROLS ══════ */
+#controls {
+  position:fixed; bottom:32px; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:8px; z-index:100;
+  animation: fadein 1s 2.5s both;
+}
+@keyframes fadein { from{opacity:0} to{opacity:1} }
+.kb {
+  width:32px; height:32px;
+  border:1px solid var(--border); border-radius:5px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:12px; color:var(--cyan);
+  background:rgba(0,229,255,0.04); backdrop-filter:blur(8px);
+  transition:background .2s, box-shadow .2s;
+}
+.kb.active, .kb:hover { background:rgba(0,229,255,0.12); box-shadow:var(--glow-cyan); }
+.kb.wide { width:70px; }
+.kb-col { display:flex; flex-direction:column; align-items:center; gap:5px; }
+.kb-row { display:flex; gap:5px; }
+.ctrl-sep { width:1px; height:30px; background:var(--border); margin:0 8px; }
+.ctrl-label { font-family:var(--mono); font-size:8px; letter-spacing:.25em; color:rgba(255,255,255,0.2); }
+
+/* ══════ MINIMAP ══════ */
+#minimap {
+  position:fixed; bottom:32px; left:28px; z-index:100;
+  width:134px;
+  background:var(--panel); border:1px solid var(--border); border-radius:12px;
+  padding:10px 10px 8px; backdrop-filter:blur(16px);
+  box-shadow:0 0 30px rgba(0,229,255,0.06), inset 0 0 20px rgba(0,229,255,0.02);
+  animation: fadein 1s 2.6s both;
+}
+#mm-label {
+  font-family:var(--mono); font-size:7px; letter-spacing:.3em;
+  color:rgba(0,229,255,0.35); text-align:center; margin-bottom:8px;
+}
+#mm-inner {
+  width:112px; height:112px; position:relative; border-radius:50%;
+  overflow:hidden; background:rgba(0,229,255,0.015);
+  border:1px solid rgba(0,229,255,0.1);
+}
+
+/* ══════ INFO PANEL ══════ */
+#info-panel {
+  position:fixed; right:28px; top:50%; z-index:100;
+  transform:translateY(-50%) translateX(40px);
+  width:310px; max-height:80vh;
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:0; padding:28px 26px; backdrop-filter:blur(24px);
+  opacity:0; pointer-events:none;
+  transition:all .5s cubic-bezier(.22,1,.36,1);
+  clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  box-shadow:0 0 80px rgba(0,229,255,0.06);
+}
+#info-panel.show {
+  opacity:1; pointer-events:auto;
+  transform:translateY(-50%) translateX(0);
+}
+#info-panel::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--cyan), transparent);
+  opacity:0.4;
+}
+.pnl-tag {
+  font-family:var(--mono); font-size:8px; letter-spacing:.4em;
+  color:rgba(0,229,255,0.55); margin-bottom:6px;
+}
+.pnl-divider {
+  width:40px; height:2px; margin-bottom:16px;
+  background:var(--cyan); border-radius:1px;
+  box-shadow:0 0 8px rgba(0,229,255,0.6);
+}
+.pnl-title {
+  font-family:var(--display); font-size:14px; font-weight:700;
+  color:#fff; line-height:1.4; margin-bottom:14px; letter-spacing:.05em;
+}
+.pnl-desc {
+  font-family:var(--body); font-size:13px; color:rgba(255,255,255,0.5);
+  line-height:1.9; font-weight:400;
+}
+.pnl-tags {
+  display:flex; flex-wrap:wrap; gap:6px; margin-top:18px;
+}
+.pnl-chip {
+  font-family:var(--mono); font-size:8px; letter-spacing:.2em;
+  color:var(--cyan); border:1px solid rgba(0,229,255,0.25);
+  padding:3px 9px; border-radius:2px;
+  background:rgba(0,229,255,0.04);
+}
+.pnl-chip.alt { color:var(--pink); border-color:rgba(255,0,110,0.25); background:rgba(255,0,110,0.04); }
+.pnl-metric {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:16px; padding-top:14px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.pnl-metric-val {
+  font-family:var(--display); font-size:20px; font-weight:700;
+  color:var(--cyan); letter-spacing:-.02em;
+}
+.pnl-metric-lbl {
+  font-family:var(--mono); font-size:7px; letter-spacing:.25em;
+  color:rgba(255,255,255,0.25); margin-top:2px;
+}
+.approach-hint {
+  font-family:var(--mono); font-size:8px; letter-spacing:.2em;
+  color:rgba(255,255,255,0.2); margin-top:14px; padding-top:12px;
+  border-top:1px solid rgba(255,255,255,0.05);
+}
+
+/* ══════ CENTER EXPLORE MSG ══════ */
+#explore-msg {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  text-align:center; z-index:50; pointer-events:none;
+  transition:opacity .6s;
+}
+.exp-big {
+  font-family:var(--display); font-size:24px; font-weight:900;
+  color:rgba(255,255,255,0.6); letter-spacing:.3em; margin-bottom:10px;
+  text-shadow:0 0 40px rgba(0,229,255,0.3);
+  animation: floatpulse 3s ease-in-out infinite;
+}
+@keyframes floatpulse {
+  0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)}
+}
+.exp-sub {
+  font-family:var(--mono); font-size:10px; letter-spacing:.35em;
+  color:rgba(0,229,255,0.4);
+}
+
+/* ══════ ABOUT PANEL (bottom) ══════ */
+#about-bar {
+  position:fixed; bottom:0; left:0; right:0; z-index:200;
+  background:var(--panel); border-top:1px solid var(--border);
+  backdrop-filter:blur(24px);
+  transform:translateY(100%); transition:transform .6s cubic-bezier(.22,1,.36,1);
+  max-height:70vh; overflow-y:auto;
+  padding:40px 60px 40px;
+}
+#about-bar.open { transform:translateY(0); }
+#about-bar::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--cyan) 30%, var(--pink) 70%, transparent);
+  opacity:0.5;
+}
+.about-close {
+  position:absolute; top:20px; right:28px;
+  font-family:var(--mono); font-size:9px; letter-spacing:.3em;
+  color:rgba(255,255,255,0.3); cursor:pointer; padding:6px 12px;
+  border:1px solid var(--border); transition:color .3s, border-color .3s;
+}
+.about-close:hover { color:var(--cyan); border-color:var(--cyan); }
+
+.about-grid {
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:40px;
+}
+.about-col h3 {
+  font-family:var(--display); font-size:10px; letter-spacing:.4em; font-weight:600;
+  color:var(--cyan); margin-bottom:16px; text-transform:uppercase;
+}
+.about-col p {
+  font-family:var(--body); font-size:14px; line-height:1.9;
+  color:rgba(255,255,255,0.5); font-weight:400;
+}
+.about-col ul { list-style:none; }
+.about-col li {
+  font-family:var(--body); font-size:13px; color:rgba(255,255,255,0.45);
+  padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05);
+  display:flex; align-items:center; gap:10px;
+}
+.about-col li::before { content:'▸'; color:var(--cyan); font-size:10px; }
+.about-col li span.val {
+  margin-left:auto; font-family:var(--mono); font-size:10px;
+  color:var(--cyan); letter-spacing:.2em;
+}
+
+/* ══════ STATION LABEL FLOATS ══════ */
+.float-label {
+  position:fixed; pointer-events:none; z-index:60;
+  font-family:var(--body); font-size:10px; font-weight:600; letter-spacing:.15em;
+  color:#fff;
+  background:rgba(1,2,8,0.82); border:1px solid var(--border);
+  padding:5px 11px; border-radius:3px; backdrop-filter:blur(8px);
+  transform:translate(-50%, -100%) translateY(-18px);
+  transition:opacity .3s;
+  clip-path:polygon(0 0,calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+
+/* ══════ COORDINATES ══════ */
+#coords {
+  position:fixed; top:68px; left:28px; z-index:100;
+  animation:fadein 1s 2.2s both;
+}
+.coord-line {
+  font-family:var(--mono); font-size:8px; letter-spacing:.25em;
+  color:rgba(0,229,255,0.3); line-height:1.9;
+}
+
+/* ══════ NOTIFICATION ══════ */
+#notif {
+  position:fixed; top:70px; left:50%; transform:translateX(-50%) translateY(-20px);
+  z-index:500; pointer-events:none; opacity:0;
+  background:rgba(0,229,255,0.08); border:1px solid var(--cyan);
+  padding:8px 20px; backdrop-filter:blur(12px);
+  transition:all .4s cubic-bezier(.22,1,.36,1);
+  clip-path:polygon(8px 0,100% 0,calc(100%-8px) 100%,0 100%);
+}
+#notif.show { opacity:1; transform:translateX(-50%) translateY(0); }
+#notif span {
+  font-family:var(--mono); font-size:9px; letter-spacing:.3em; color:var(--cyan);
+}
+
+/* ══════ UTILITY ══════ */
+::selection { background:rgba(0,229,255,0.2); }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:rgba(0,229,255,0.3); }
+
+/* cursor */
+* { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='2' fill='%2300e5ff'/%3E%3Ccircle cx='10' cy='10' r='8' stroke='%2300e5ff' stroke-width='1' fill='none' stroke-opacity='0.4'/%3E%3C/svg%3E") 10 10, crosshair; }
+
+/* Mobile warning */
+@media(max-width:600px) {
+  #controls { display:none; }
+  .about-grid { grid-template-columns:1fr; }
+  #info-panel { width:90vw; right:5vw; }
+}
+</style>
+</head>
+<body>
+
+<!-- OVERLAYS -->
+<div id="scanlines"></div>
+<div id="vignette"></div>
+<div id="chroma"></div>
+
+<!-- CANVAS -->
+<canvas id="world"></canvas>
+
+<!-- ══ LOADING ══ -->
+<div id="loading">
+  <svg class="load-hexagon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="50,5 93,27.5 93,72.5 50,95 7,72.5 7,27.5" stroke="#00e5ff" stroke-width="1.5" fill="rgba(0,229,255,0.03)"/>
+    <polygon points="50,15 83,32.5 83,67.5 50,85 17,67.5 17,32.5" stroke="rgba(255,0,110,0.6)" stroke-width="0.8" fill="none"/>
+    <circle cx="50" cy="5" r="3" fill="#00e5ff"/>
+    <circle cx="93" cy="27.5" r="2.5" fill="#00e5ff"/>
+    <circle cx="93" cy="72.5" r="2.5" fill="#00e5ff"/>
+    <circle cx="50" cy="95" r="3" fill="#00e5ff"/>
+    <circle cx="7" cy="72.5" r="2.5" fill="#00e5ff"/>
+    <circle cx="7" cy="27.5" r="2.5" fill="#00e5ff"/>
+    <path d="M50,30 C51.5,44 58,50.5 72,50 C58,50.5 51.5,57 50,70 C48.5,57 42,50.5 28,50 C42,50.5 48.5,44 50,30 Z" fill="rgba(0,229,255,0.9)"/>
+  </svg>
+  <div class="load-bar-wrap">
+    <div class="load-bar-fill" id="load-bar"></div>
+    <div class="load-bar-cursor"></div>
+  </div>
+  <div class="load-status" id="load-status">INITIALIZING SYSTEMS...</div>
+  <div class="load-title">ENFIBIO TECHNOLOGIES PVT. LTD.</div>
+  <div class="load-pct" id="load-pct">0%</div>
+</div>
+
+<!-- ══ TOPBAR ══ -->
+<div id="topbar">
+  <div class="logo-wrap">
+    <svg class="logo-svg" width="40" height="40" viewBox="0 0 200 200" fill="none">
+      <defs><filter id="lg"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      <g stroke="rgba(0,229,255,0.75)" stroke-width="1.4" filter="url(#lg)">
+        <line x1="100" y1="28" x2="100" y2="78"/>
+        <line x1="100" y1="122" x2="100" y2="172"/>
+        <line x1="28" y1="100" x2="78" y2="100"/>
+        <line x1="122" y1="100" x2="172" y2="100"/>
+        <line x1="100" y1="28" x2="145" y2="60"/>
+        <line x1="100" y1="28" x2="55" y2="60"/>
+        <line x1="100" y1="172" x2="145" y2="140"/>
+        <line x1="100" y1="172" x2="55" y2="140"/>
+      </g>
+      <circle cx="100" cy="22" r="5" fill="rgba(0,229,255,0.95)"/>
+      <circle cx="100" cy="178" r="5" fill="rgba(0,229,255,0.95)"/>
+      <circle cx="145" cy="55" r="4.5" fill="rgba(0,229,255,0.9)"/>
+      <circle cx="55" cy="55" r="4.5" fill="rgba(0,229,255,0.9)"/>
+      <circle cx="145" cy="145" r="4.5" fill="rgba(0,229,255,0.9)"/>
+      <circle cx="55" cy="145" r="4.5" fill="rgba(0,229,255,0.9)"/>
+      <polygon points="175,100 168,93 168,107" fill="rgba(0,229,255,0.95)"/>
+      <polygon points="25,100 32,93 32,107" fill="rgba(0,229,255,0.95)"/>
+      <path d="M100,76 C101.2,90 110,99 124,100 C110,101 101.2,110 100,124 C98.8,110 90,101 76,100 C90,99 98.8,90 100,76 Z" fill="rgba(0,229,255,1)" filter="url(#lg)"/>
+    </svg>
+    <div class="logo-text">
+      <span class="logo-name">ENFIBIO</span>
+      <span class="logo-sub">TECHNOLOGIES PVT. LTD.</span>
+      <span class="logo-tag">ENGINEERING INTELLIGENCE FOR THE FUTURE</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="nav-link" onclick="showAbout()">ABOUT</span>
+    <span class="nav-link" onclick="showProjects()">PROJECTS</span>
+    <span class="nav-link" id="nav-reset" onclick="resetCamera()">RESET VIEW</span>
+    <a class="nav-cta" href="mailto:info@enfibio.com">CONTACT US</a>
+  </div>
+</div>
+
+<!-- ══ SECTOR ══ -->
+<div id="sector">
+  <div class="sec-label">CURRENT SECTOR</div>
+  <div class="sec-name" id="sec-name">OPEN FIELD</div>
+</div>
+
+<!-- ══ COORDS ══ -->
+<div id="coords">
+  <div class="coord-line" id="coord-x">X: +000.0m</div>
+  <div class="coord-line" id="coord-z">Z: +000.0m</div>
+  <div class="coord-line" id="coord-alt">ALT: 000.0m</div>
+</div>
+
+<!-- ══ SPEEDOMETER ══ -->
+<div id="speedometer">
+  <div id="spd-val">0</div>
+  <div id="spd-unit">KM/H</div>
+</div>
+
+<!-- ══ CONTROLS ══ -->
+<div id="controls">
+  <div class="kb-col">
+    <div class="kb" id="kb-w">W</div>
+    <div class="kb-row">
+      <div class="kb" id="kb-a">A</div>
+      <div class="kb" id="kb-s">S</div>
+      <div class="kb" id="kb-d">D</div>
+    </div>
+  </div>
+  <div class="ctrl-sep"></div>
+  <div class="kb wide" id="kb-sp">SPACE</div>
+  <div class="ctrl-sep"></div>
+  <div class="ctrl-label">DRIVE · BRAKE · EXPLORE</div>
+</div>
+
+<!-- ══ MINIMAP ══ -->
+<div id="minimap">
+  <div id="mm-label">TACTICAL MAP</div>
+  <div id="mm-inner">
+    <svg id="mm-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="mm-glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Grid lines -->
+      <g stroke="rgba(0,229,255,0.08)" stroke-width="0.5">
+        <line x1="0" y1="100" x2="200" y2="100"/>
+        <line x1="100" y1="0" x2="100" y2="200"/>
+        <line x1="0" y1="50" x2="200" y2="50"/><line x1="0" y1="150" x2="200" y2="150"/>
+        <line x1="50" y1="0" x2="50" y2="200"/><line x1="150" y1="0" x2="150" y2="200"/>
+      </g>
+      <!-- Roads -->
+      <g stroke="rgba(0,229,255,0.12)" stroke-width="3">
+        <line x1="100" y1="100" x2="53" y2="53"/>
+        <line x1="100" y1="100" x2="147" y2="53"/>
+        <line x1="100" y1="100" x2="175" y2="100"/>
+        <line x1="100" y1="100" x2="147" y2="147"/>
+        <line x1="100" y1="100" x2="53" y2="147"/>
+        <line x1="100" y1="100" x2="25" y2="100"/>
+        <line x1="53" y1="53" x2="147" y2="53"/>
+        <line x1="147" y1="53" x2="175" y2="100"/>
+        <line x1="175" y1="100" x2="147" y2="147"/>
+        <line x1="147" y1="147" x2="53" y2="147"/>
+        <line x1="53" y1="147" x2="25" y2="100"/>
+        <line x1="25" y1="100" x2="53" y2="53"/>
+      </g>
+      <!-- Station nodes -->
+      <circle id="mms1" cx="53" cy="53" r="6" fill="#00e5ff" filter="url(#mm-glow)" opacity="0.85"/>
+      <circle id="mms2" cx="147" cy="53" r="6" fill="#a855f7" filter="url(#mm-glow)" opacity="0.85"/>
+      <circle id="mms3" cx="175" cy="100" r="6" fill="#22c55e" filter="url(#mm-glow)" opacity="0.85"/>
+      <circle id="mms4" cx="147" cy="147" r="6" fill="#f59e0b" filter="url(#mm-glow)" opacity="0.85"/>
+      <circle id="mms5" cx="53" cy="147" r="6" fill="#ef4444" filter="url(#mm-glow)" opacity="0.85"/>
+      <circle id="mms6" cx="25" cy="100" r="6" fill="#8b5cf6" filter="url(#mm-glow)" opacity="0.85"/>
+      <!-- HQ -->
+      <path d="M100,80 C101.5,93 107,99 120,100 C107,101 101.5,107 100,120 C98.5,107 93,101 80,100 C93,99 98.5,93 100,80 Z" fill="rgba(0,229,255,0.6)" filter="url(#mm-glow)"/>
+      <!-- Car -->
+      <g id="mm-car" transform="translate(100,100) rotate(0)">
+        <circle r="5" fill="rgba(255,255,255,0.1)"/>
+        <circle r="3" fill="white" filter="url(#mm-glow)"/>
+        <polygon points="0,-5.5 2,-1 -2,-1" fill="#00e5ff"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<!-- ══ INFO PANEL ══ -->
+<div id="info-panel">
+  <div class="pnl-tag" id="pnl-tag">STATION 01</div>
+  <div class="pnl-divider" id="pnl-divider"></div>
+  <div class="pnl-title" id="pnl-title">—</div>
+  <div class="pnl-desc" id="pnl-desc">—</div>
+  <div class="pnl-tags" id="pnl-tags"></div>
+  <div class="pnl-metric">
+    <div>
+      <div class="pnl-metric-val" id="pnl-metric-val">—</div>
+      <div class="pnl-metric-lbl" id="pnl-metric-lbl">—</div>
+    </div>
+    <div style="text-align:right">
+      <div class="pnl-metric-val" id="pnl-metric2-val" style="font-size:14px;color:var(--pink)">—</div>
+      <div class="pnl-metric-lbl" id="pnl-metric2-lbl">—</div>
+    </div>
+  </div>
+  <div class="approach-hint">DRIVE INTO ZONE · EXPLORE ›</div>
+</div>
+
+<!-- ══ EXPLORE MSG ══ -->
+<div id="explore-msg">
+  <div class="exp-big">DRIVE TO EXPLORE</div>
+  <div class="exp-sub">6 INTELLIGENCE SYSTEMS AWAIT</div>
+</div>
+
+<!-- ══ ABOUT PANEL ══ -->
+<div id="about-bar">
+  <div class="about-close" onclick="hideAbout()">[ CLOSE × ]</div>
+  <div class="about-grid">
+    <div class="about-col">
+      <h3>Company</h3>
+      <p>Enfibio Technologies Pvt. Ltd. is a deep-tech defense and intelligence startup engineering next-generation signal intelligence, swarm robotics, and AI systems for sovereign defense ecosystems.</p>
+      <br>
+      <p style="color:rgba(0,229,255,0.5);font-family:var(--mono);font-size:10px;letter-spacing:.2em">FOUNDED 2023 · HYDERABAD, INDIA</p>
+    </div>
+    <div class="about-col">
+      <h3>Capabilities</h3>
+      <ul>
+        <li>Radar Emitter Location Estimation <span class="val">TDOA</span></li>
+        <li>Signal Deinterleaving <span class="val">&lt;2ms</span></li>
+        <li>ML Signal Classification <span class="val">&gt;97%</span></li>
+        <li>Federated Learning <span class="val">PRIVATE</span></li>
+        <li>Heterogeneous UAV Swarms <span class="val">MULTI</span></li>
+        <li>AI Swarm Intelligence <span class="val">BIO-INS</span></li>
+      </ul>
+    </div>
+    <div class="about-col">
+      <h3>Contact</h3>
+      <ul>
+        <li>iDEX PRIME Challenge <span class="val">ACTIVE</span></li>
+        <li>Sphoorthy Eng. College <span class="val">PARTNER</span></li>
+        <li>India AI Impact Summit <span class="val">2026</span></li>
+        <li>UAV SIGINT Dashboard <span class="val">v7</span></li>
+        <li>LearnMate AI Platform <span class="val">LIVE</span></li>
+        <li>Smart Sewage Monitor <span class="val">DEPLOYED</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NOTIFICATION ══ -->
+<div id="notif"><span id="notif-txt">—</span></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+//   ENFIBIO TECHNOLOGIES — Cyberpunk City Portfolio
+//   Three.js Interactive 3D World
+//   All 6 Project Stations + Procedural Cyberpunk City
+// ═══════════════════════════════════════════════════════
+
+// ── STATION DATA ─────────────────────────────────────
+const STATIONS = [
+  {
+    id:1, tag:'STATION 01', hex:'#00e5ff', color:0x00e5ff,
+    pos:[-72,-72], worldPos:[-72,0,-72],
+    name:'Radar Emitter\nLocation Estimation',
+    desc:'Precision geolocation of radar emitters using multi-sensor fusion, TDOA algorithms, and adaptive signal triangulation across contested electromagnetic environments.',
+    tags:['TDOA','MULTI-SENSOR','EW','SIGINT'],
+    metricVal:'±0.8m', metricLbl:'ACCURACY',
+    metric2Val:'real-time', metric2Lbl:'LATENCY CLASS',
+    icon:'radar'
+  },
+  {
+    id:2, tag:'STATION 02', hex:'#a855f7', color:0xa855f7,
+    pos:[72,-72], worldPos:[72,0,-72],
+    name:'Radar Signal Processing\n& Deinterleaving System',
+    desc:'Real-time pulse deinterleaving pipeline separating overlapping radar pulse trains from dense EM environments with sub-2ms latency using stochastic PRI analysis.',
+    tags:['PRI ANALYSIS','DSP','STOCHASTIC','EEVEE'],
+    metricVal:'<2ms', metricLbl:'PIPELINE LATENCY',
+    metric2Val:'40+', metric2Lbl:'PULSE ARCHETYPES',
+    icon:'signal'
+  },
+  {
+    id:3, tag:'STATION 03', hex:'#22c55e', color:0x22c55e,
+    pos:[100,0], worldPos:[100,0,0],
+    name:'ML-based Radar / Signal\nClassification System',
+    desc:'Deep convolutional neural networks for automated waveform identification and radar mode classification achieving greater than 97% accuracy across 40+ signal archetypes.',
+    tags:['CNN','WAVEFORM ID','DEEP LEARNING','97%+'],
+    metricVal:'>97%', metricLbl:'CLASSIFICATION ACC',
+    metric2Val:'40+', metric2Lbl:'SIGNAL CLASSES',
+    icon:'ml'
+  },
+  {
+    id:4, tag:'STATION 04', hex:'#f59e0b', color:0xf59e0b,
+    pos:[72,72], worldPos:[72,0,72],
+    name:'Federated Learning System\nfor Signal Analysis',
+    desc:'Privacy-preserving distributed ML framework enabling collaborative model training across geographically dispersed sensor nodes with differential privacy guarantees.',
+    tags:['FEDERATED','PRIVACY','DIFFERENTIAL','DISTRIBUTED'],
+    metricVal:'100%', metricLbl:'DATA PRIVACY',
+    metric2Val:'N-node', metric2Lbl:'DISTRIBUTED ARCH',
+    icon:'federated'
+  },
+  {
+    id:5, tag:'STATION 05', hex:'#ef4444', color:0xef4444,
+    pos:[-72,72], worldPos:[-72,0,72],
+    name:'Heterogeneous\nUAV Swarm System',
+    desc:'Multi-domain swarm coordination architecture managing heterogeneous UAV platforms with adaptive formation control, fault tolerance, and emergent task allocation.',
+    tags:['SWARM','UAV','ADAPTIVE','FORMATION'],
+    metricVal:'N+k', metricLbl:'FAULT TOLERANCE',
+    metric2Val:'multi', metric2Lbl:'DOMAIN COVERAGE',
+    icon:'uav'
+  },
+  {
+    id:6, tag:'STATION 06', hex:'#8b5cf6', color:0x8b5cf6,
+    pos:[-100,0], worldPos:[-100,0,0],
+    name:'Enfibio AI Swarm\nIntelligence System',
+    desc:'Proprietary collective intelligence platform applying bio-inspired optimization algorithms for decentralized decision-making in complex, dynamic operational scenarios.',
+    tags:['BIO-INSPIRED','COLLECTIVE AI','DECENTRALIZED','OPT'],
+    metricVal:'emergent', metricLbl:'DECISION MODEL',
+    metric2Val:'adaptive', metric2Lbl:'THREAT RESPONSE',
+    icon:'ai'
+  }
+];
+
+// ── THREE.JS SETUP ────────────────────────────────────
+const canvas = document.getElementById('world');
+const W = window.innerWidth, H = window.innerHeight;
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(W,H);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x010208);
+scene.fog = new THREE.FogExp2(0x010208, 0.005);
+
+const camera = new THREE.PerspectiveCamera(60, W/H, 0.1, 600);
+camera.position.set(0, 20, 28);
+
+window.addEventListener('resize', () => {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+// ── MATERIAL HELPERS ─────────────────────────────────
+function emitMat(color, str=10, opacity=1) {
+  const m = new THREE.MeshStandardMaterial({
+    color, emissive:color, emissiveIntensity:str,
+    transparent:opacity<1, opacity,
+  });
+  return m;
+}
+function stdMat(color, rough=0.7, metal=0) {
+  return new THREE.MeshStandardMaterial({color, roughness:rough, metalness:metal});
+}
+
+// ── LIGHTING ─────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x08101f, 4));
+
+const sun = new THREE.DirectionalLight(0xffffff, 0.3);
+sun.position.set(60,100,40); sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.near=0.1; sun.shadow.camera.far=400;
+sun.shadow.camera.left=sun.shadow.camera.bottom=-160;
+sun.shadow.camera.right=sun.shadow.camera.top=160;
+scene.add(sun);
+
+// Neon atmosphere lights
+const pinkArea = new THREE.PointLight(0xff006e, 1.5, 300);
+pinkArea.position.set(-100,80,80); scene.add(pinkArea);
+const cyanArea = new THREE.PointLight(0x00e5ff, 1.2, 300);
+cyanArea.position.set(100,80,-80); scene.add(cyanArea);
+const amberArea = new THREE.PointLight(0xff8c00, 0.8, 200);
+amberArea.position.set(0,80,0); scene.add(amberArea);
+
+// ── GROUND ───────────────────────────────────────────
+const gnd = new THREE.Mesh(
+  new THREE.PlaneGeometry(600,600),
+  new THREE.MeshStandardMaterial({color:0x010408, roughness:0.07, metalness:0.0})
+);
+gnd.rotation.x = -Math.PI/2; gnd.receiveShadow=true; scene.add(gnd);
+
+// Grid
+const grid = new THREE.GridHelper(500,120,0x00e5ff,0x00e5ff);
+grid.material.opacity=0.04; grid.material.transparent=true; grid.position.y=0.01; scene.add(grid);
+
+// ── ROADS ─────────────────────────────────────────────
+const roadMat = stdMat(0x060a14, 0.9);
+const markMat = new THREE.MeshStandardMaterial({color:0x223322,emissive:0x004400,emissiveIntensity:0.4,roughness:0.8});
+
+function buildRoad(x1,z1,x2,z2,w=7) {
+  const len = Math.sqrt((x2-x1)**2+(z2-z1)**2);
+  const mx=(x1+x2)/2, mz=(z1+z2)/2;
+  const angle = Math.atan2(x2-x1,z2-z1);
+  const r = new THREE.Mesh(new THREE.BoxGeometry(w,0.07,len), roadMat);
+  r.position.set(mx,0.035,mz); r.rotation.y=angle; r.receiveShadow=true; scene.add(r);
+  for(let i=4;i<len-4;i+=6) {
+    const pct=i/len;
+    const d = new THREE.Mesh(new THREE.BoxGeometry(0.18,0.02,2.2), markMat);
+    d.position.set(x1+(x2-x1)*pct,0.06,z1+(z2-z1)*pct);
+    d.rotation.y=angle; scene.add(d);
+  }
+}
+
+// Hub-and-spoke roads from center
+STATIONS.forEach(s => buildRoad(0,0,...s.worldPos.filter((_,i)=>i!==1),7));
+// Ring road
+for(let i=0;i<STATIONS.length;i++) {
+  const a=STATIONS[i], b=STATIONS[(i+1)%STATIONS.length];
+  buildRoad(a.worldPos[0],a.worldPos[2],b.worldPos[0],b.worldPos[2],5);
+}
+// Cross grid
+for(let x=-3;x<=3;x++) for(let z=-3;z<=3;z++) {
+  if(Math.abs(x)<=1&&Math.abs(z)<=1) continue;
+  buildRoad(x*38,-160,x*38,160,5);
+  buildRoad(-160,z*38,160,z*38,5);
+}
+
+// Elevated Highway
+const hwMat = stdMat(0x1a1a2e,0.85,0.2);
+for(let i=0;i<10;i++) {
+  const t0=i/10, t1=(i+1)/10;
+  const x0=-140+280*t0, z0=-140+280*t0;
+  const x1=-140+280*t1, z1=-140+280*t1;
+  const len=Math.sqrt((x1-x0)**2+(z1-z0)**2);
+  const hw=new THREE.Mesh(new THREE.BoxGeometry(len+1,0.8,12),hwMat);
+  hw.position.set((x0+x1)/2,9,(z0+z1)/2);
+  hw.rotation.y=Math.atan2(x1-x0,z1-z0); hw.castShadow=true; scene.add(hw);
+  // Pillar
+  const p=new THREE.Mesh(new THREE.CylinderGeometry(0.8,1.2,9,8),hwMat);
+  p.position.set(x0,4.5,z0); p.castShadow=true; scene.add(p);
+}
+
+// ── PROCEDURAL BUILDINGS ──────────────────────────────
+const rng = (seed) => { let s=seed; return ()=>{ s=(s*16807+0)%2147483647; return (s-1)/2147483646; }; };
+const rand = rng(42);
+const NEON_COLS = [0x00e5ff,0xff006e,0xff8c00,0x00ff88,0xaa00ff];
+
+function buildingMat(type) {
+  if(type==='glass') return stdMat(0x040c18,0.06,0.1);
+  if(type==='metal') return stdMat(0x1a0808,0.8,0.85);
+  return stdMat(0x0e1018,0.85,0.0);
+}
+function neonTrimMat(ci) {
+  const c=NEON_COLS[ci%NEON_COLS.length];
+  return new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:8});
+}
+
+const buildingGroup = new THREE.Group(); scene.add(buildingGroup);
+
+for(let gx=-3;gx<=3;gx++) for(let gz=-3;gz<=3;gz++) {
+  if(Math.abs(gx)<=1&&Math.abs(gz)<=1) continue;
+  const bx=gx*38, bz=gz*38;
+  const count=Math.floor(rand()*2)+2;
+  for(let bi=0;bi<count;bi++) {
+    const ox=(rand()-0.5)*24, oz=(rand()-0.5)*24;
+    const w=rand()*12+7, d=rand()*12+7;
+    const type=rand()<0.2?'glass':rand()<0.5?'concrete':'metal';
+    const h=type==='glass'?rand()*120+40:rand()*55+18;
+    const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),buildingMat(type));
+    b.position.set(bx+ox,h/2,bz+oz); b.castShadow=true; b.receiveShadow=true;
+    buildingGroup.add(b);
+    // Neon trim top
+    const ci=Math.floor(rand()*NEON_COLS.length);
+    const trim=new THREE.Mesh(new THREE.BoxGeometry(w+0.4,0.4,d+0.4),neonTrimMat(ci));
+    trim.position.set(bx+ox,h+0.2,bz+oz); buildingGroup.add(trim);
+    // Window strips
+    const wc=NEON_COLS[Math.floor(rand()*NEON_COLS.length)];
+    const winMat=new THREE.MeshStandardMaterial({color:wc,emissive:wc,emissiveIntensity:rand()<0.7?2:0,transparent:true,opacity:0.8});
+    for(let wy=4;wy<h-3;wy+=5) {
+      if(rand()<0.25) continue;
+      const ws=new THREE.Mesh(new THREE.BoxGeometry(w+0.02,0.4,0.05),winMat);
+      ws.position.set(bx+ox,wy,bz+oz+d/2); buildingGroup.add(ws);
+    }
+    // Point light on tall buildings
+    if(h>60) {
+      const pl=new THREE.PointLight(NEON_COLS[ci],1.5,40);
+      pl.position.set(bx+ox,h+3,bz+oz); scene.add(pl);
+    }
+  }
+}
+
+// ── NEON SIGNS ────────────────────────────────────────
+for(let i=0;i<80;i++) {
+  const ci=Math.floor(rand()*NEON_COLS.length);
+  const c=NEON_COLS[ci];
+  const sm=new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:12});
+  const sw=rand()*5+2, sh=rand()*1.2+0.4;
+  const sg=new THREE.Mesh(new THREE.BoxGeometry(sw,sh,0.15),sm);
+  const sx=(rand()-0.5)*200, sz=(rand()-0.5)*200, sy=rand()*25+5;
+  sg.position.set(sx,sy,sz); sg.rotation.y=rand()*Math.PI; scene.add(sg);
+}
+
+// Streetlights
+for(let i=-3;i<=3;i++) for(let j=-3;j<=3;j++) {
+  const sx=i*38+18, sz=j*38+18;
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.15,7,6),stdMat(0x1a1a2e,0.9));
+  pole.position.set(sx,3.5,sz); scene.add(pole);
+  const sl=new THREE.PointLight(0xffcc66,0.8,22);
+  sl.position.set(sx,8,sz); scene.add(sl);
+}
+
+// Flying vehicles
+const flyVehicles=[];
+for(let i=0;i<20;i++) {
+  const ci=Math.floor(rand()*NEON_COLS.length);
+  const c=NEON_COLS[ci];
+  const fvm=new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:3});
+  const fv=new THREE.Mesh(new THREE.BoxGeometry(3,0.6,1.5),fvm);
+  const angle=rand()*Math.PI*2;
+  const radius=rand()*90+30;
+  fv.userData={ angle, radius, speed:rand()*0.4+0.1, alt:rand()*50+20, orbitY:rand()*10+15 };
+  fv.castShadow=false; flyVehicles.push(fv); scene.add(fv);
+}
+
+// ── STATION STRUCTURES ────────────────────────────────
+const animParts=[], stationGroups=[];
+
+function makeEmitMat(hex,str=12) {
+  const c=new THREE.Color(hex);
+  return new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:str});
+}
+function addStationLight(g,hex) {
+  const c=new THREE.Color(hex);
+  const l=new THREE.PointLight(c,5,60); l.position.y=5; g.add(l);
+}
+
+STATIONS.forEach((s,si) => {
+  const g=new THREE.Group();
+  g.position.set(...s.worldPos);
+  const em=makeEmitMat(s.hex);
+  const darkMat=stdMat(0x080d1a,0.8,0.3);
+
+  // Platform
+  const plat=new THREE.Mesh(new THREE.CylinderGeometry(8,9,0.4,12),darkMat);
+  plat.position.y=0.2; plat.receiveShadow=true; g.add(plat);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(8,0.2,8,48),em);
+  rim.rotation.x=Math.PI/2; rim.position.y=0.42; g.add(rim);
+  animParts.push({mesh:rim,type:'pulseEmit',speed:0.8+si*0.15,min:0.5,max:3,phase:si*0.9});
+
+  addStationLight(g,s.hex);
+
+  // Per-station unique structure
+  switch(si) {
+    case 0: { // Radar — rotating dish
+      const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.4,10,8),darkMat); pole.position.y=5.5; g.add(pole);
+      const dg=new THREE.Group(); dg.position.y=11;
+      const dish=new THREE.Mesh(new THREE.SphereGeometry(3.5,16,8,0,Math.PI*2,0,Math.PI*0.55),em);
+      dish.rotation.x=Math.PI*0.35; g.add(dg); dg.add(dish);
+      const tip=new THREE.Mesh(new THREE.SphereGeometry(0.3,8,8),emitMat(0xffffff,4)); dg.add(tip);
+      animParts.push({mesh:dg,type:'rotY',speed:0.5});
+      // rings
+      for(let r=0;r<3;r++) {
+        const ring=new THREE.Mesh(new THREE.TorusGeometry(4+r*2.5,0.12,6,48),em);
+        ring.rotation.x=Math.PI/2; ring.position.y=0.5; g.add(ring);
+        animParts.push({mesh:ring,type:'pulseEmit',speed:0.6+r*0.4,min:0.05,max:0.8,phase:r*1.5});
+      }
+      break;
+    }
+    case 1: { // Signal — antenna array
+      [[-2,0,0],[0,0,0],[2,0,0]].forEach(([ax,,az],ai) => {
+        const h=8+ai*2.5;
+        const ant=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.2,h,8),darkMat);
+        ant.position.set(ax,h/2,az); g.add(ant);
+        const top=new THREE.Mesh(new THREE.SphereGeometry(0.35,8,8),em);
+        top.position.set(ax,h+0.3,az); g.add(top);
+        animParts.push({mesh:top,type:'pulseEmit',speed:0.7+ai*0.4,min:0.3,max:4,phase:ai*1.2});
+      });
+      [3,6,9].forEach(hy => {
+        const bar=new THREE.Mesh(new THREE.BoxGeometry(5,0.1,0.1),darkMat); bar.position.y=hy; g.add(bar);
+      });
+      break;
+    }
+    case 2: { // ML — rotating neural net sphere
+      const sg=new THREE.Group(); sg.position.y=10;
+      const sphere=new THREE.Mesh(new THREE.IcosahedronGeometry(3,1),em);
+      sg.add(sphere); g.add(sg);
+      animParts.push({mesh:sg,type:'rotY',speed:0.6});
+      animParts.push({mesh:sphere,type:'pulseEmit',speed:1.5,min:1,max:5,phase:0});
+      // orbit rings
+      for(let r=0;r<2;r++) {
+        const orb=new THREE.Mesh(new THREE.TorusGeometry(4+r*1.5,0.1,6,48),em);
+        orb.rotation.x=Math.PI/2+r*0.6; orb.position.y=10; g.add(orb);
+        animParts.push({mesh:orb,type:'rotY',speed:0.4*(r+1)});
+      }
+      break;
+    }
+    case 3: { // Federated — network nodes
+      const nodePositions=[[0,12,0],[4,9,-3],[-4,9,3],[3,9,4],[-3,9,-4]];
+      nodePositions.forEach(([nx,ny,nz],ni) => {
+        const n=new THREE.Mesh(new THREE.OctahedronGeometry(0.8,0),em);
+        n.position.set(nx,ny,nz); g.add(n);
+        animParts.push({mesh:n,type:'hover',speed:0.5+ni*0.2,amp:0.8,baseY:ny,phase:ni*1.1});
+        if(ni>0) {
+          const dir=new THREE.Vector3(nx,ny,nz).normalize();
+          const conn=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,Math.sqrt(nx*nx+(ny-12)**2+nz*nz),6),em);
+          conn.position.set(nx/2,ny/2+6,nz/2);
+          conn.lookAt(new THREE.Vector3(...nodePositions[0])); g.add(conn);
+        }
+      });
+      break;
+    }
+    case 4: { // UAV Swarm — orbiting drones
+      const center=new THREE.Mesh(new THREE.CylinderGeometry(0.5,1,8,8),darkMat); center.position.y=4; g.add(center);
+      for(let d=0;d<5;d++) {
+        const dg=new THREE.Group(); dg.position.y=10;
+        const body=new THREE.Mesh(new THREE.BoxGeometry(2,0.3,1),em);
+        dg.add(body);
+        const arm=new THREE.Mesh(new THREE.BoxGeometry(3.5,0.1,0.1),em); arm.rotation.y=Math.PI/2; dg.add(arm);
+        g.add(dg); const ang=d/5*Math.PI*2;
+        dg.position.set(Math.cos(ang)*6,10+Math.sin(d)*2,Math.sin(ang)*6);
+        animParts.push({mesh:dg,type:'orbit',speed:0.3+d*0.05,radius:6,startAngle:ang,centerY:10+Math.sin(d)*2});
+      }
+      break;
+    }
+    case 5: { // AI Swarm — pulsing brain
+      const brain=new THREE.Mesh(new THREE.IcosahedronGeometry(4,2),makeEmitMat(s.hex,5));
+      brain.position.y=9; g.add(brain);
+      animParts.push({mesh:brain,type:'pulseEmit',speed:1.2,min:2,max:8,phase:0});
+      animParts.push({mesh:brain,type:'rotY',speed:0.2});
+      // Orbiting particles
+      for(let p=0;p<8;p++) {
+        const pm=new THREE.Mesh(new THREE.SphereGeometry(0.25,6,6),em);
+        g.add(pm);
+        const ang=p/8*Math.PI*2;
+        animParts.push({mesh:pm,type:'orbit3d',speed:0.8+p*0.1,radius:7,startAngle:ang,
+          centerY:9,tilt:p*Math.PI/4});
+      }
+      break;
+    }
+  }
+
+  scene.add(g); stationGroups.push(g);
+
+  // Station light pillar
+  const beam=new THREE.Mesh(new THREE.CylinderGeometry(0.2,2,40,8,1,true),
+    new THREE.MeshStandardMaterial({color:new THREE.Color(s.hex),emissive:new THREE.Color(s.hex),emissiveIntensity:0.5,transparent:true,opacity:0.1,side:THREE.DoubleSide}));
+  beam.position.set(...s.worldPos); beam.position.y=20;
+  scene.add(beam);
+  animParts.push({mesh:beam.material,type:'pulseMat',speed:0.7+si*0.2,min:0.05,max:0.2,phase:si*0.8});
+});
+
+// ── HQ CENTER ─────────────────────────────────────────
+const hqGroup=new THREE.Group();
+const hqBase=new THREE.Mesh(new THREE.CylinderGeometry(12,14,1,12),stdMat(0x080d1a,0.8));
+hqBase.position.y=0.5; hqGroup.add(hqBase);
+
+const hqTower=new THREE.Mesh(new THREE.BoxGeometry(10,25,10),stdMat(0x040c18,0.06,0.1));
+hqTower.position.y=13.5; hqGroup.add(hqTower);
+
+const hqTop=new THREE.Mesh(new THREE.CylinderGeometry(0.2,5,4,8),makeEmitMat('#00e5ff',6));
+hqTop.position.y=28; hqGroup.add(hqTop);
+
+const hqRim=new THREE.Mesh(new THREE.TorusGeometry(12,0.25,8,48),makeEmitMat('#00e5ff',4));
+hqRim.rotation.x=Math.PI/2; hqRim.position.y=0.55; hqGroup.add(hqRim);
+animParts.push({mesh:hqRim,type:'pulseEmit',speed:0.4,min:1,max:5,phase:0});
+
+// HQ LED screens
+['#00e5ff','#ff006e','#ff8c00','#8b5cf6'].forEach((hex,i) => {
+  const angle=i/4*Math.PI*2;
+  const sc=new THREE.Mesh(new THREE.PlaneGeometry(6,10),makeEmitMat(hex,4));
+  sc.position.set(Math.sin(angle)*5.1,15,Math.cos(angle)*5.1);
+  sc.rotation.y=angle; hqGroup.add(sc);
+  animParts.push({mesh:sc.material,type:'pulseMat',speed:0.6+i*0.2,min:1,max:6,phase:i*1.1});
+});
+
+const hqLight=new THREE.PointLight(0x00e5ff,8,80);
+hqLight.position.y=32; hqGroup.add(hqLight);
+animParts.push({mesh:hqLight,type:'lightPulse',speed:0.8,min:4,max:12});
+
+scene.add(hqGroup);
+
+// ── PROCEDURAL DRONE (since GLB is on local machine) ──────
+const droneGroup=new THREE.Group();
+droneGroup.position.set(0,22,0);
+droneGroup.name='ProceduralDrone';
+
+const droneMat=stdMat(0x1a2a3a,0.4,0.8);
+const droneEmit=makeEmitMat('#00e5ff',8);
+
+// Body
+const dBody=new THREE.Mesh(new THREE.BoxGeometry(2.5,0.7,2),droneMat); droneGroup.add(dBody);
+// Arms
+[[-1.8,0,-1.8],[1.8,0,-1.8],[-1.8,0,1.8],[1.8,0,1.8]].forEach(([ax,,az]) => {
+  const arm=new THREE.Mesh(new THREE.BoxGeometry(Math.abs(ax)*1.6,0.15,0.15),droneMat);
+  arm.position.set(ax*0.6,0,az*0.6); droneGroup.add(arm);
+  // Rotor
+  const rotor=new THREE.Mesh(new THREE.TorusGeometry(0.9,0.08,6,16),droneEmit);
+  rotor.position.set(ax,0.1,az); rotor.rotation.x=Math.PI/2; droneGroup.add(rotor);
+  animParts.push({mesh:rotor,type:'rotY',speed:8+Math.random()*3});
+});
+// Camera gimbal
+const camBall=new THREE.Mesh(new THREE.SphereGeometry(0.35,8,8),droneEmit);
+camBall.position.set(0,-0.5,0); droneGroup.add(camBall);
+// Glow
+const dLight=new THREE.PointLight(0x00e5ff,2,12); dLight.position.y=-1; droneGroup.add(dLight);
+
+scene.add(droneGroup);
+animParts.push({mesh:droneGroup,type:'hover',speed:0.4,amp:1.2,baseY:22,phase:0});
+
+// ── PROCEDURAL BIKE ────────────────────────────────────
+const bikeGroup=new THREE.Group();
+bikeGroup.position.set(-68,0,72);
+bikeGroup.rotation.y=Math.PI*0.7;
+bikeGroup.name='CyberpunkBike';
+
+const bikeMat=stdMat(0x0a0a1a,0.3,0.9);
+const bikeGlow=makeEmitMat('#00e5ff',10);
+const bikeGlowPink=makeEmitMat('#ff006e',8);
+
+// Frame
+const bFrame=new THREE.Mesh(new THREE.BoxGeometry(3.5,0.8,0.7),bikeMat); bFrame.position.y=0.8; bikeGroup.add(bFrame);
+// Tank
+const bTank=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.9,0.7),bikeMat); bTank.position.set(-0.2,1.45,0); bikeGroup.add(bTank);
+// Fairings
+const bFront=new THREE.Mesh(new THREE.ConeGeometry(0.5,1.5,8),bikeMat); bFront.position.set(1.8,0.9,0); bFront.rotation.z=-Math.PI/2; bikeGroup.add(bFront);
+// Wheels
+[-1.3,1.3].forEach(wx => {
+  const wheel=new THREE.Mesh(new THREE.TorusGeometry(0.7,0.22,12,24),stdMat(0x111111,0.95));
+  wheel.position.set(wx,0.7,0); wheel.rotation.y=Math.PI/2; bikeGroup.add(wheel);
+  const spoke=new THREE.Mesh(new THREE.TorusGeometry(0.45,0.04,6,12),bikeMat);
+  spoke.position.set(wx,0.7,0); spoke.rotation.y=Math.PI/2; bikeGroup.add(spoke);
+});
+// Neon underglow
+const bLine=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.05,0.1),bikeGlow); bLine.position.set(0,0.18,0.38); bikeGroup.add(bLine);
+const bLine2=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.05,0.1),bikeGlowPink); bLine2.position.set(0,0.18,-0.38); bikeGroup.add(bLine2);
+const bHeadlight=new THREE.PointLight(0x00e5ff,2,15); bHeadlight.position.set(2.2,0.9,0); bikeGroup.add(bHeadlight);
+animParts.push({mesh:bLine.material,type:'pulseMat',speed:1.5,min:4,max:14,phase:0});
+
+scene.add(bikeGroup);
+
+// ── CAR / PLAYER ──────────────────────────────────────
+const carGroup=new THREE.Group();
+const carBody=new THREE.Mesh(new THREE.BoxGeometry(3,0.8,1.8),stdMat(0x050b14,0.3,0.8));
+carBody.position.y=0.6; carGroup.add(carBody);
+const carTop=new THREE.Mesh(new THREE.BoxGeometry(2,0.6,1.6),stdMat(0x020608,0.1,0.1));
+carTop.position.y=1.3; carGroup.add(carTop);
+const wheels=[];
+[[-1,0.4,-1],[1,0.4,-1],[-1,0.4,1],[1,0.4,1]].forEach(([wx,wy,wz]) => {
+  const w=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,0.3,12),stdMat(0x0a0a0a,0.9));
+  w.position.set(wx,wy,wz); w.rotation.z=Math.PI/2; carGroup.add(w); wheels.push(w);
+});
+// Neon undercarriage
+const carGlow=new THREE.Mesh(new THREE.BoxGeometry(2.5,0.05,1.5),makeEmitMat('#00e5ff',6));
+carGlow.position.y=0.18; carGroup.add(carGlow);
+const headL=new THREE.PointLight(0xffffff,2,30);
+headL.position.set(1.6,0.5,0); carGroup.add(headL);
+scene.add(carGroup);
+
+// ── PHYSICS STATE ─────────────────────────────────────
+const car = { pos:new THREE.Vector3(0,0,0), dir:0, speed:0, accel:28, maxFwd:45, maxBwd:18, turnFactor:2.0 };
+const camPos=new THREE.Vector3(0,20,28), camLook=new THREE.Vector3();
+
+const keys={};
+window.addEventListener('keydown',e=>{keys[e.code]=true; updateKbUI();});
+window.addEventListener('keyup',e=>{keys[e.code]=false; updateKbUI();});
+
+function updateKbUI() {
+  document.getElementById('kb-w').classList.toggle('active',!!keys['KeyW']||!!keys['ArrowUp']);
+  document.getElementById('kb-s').classList.toggle('active',!!keys['KeyS']||!!keys['ArrowDown']);
+  document.getElementById('kb-a').classList.toggle('active',!!keys['KeyA']||!!keys['ArrowLeft']);
+  document.getElementById('kb-d').classList.toggle('active',!!keys['KeyD']||!!keys['ArrowRight']);
+  document.getElementById('kb-sp').classList.toggle('active',!!keys['Space']);
+}
+
+// Touch
+let touchDX=0, touchDY=0, lastTouchX=null, lastTouchY=null;
+window.addEventListener('touchstart',e=>{const t=e.touches[0]; lastTouchX=t.clientX; lastTouchY=t.clientY;},{passive:true});
+window.addEventListener('touchmove',e=>{
+  const t=e.touches[0];
+  touchDX=(t.clientX-lastTouchX)/30; touchDY=-(t.clientY-lastTouchY)/30;
+  lastTouchX=t.clientX; lastTouchY=t.clientY;
+},{passive:true});
+window.addEventListener('touchend',()=>{touchDX=0; touchDY=0;},{passive:true});
+
+// ── MINIMAP ───────────────────────────────────────────
+const mmCar=document.getElementById('mm-car');
+const mmStations=[1,2,3,4,5,6].map(i=>document.getElementById('mms'+i));
+
+function drawMinimap() {
+  const MAP=105; const S_MIN=18, S_MAX=182, SR=S_MAX-S_MIN;
+  const svgX=((car.pos.x+MAP)/(MAP*2))*SR+S_MIN;
+  const svgY=((car.pos.z+MAP)/(MAP*2))*SR+S_MIN;
+  const deg=car.dir*(180/Math.PI);
+  mmCar.setAttribute('transform',`translate(${svgX.toFixed(1)},${svgY.toFixed(1)}) rotate(${deg.toFixed(1)})`);
+  mmStations.forEach((el,i) => {
+    const s=STATIONS[i];
+    const sPos=new THREE.Vector3(...s.worldPos);
+    const dist=car.pos.distanceTo(sPos);
+    if(dist<28) { el.setAttribute('opacity','1'); el.setAttribute('r',String(7+Math.sin(performance.now()/300)*1.2)); }
+    else { el.setAttribute('opacity','0.6'); el.setAttribute('r','5.5'); }
+  });
+}
+
+// ── PROXIMITY & INFO ──────────────────────────────────
+let currentStation=null, exploreShown=true;
+
+function showNotif(msg,dur=2200) {
+  const n=document.getElementById('notif');
+  document.getElementById('notif-txt').textContent=msg;
+  n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'),dur);
+}
+
+function checkProximity() {
+  const RADIUS=30, HQ_RADIUS=20;
+  let nearest=null, nearestDist=Infinity;
+  STATIONS.forEach(s => {
+    const sp=new THREE.Vector3(...s.worldPos);
+    const dist=car.pos.distanceTo(sp);
+    if(dist<RADIUS&&dist<nearestDist) { nearest=s; nearestDist=dist; }
+  });
+
+  const panel=document.getElementById('info-panel');
+  const expMsg=document.getElementById('explore-msg');
+  const secEl=document.getElementById('sec-name');
+
+  if(exploreShown&&Math.abs(car.speed)>1) {
+    expMsg.style.opacity='0'; exploreShown=false;
+  }
+
+  if(nearest&&nearest!==currentStation) {
+    currentStation=nearest;
+    document.getElementById('pnl-tag').textContent=nearest.tag;
+    document.getElementById('pnl-divider').style.background=nearest.hex;
+    document.getElementById('pnl-title').innerHTML=nearest.name.replace('\n','<br>');
+    document.getElementById('pnl-desc').textContent=nearest.desc;
+    document.getElementById('pnl-metric-val').textContent=nearest.metricVal;
+    document.getElementById('pnl-metric-val').style.color=nearest.hex;
+    document.getElementById('pnl-metric-lbl').textContent=nearest.metricLbl;
+    document.getElementById('pnl-metric2-val').textContent=nearest.metric2Val;
+    document.getElementById('pnl-metric2-lbl').textContent=nearest.metric2Lbl;
+    // tags
+    const tagsEl=document.getElementById('pnl-tags');
+    tagsEl.innerHTML=nearest.tags.map((t,i)=>`<span class="pnl-chip${i%2===1?' alt':''}">${t}</span>`).join('');
+    panel.classList.add('show');
+    secEl.textContent=nearest.name.split('\n')[0].substring(0,22);
+    secEl.classList.add('active');
+    showNotif(`▸ ${nearest.tag} — ${nearest.name.split('\n')[0]}`);
+  } else if(!nearest&&currentStation) {
+    currentStation=null;
+    panel.classList.remove('show');
+    secEl.textContent='OPEN FIELD';
+    secEl.classList.remove('active');
+  }
+  if(!nearest&&car.pos.length()<HQ_RADIUS) { secEl.textContent='ENFIBIO HQ'; secEl.classList.add('active'); }
+}
+
+// ── ANIMATION LOOP ────────────────────────────────────
+let prevTime=performance.now();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const now=performance.now();
+  const dt=Math.min((now-prevTime)/1000,0.05);
+  prevTime=now;
+  const t=now/1000;
+
+  // Car physics
+  const fwd=(keys['ArrowUp']||keys['KeyW'])?1:(keys['ArrowDown']||keys['KeyS'])?-1:0;
+  const trn=(keys['ArrowLeft']||keys['KeyA'])?1:(keys['ArrowRight']||keys['KeyD'])?-1:0;
+  const brk=keys['Space']?1:0;
+  const fi=Math.max(fwd,Math.min(touchDY,1));
+
+  if(fi>0) car.speed=Math.min(car.speed+car.accel*dt*fi, car.maxFwd);
+  else if(fi<0) car.speed=Math.max(car.speed+car.accel*dt*fi*0.6, -car.maxBwd);
+  if(brk) car.speed*=Math.pow(0.05,dt);
+  if(Math.abs(fi)<0.1) car.speed*=Math.pow(0.12,dt);
+
+  if(Math.abs(car.speed)>0.3) {
+    car.dir+=(trn+touchDX)*car.turnFactor*dt*Math.sign(car.speed)*Math.min(Math.abs(car.speed)/car.maxFwd,1);
+  }
+  car.pos.x+=Math.sin(car.dir)*car.speed*dt;
+  car.pos.z+=Math.cos(car.dir)*car.speed*dt;
+  car.pos.x=Math.max(-145,Math.min(145,car.pos.x));
+  car.pos.z=Math.max(-145,Math.min(145,car.pos.z));
+
+  carGroup.position.copy(car.pos);
+  carGroup.rotation.y=car.dir;
+  const wspd=car.speed*dt*4;
+  wheels.forEach(w=>w.rotation.y+=wspd);
+
+  // Camera follow
+  const behX=-Math.sin(car.dir)*20, behZ=-Math.cos(car.dir)*20;
+  camPos.lerp(new THREE.Vector3(car.pos.x+behX,15,car.pos.z+behZ),0.06);
+  camera.position.copy(camPos);
+  const lookAhead=new THREE.Vector3(car.pos.x+Math.sin(car.dir)*8,car.pos.y+1.5,car.pos.z+Math.cos(car.dir)*8);
+  camLook.lerp(lookAhead,0.09);
+  camera.lookAt(camLook);
+
+  // Flying vehicles orbit
+  flyVehicles.forEach(fv => {
+    fv.userData.angle+=fv.userData.speed*dt;
+    const a=fv.userData.angle, r=fv.userData.radius;
+    fv.position.set(Math.cos(a)*r, fv.userData.orbitY+Math.sin(a*0.3)*3, Math.sin(a)*r);
+    fv.rotation.y=-a+Math.PI/2;
+  });
+
+  // Animated parts
+  animParts.forEach(p => {
+    const ph=p.phase||0;
+    switch(p.type) {
+      case 'rotY':       p.mesh.rotation.y+=p.speed*dt; break;
+      case 'hover':      p.mesh.position.y=p.baseY+Math.sin(t*p.speed+ph)*p.amp; break;
+      case 'pulseEmit':  if(p.mesh.material) p.mesh.material.emissiveIntensity=p.min+(Math.sin(t*p.speed+ph)*0.5+0.5)*(p.max-p.min); break;
+      case 'pulseMat':   p.mesh.emissiveIntensity=p.min+(Math.sin(t*p.speed+ph)*0.5+0.5)*(p.max-p.min); break;
+      case 'lightPulse': p.mesh.intensity=p.min+(Math.sin(t*p.speed+ph)*0.5+0.5)*(p.max-p.min); break;
+      case 'orbit':
+        p.mesh.position.x=Math.cos(p.startAngle+t*p.speed)*p.radius;
+        p.mesh.position.z=Math.sin(p.startAngle+t*p.speed)*p.radius;
+        p.mesh.position.y=p.centerY+Math.sin(t*0.4+ph)*1.5;
+        break;
+      case 'orbit3d':
+        const a3=p.startAngle+t*p.speed;
+        p.mesh.position.x=Math.cos(a3)*p.radius;
+        p.mesh.position.y=p.centerY+Math.sin(a3+p.tilt)*p.radius*0.4;
+        p.mesh.position.z=Math.sin(a3)*p.radius*Math.cos(p.tilt||0);
+        break;
+    }
+  });
+
+  // Atmosphere lights pulse
+  pinkArea.intensity=1.2+Math.sin(t*0.7)*0.4;
+  cyanArea.intensity=1.0+Math.sin(t*0.5+1)*0.3;
+
+  // UI updates
+  const spd=Math.round(Math.abs(car.speed)*3.6*0.65);
+  document.getElementById('spd-val').textContent=spd;
+  document.getElementById('spd-val').style.color=spd>60?'#ff006e':spd>30?'#ff8c00':'#00e5ff';
+  document.getElementById('coord-x').textContent=`X: ${car.pos.x>=0?'+':''}${car.pos.x.toFixed(1)}m`;
+  document.getElementById('coord-z').textContent=`Z: ${car.pos.z>=0?'+':''}${car.pos.z.toFixed(1)}m`;
+  document.getElementById('coord-alt').textContent=`ALT: ${(camPos.y).toFixed(1)}m`;
+
+  checkProximity();
+  drawMinimap();
+  renderer.render(scene,camera);
+}
+
+// ── CONTROLS ─────────────────────────────────────────
+function resetCamera() { car.pos.set(0,0,0); car.speed=0; car.dir=0; showNotif('▸ VIEW RESET'); }
+function showAbout() { document.getElementById('about-bar').classList.toggle('open'); }
+function hideAbout() { document.getElementById('about-bar').classList.remove('open'); }
+function showProjects() {
+  car.pos.set(0,0,0); car.speed=0; car.dir=0;
+  showNotif('▸ DRIVING TO STATION 01 — RADAR');
+  setTimeout(()=>{ car.pos.set(-60,-0,-60); },500);
+}
+
+// ── LOADING SEQUENCE ──────────────────────────────────
+const MESSAGES=['INITIALIZING SYSTEMS...','LOADING 3D WORLD...','CALIBRATING SENSORS...','DEPLOYING UAV SWARM...','ACTIVATING AI MATRIX...','BUILDING CITY GRID...','SYSTEMS ONLINE'];
+let loadPct=0, msgIdx=0;
+const loadBar=document.getElementById('load-bar');
+const loadStatus=document.getElementById('load-status');
+const loadPctEl=document.getElementById('load-pct');
+
+const loadInterval=setInterval(()=>{
+  loadPct+=Math.random()*15+6;
+  if(loadPct>=100) { loadPct=100; clearInterval(loadInterval); }
+  loadBar.style.width=loadPct+'%';
+  loadPctEl.textContent=Math.round(loadPct)+'%';
+  const mThresh=(msgIdx+1)*14;
+  if(loadPct>mThresh&&msgIdx<MESSAGES.length-1) { msgIdx++; loadStatus.textContent=MESSAGES[msgIdx]; }
+  if(loadPct>=100) {
+    setTimeout(()=>{
+      document.getElementById('loading').classList.add('fade');
+      setTimeout(()=>{ document.getElementById('loading').style.display='none'; animate(); },1100);
+    },300);
+  }
+},130);
+</script>
+</body>
+</html>
