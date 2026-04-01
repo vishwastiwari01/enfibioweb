@@ -1,26 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Loader({ onComplete }: { onComplete: () => void }) {
   const [visible, setVisible] = useState(true);
-  const [showEnfibio, setShowEnfibio] = useState(false);
 
   useEffect(() => {
-    // Show ENFIBIO text shortly after start
-    const timerText = setTimeout(() => setShowEnfibio(true), 800);
-    
-    // Automatically complete loader after 3.5 seconds
+    // Automatically complete loader after 4.5 seconds to sync with the spin animation
     const timerEnd = setTimeout(() => {
       setVisible(false);
       setTimeout(onComplete, 800);
-    }, 3500);
+    }, 4500);
 
-    return () => {
-      clearTimeout(timerText);
-      clearTimeout(timerEnd);
-    };
+    return () => clearTimeout(timerEnd);
   }, [onComplete]);
 
   return (
@@ -33,72 +27,356 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
           className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
           style={{ background: '#010208' }}
         >
-          {/* Background Text "ENFIBIO TECHNOLOGIES" */}
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none select-none z-0">
-            <AnimatePresence>
-              {showEnfibio && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 0.08, scale: 1.1 }}
-                  transition={{ duration: 1.5, ease: 'easeOut' }}
-                  className="text-center"
-                >
-                  <h1 className="text-[12vw] font-black tracking-[-0.05em] leading-none mb-0 text-white">
-                    ENFIBIO
-                  </h1>
-                  <h2 className="text-[2vw] font-bold tracking-[1.5em] text-white/40 -mt-2 ml-[1.5em]">
-                    TECHNOLOGIES
-                  </h2>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Floating Car / Drone Animation */}
-          <motion.div
-            initial={{ opacity: 0, rotate: -5, scale: 0.5 }}
-            animate={{
-              opacity: 0.8,
-              rotate: 0,
-              scale: 1,
-              y: [20, -20, 20],
-            }}
-            exit={{ scale: 1.5, opacity: 0, x: 200 }}
-            transition={{
-              opacity: { duration: 1 },
-              scale: { duration: 1 },
-              rotate: { duration: 1 },
-              y: { repeat: Infinity, duration: 4, ease: 'easeInOut' }
-            }}
-            className="absolute z-10 w-[600px] h-auto pointer-events-none"
-          >
-            <img
-              src="/astra_carrier.png"
-              alt="Floating Vehicle"
-              className="w-full h-auto object-contain drop-shadow-[0_0_50px_rgba(37,99,235,0.4)]"
-              style={{ filter: 'brightness(1.5) contrast(1.2)' }}
-            />
-          </motion.div>
+          <StyledWrapper>
+            <div className="macbook">
+              <div className="inner">
+                <div className="screen">
+                  <div className="face-one">
+                    <div className="camera" />
+                    <div className="display flex items-center justify-center relative">
+                      <div className="shade z-10" />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center z-0">
+                        <span className="font-mono text-blue-500/80 text-[6px] tracking-widest font-bold">ENFIBIO</span>
+                        <span className="font-mono text-blue-400/50 text-[4px] tracking-wide mt-1 text-center">SYSTEM STARTUP</span>
+                      </div>
+                    </div>
+                    <span className="brand-text">Enfibio Technologies</span>
+                  </div>
+                </div>
+                <div className="macbody">
+                  <div className="face-one">
+                    <div className="touchpad" />
+                    <div className="keyboard">
+                      {/* Line 1 */}
+                      <div className="key" />
+                      <div className="key" />
+                      <div className="key" />
+                      <div className="key" />
+                      <div className="key" />
+                      <div className="key space" />
+                      
+                      {/* Fill the rest of normal keys */}
+                      {[...Array(53)].map((_, i) => (
+                        <div key={i} className="key" />
+                      ))}
+                      
+                      {/* Fill small top/function keys */}
+                      {[...Array(16)].map((_, i) => (
+                        <div key={`f-${i}`} className="key f" />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="pad one" />
+                  <div className="pad two" />
+                  <div className="pad three" />
+                  <div className="pad four" />
+                </div>
+              </div>
+              <div className="shadow" />
+            </div>
+          </StyledWrapper>
 
           {/* Loading Progress Indicator */}
           <div className="absolute bottom-16 left-0 right-0 flex flex-col items-center">
             <motion.div 
               initial={{ width: 0 }}
               animate={{ width: "200px" }}
-              transition={{ duration: 3.5, ease: "linear" }}
+              transition={{ duration: 4.5, ease: "linear" }}
               className="h-[1px] bg-blue-500 shadow-[0_0_10px_#2563eb]"
             />
             <div className="mt-4 font-mono text-[10px] tracking-[0.3em] text-blue-500/60 uppercase">
-              INITIALIZING SECURE LINK...
+              INITIALIZING ENFIBIO OS...
             </div>
           </div>
           
           {/* Decorative corner borders */}
-          <div className="absolute top-8 left-8 w-12 h-12 border-t border-l border-white/20" />
-          <div className="absolute bottom-8 right-8 w-12 h-12 border-b border-r border-white/20" />
+          <div className="absolute top-8 left-8 w-12 h-12 border-t border-l border-white/20 pointer-events-none" />
+          <div className="absolute bottom-8 right-8 w-12 h-12 border-b border-r border-white/20 pointer-events-none" />
         </motion.div>
       )}
     </AnimatePresence>
   );
 }
+
+const StyledWrapper = styled.div`
+  .macbook {
+    width: 150px;
+    height: 96px;
+    position: relative;
+    perspective: 500px;
+    transform: scale(1.5);
+  }
+
+  .shadow {
+    position: absolute;
+    width: 60px;
+    height: 0px;
+    left: 40px;
+    top: 160px;
+    transform: rotateX(80deg) rotateY(0deg) rotateZ(0deg);
+    box-shadow: 0 0 60px 40px rgba(0,0,0,0.3);
+    animation: shadow infinite 7s ease;
+  }
+
+  .inner {
+    z-index: 20;
+    position: absolute;
+    width: 150px;
+    height: 96px;
+    left: 0;
+    top: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(-20deg) rotateY(0deg) rotateZ(0deg);
+    animation: rotate infinite 7s ease;
+  }
+
+  .screen {
+    width: 150px;
+    height: 96px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    border-radius: 7px;
+    background: #ddd;
+    transform-style: preserve-3d;
+    transform-origin: 50% 93px;
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+    animation: lid-screen infinite 7s ease;
+    background-image: linear-gradient(45deg, rgba(0,0,0,0.34) 0%,rgba(0,0,0,0) 100%);
+    background-position: left bottom;
+    background-size: 300px 300px;
+    box-shadow: inset 0 3px 7px rgba(255,255,255,0.5);
+  }
+
+  .screen .face-one {
+    width: 150px;
+    height: 96px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    border-radius: 7px;
+    background: #d3d3d3;
+    transform: translateZ(2px);
+    background-image: linear-gradient(45deg,rgba(0,0,0,0.24) 0%,rgba(0,0,0,0) 100%);
+  }
+
+  .screen .face-one .camera {
+    width: 3px;
+    height: 3px;
+    border-radius: 100%;
+    background: #000;
+    position: absolute;
+    left: 50%;
+    top: 4px;
+    margin-left: -1.5px;
+  }
+
+  .screen .face-one .display {
+    width: 130px;
+    height: 74px;
+    margin: 10px;
+    background-color: #000;
+    background-size: 100% 100%;
+    border-radius: 1px;
+    position: relative;
+    box-shadow: inset 0 0 2px rgba(0,0,0,1);
+    overflow: hidden;
+  }
+
+  .screen .face-one .display .shade {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 130px;
+    height: 74px;
+    background: linear-gradient(-135deg, rgba(255,255,255,0) 0%,rgba(255,255,255,0.1) 47%,rgba(255,255,255,0) 48%);
+    animation: screen-shade infinite 7s ease;
+    background-size: 300px 200px;
+    background-position: 0px 0px;
+  }
+
+  .screen .face-one .brand-text {
+    position: absolute;
+    top: 85px;
+    width: 100%;
+    text-align: center;
+    left: 0;
+    font-size: 5px;
+    color: #555;
+    font-family: sans-serif;
+  }
+
+  .macbody {
+    width: 150px;
+    height: 96px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    border-radius: 7px;
+    background: #cbcbcb;
+    transform-style: preserve-3d;
+    transform-origin: 50% bottom;
+    transform: rotateX(-90deg);
+    animation: lid-macbody infinite 7s ease;
+    background-image: linear-gradient(45deg, rgba(0,0,0,0.24) 0%,rgba(0,0,0,0) 100%);
+  }
+
+  .macbody .face-one {
+    width: 150px;
+    height: 96px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    border-radius: 7px;
+    transform-style: preserve-3d;
+    background: #dfdfdf;
+    animation: lid-keyboard-area infinite 7s ease;
+    transform: translateZ(-2px);
+    background-image: linear-gradient(30deg, rgba(0,0,0,0.24) 0%,rgba(0,0,0,0) 100%);
+  }
+
+  .macbody .touchpad {
+    width: 40px;
+    height: 31px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-radius: 4px;
+    margin: -44px 0 0 -18px;
+    background: #cdcdcd;
+    background-image: linear-gradient(30deg, rgba(0,0,0,0.24) 0%,rgba(0,0,0,0) 100%);
+    box-shadow: inset 0 0 3px #888;
+  }
+
+  .macbody .keyboard {
+    width: 130px;
+    height: 45px;
+    position: absolute;
+    left: 7px;
+    top: 41px;
+    border-radius: 4px;
+    transform-style: preserve-3d;
+    background: #cdcdcd;
+    background-image: linear-gradient(30deg, rgba(0,0,0,0.24) 0%,rgba(0,0,0,0) 100%);
+    box-shadow: inset 0 0 3px #777;
+    padding: 0 0 0 2px;
+  }
+
+  .keyboard .key {
+    width: 6px;
+    height: 6px;
+    background: #444;
+    float: left;
+    margin: 1px;
+    transform: translateZ(-2px);
+    border-radius: 2px;
+    box-shadow: 0 -2px 0 #222;
+    animation: keys infinite 7s ease;
+  }
+
+  .key.space {
+    width: 45px;
+  }
+
+  .key.f {
+    height: 3px;
+  }
+
+  .macbody .pad {
+    width: 5px;
+    height: 5px;
+    background: #333;
+    border-radius: 100%;
+    position: absolute;
+  }
+
+  .pad.one {
+    left: 20px;
+    top: 20px;
+  }
+
+  .pad.two {
+    right: 20px;
+    top: 20px;
+  }
+
+  .pad.three {
+    right: 20px;
+    bottom: 20px;
+  }
+
+  .pad.four {
+    left: 20px;
+    bottom: 20px;
+  }
+
+  @keyframes rotate {
+    0% { transform: rotateX(-20deg) rotateY(0deg) rotateZ(0deg); }
+    5% { transform: rotateX(-20deg) rotateY(-20deg) rotateZ(0deg); }
+    20% { transform: rotateX(30deg) rotateY(200deg) rotateZ(0deg); }
+    25% { transform: rotateX(-60deg) rotateY(150deg) rotateZ(0deg); }
+    60% { transform: rotateX(-20deg) rotateY(130deg) rotateZ(0deg); }
+    65% { transform: rotateX(-20deg) rotateY(120deg) rotateZ(0deg); }
+    80% { transform: rotateX(-20deg) rotateY(375deg) rotateZ(0deg); }
+    85% { transform: rotateX(-20deg) rotateY(357deg) rotateZ(0deg); }
+    87% { transform: rotateX(-20deg) rotateY(360deg) rotateZ(0deg); }
+    100% { transform: rotateX(-20deg) rotateY(360deg) rotateZ(0deg); }
+  }
+
+  @keyframes lid-screen {
+    0% { transform: rotateX(0deg); background-position: left bottom; }
+    5% { transform: rotateX(50deg); background-position: left bottom; }
+    20% { transform: rotateX(-90deg); background-position: -150px top; }
+    25% { transform: rotateX(15deg); background-position: left bottom; }
+    30% { transform: rotateX(-5deg); background-position: right top; }
+    38% { transform: rotateX(5deg); background-position: right top; }
+    48% { transform: rotateX(0deg); background-position: right top; }
+    90% { transform: rotateX(0deg); background-position: right top; }
+    100% { transform: rotateX(0deg); background-position: right center; }
+  }
+
+  @keyframes lid-macbody {
+    0% { transform: rotateX(-90deg); }
+    50% { transform: rotateX(-90deg); }
+    100% { transform: rotateX(-90deg); }
+  }
+
+  @keyframes lid-keyboard-area {
+    0% { background-color: #dfdfdf; }
+    50% { background-color: #bbb; }
+    100% { background-color: #dfdfdf; }
+  }
+
+  @keyframes screen-shade {
+    0% { background-position: -20px 0px; }
+    5% { background-position: -40px 0px; }
+    20% { background-position: 200px 0; }
+    50% { background-position: -200px 0; }
+    80% { background-position: 0px 0px; }
+    85% { background-position: -30px 0; }
+    90% { background-position: -20px 0; }
+    100% { background-position: -20px 0px; }
+  }
+
+  @keyframes keys {
+    0% { box-shadow: 0 -2px 0 #222; }
+    5% { box-shadow: 1 -1px 0 #222; }
+    20% { box-shadow: -1px 1px 0 #222; }
+    25% { box-shadow: -1px 1px 0 #222; }
+    60% { box-shadow: -1px 1px 0 #222; }
+    80% { box-shadow: 0 -2px 0 #222; }
+    85% { box-shadow: 0 -2px 0 #222; }
+    87% { box-shadow: 0 -2px 0 #222; }
+    100% { box-shadow: 0 -2px 0 #222; }
+  }
+
+  @keyframes shadow {
+    0% { transform: rotateX(80deg) rotateY(0deg) rotateZ(0deg); box-shadow: 0 0 60px 40px rgba(0,0,0,0.3); }
+    5% { transform: rotateX(80deg) rotateY(10deg) rotateZ(0deg); box-shadow: 0 0 60px 40px rgba(0,0,0,0.3); }
+    20% { transform: rotateX(30deg) rotateY(-20deg) rotateZ(-20deg); box-shadow: 0 0 50px 30px rgba(0,0,0,0.3); }
+    25% { transform: rotateX(80deg) rotateY(-20deg) rotateZ(50deg); box-shadow: 0 0 35px 15px rgba(0,0,0,0.1); }
+    60% { transform: rotateX(80deg) rotateY(0deg) rotateZ(-50deg) translateX(30px); box-shadow: 0 0 60px 40px rgba(0,0,0,0.3); }
+    100% { box-shadow: 0 0 60px 40px rgba(0,0,0,0.3); }
+  }
+`;
 
