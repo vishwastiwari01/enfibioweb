@@ -1,13 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { useGLTF, OrbitControls, Center } from '@react-three/drei';
 
-const BATTLE_DRONE_URL =
-  'https://sketchfab.com/models/e104b7ce3d014152af703ac9d30e6eaa/embed' +
-  '?autostart=1&ui_theme=dark&ui_animations=0&ui_infos=0&ui_stop=0' +
-  '&ui_inspector=0&ui_watermark=0&ui_watermark_link=0&ui_ar=0' +
-  '&ui_help=0&ui_settings=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0' +
-  '&camera=0&transparent=1';
+const BATTLE_DRONE_URL = '/comic_drone.glb'; // local GLB file uploaded by user
 
 const SPY_DRONE_URL =
   'https://sketchfab.com/models/cba87a0ba2c54be6a429440f39daeb1b/embed' +
@@ -16,27 +13,42 @@ const SPY_DRONE_URL =
   '&ui_help=0&ui_settings=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0' +
   '&camera=0&transparent=1';
 
+function GLBModel({ url }: { url: string }) {
+  const { scene } = useGLTF(url);
+  const clonedScene = React.useMemo(() => scene.clone(), [scene]);
+  return (
+    <primitive 
+      object={clonedScene} 
+      scale={2.2} 
+      position={[0, 0, 0]} 
+      rotation={[0.2, Math.PI / 4, 0]}
+    />
+  );
+}
+
 function ModelPane({
   src,
   label,
   sublabel,
   badge,
   badgeColor,
+  isLocalGLB = false,
 }: {
   src: string;
   label: string;
   sublabel: string;
   badge: string;
   badgeColor: string;
+  isLocalGLB?: boolean;
 }) {
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <div className="relative flex-1 min-w-0" style={{ background: 'var(--bg)' }}>
+    <div className="relative flex-1 min-w-0" style={{ background: 'var(--surface)' }}>
       {/* Model label */}
       <div
         className="absolute top-3 left-3 z-10 text-[9px] tracking-widest pointer-events-none"
-        style={{ fontFamily: 'Share Tech Mono, monospace', color: badgeColor }}
+        style={{ fontFamily: 'var(--font-share-tech-mono), Share Tech Mono, monospace', color: badgeColor }}
       >
         <div className="opacity-80 mb-0.5">{label}</div>
         <div className="opacity-40 text-[var(--text-muted)]">{sublabel}</div>
@@ -46,7 +58,7 @@ function ModelPane({
       <div
         className="absolute top-3 right-3 z-10 px-2 py-0.5 text-[8px] tracking-widest border"
         style={{
-          fontFamily: 'Share Tech Mono, monospace',
+          fontFamily: 'var(--font-share-tech-mono), Share Tech Mono, monospace',
           color: badgeColor,
           borderColor: `${badgeColor}40`,
           background: `${badgeColor}10`,
@@ -55,37 +67,77 @@ function ModelPane({
         ● {badge}
       </div>
 
-      {/* Loading placeholder */}
-      {!loaded && (
-        <div
-          className="absolute inset-0 flex items-center justify-center z-20"
-          style={{
-            background: 'var(--bg)',
-            fontFamily: 'Share Tech Mono, monospace',
-            color: badgeColor,
-            fontSize: '9px',
-            letterSpacing: '0.2em',
-            opacity: 0.5,
-          }}
-        >
-          ▸ LOADING...
+      {isLocalGLB ? (
+        <div className="w-full h-full relative" style={{ minHeight: '300px' }}>
+          <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
+            <ambientLight intensity={1.5} />
+            <directionalLight position={[10, 10, 10]} intensity={1.8} />
+            <directionalLight position={[-10, -10, -10]} intensity={0.6} />
+            <pointLight position={[0, 0, 5]} intensity={1.2} color={badgeColor} />
+            <Suspense fallback={
+              <div
+                className="absolute inset-0 flex items-center justify-center z-20"
+                style={{
+                  background: 'var(--surface)',
+                  fontFamily: 'var(--font-share-tech-mono), Share Tech Mono, monospace',
+                  color: badgeColor,
+                  fontSize: '9px',
+                  letterSpacing: '0.2em',
+                  opacity: 0.5,
+                }}
+              >
+                ▸ LOADING 3D MODEL...
+              </div>
+            }>
+              <Center>
+                <GLBModel url={src} />
+              </Center>
+            </Suspense>
+            <OrbitControls enableZoom={true} enablePan={true} autoRotate autoRotateSpeed={0.8} />
+          </Canvas>
+          
+          <div 
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-40 pointer-events-none"
+            style={{ fontFamily: 'var(--font-share-tech-mono), Share Tech Mono, monospace', fontSize: '8px', color: 'var(--text-muted)' }}
+          >
+            <span>click & hold to rotate</span>
+          </div>
         </div>
-      )}
+      ) : (
+        <>
+          {/* Loading placeholder */}
+          {!loaded && (
+            <div
+              className="absolute inset-0 flex items-center justify-center z-20"
+              style={{
+                background: 'var(--surface)',
+                fontFamily: 'var(--font-share-tech-mono), Share Tech Mono, monospace',
+                color: badgeColor,
+                fontSize: '9px',
+                letterSpacing: '0.2em',
+                opacity: 0.5,
+              }}
+            >
+              ▸ LOADING...
+            </div>
+          )}
 
-      <iframe
-        title={label}
-        src={src}
-        allow="autoplay; fullscreen; xr-spatial-tracking"
-        style={{
-          width: '100%',
-          height: '100%',
-          border: 'none',
-          display: 'block',
-          opacity: loaded ? 1 : 0,
-          transition: 'opacity 0.8s ease',
-        }}
-        onLoad={() => setLoaded(true)}
-      />
+          <iframe
+            title={label}
+            src={src}
+            allow="autoplay; fullscreen; xr-spatial-tracking"
+            style={{
+              width: '100%',
+              height: '100%',
+              border: 'none',
+              display: 'block',
+              opacity: loaded ? 1 : 0,
+              transition: 'opacity 0.8s ease',
+            }}
+            onLoad={() => setLoaded(true)}
+          />
+        </>
+      )}
     </div>
   );
 }
@@ -95,7 +147,7 @@ function LaunchTrajectory() {
   return (
     <div
       className="relative flex-shrink-0 flex flex-col items-center justify-center"
-      style={{ width: '64px', background: 'var(--bg)' }}
+      style={{ width: '64px', background: 'var(--surface)' }}
     >
       {/* Vertical divider line */}
       <div
@@ -129,7 +181,7 @@ function LaunchTrajectory() {
 
         <div
           className="text-[7px] tracking-widest text-center"
-          style={{ fontFamily: 'Share Tech Mono, monospace', color: '#2563eb', opacity: 0.8 }}
+          style={{ fontFamily: 'var(--font-share-tech-mono), Share Tech Mono, monospace', color: '#2563eb', opacity: 0.8 }}
         >
           DEPLOY
           <br />
@@ -149,7 +201,7 @@ export default function HangarCanvas() {
     <div
       style={{
         height: '500px',
-        background: 'var(--bg)',
+        background: 'var(--surface-3)',
         borderRadius: '4px',
         overflow: 'hidden',
         position: 'relative',
@@ -162,8 +214,8 @@ export default function HangarCanvas() {
         className="flex-shrink-0 flex items-center justify-between px-4 py-2 border-b"
         style={{
           borderColor: 'var(--border)',
-          fontFamily: 'Share Tech Mono, monospace',
-          background: 'var(--bg)',
+          fontFamily: 'var(--font-share-tech-mono), Share Tech Mono, monospace',
+          background: 'var(--surface-3)',
         }}
       >
         <span className="text-[9px] tracking-widest" style={{ color: '#2563eb', opacity: 0.8 }}>
@@ -196,10 +248,11 @@ export default function HangarCanvas() {
 
         <ModelPane
           src={BATTLE_DRONE_URL}
-          label="PAYLOAD — BATTLE DRONE"
+          label="PAYLOAD — COMIC DRONE"
           sublabel="AUTONOMOUS ASSAULT UNIT"
           badge="IN FLIGHT"
-          badgeColor="#00d4ff"
+          badgeColor="#0ea5e9"
+          isLocalGLB={true}
         />
       </div>
     </div>

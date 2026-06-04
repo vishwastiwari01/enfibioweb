@@ -79,7 +79,137 @@ function getTargets(phase: Formation, n: number): THREE.Vector3[] {
 }
 
 /* ──────────────────────────────────────────────────────────
-   Drone body mesh (instanced)
+   Drone model with spinning propellers (SwarmBench style)
+────────────────────────────────────────────────────────── */
+function DroneModel({ color, isLeader }: { color: string; isLeader: boolean }) {
+  const prop1Ref = useRef<THREE.Mesh>(null);
+  const prop2Ref = useRef<THREE.Mesh>(null);
+  const prop3Ref = useRef<THREE.Mesh>(null);
+  const prop4Ref = useRef<THREE.Mesh>(null);
+
+  useFrame(() => {
+    if (prop1Ref.current) prop1Ref.current.rotation.y += 0.5;
+    if (prop2Ref.current) prop2Ref.current.rotation.y += 0.5;
+    if (prop3Ref.current) prop3Ref.current.rotation.y += 0.5;
+    if (prop4Ref.current) prop4Ref.current.rotation.y += 0.5;
+  });
+
+  return (
+    <group scale={0.25}>
+      {/* Body Box */}
+      <mesh castShadow receiveShadow>
+        <boxGeometry args={[1.5, 0.5, 1.5]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={0.35}
+          metalness={0.7}
+          roughness={0.2}
+        />
+      </mesh>
+
+      {/* 4 Arms */}
+      {[
+        { x: 0.7, z: 0.7 },
+        { x: -0.7, z: 0.7 },
+        { x: 0.7, z: -0.7 },
+        { x: -0.7, z: -0.7 },
+      ].map((pos, idx) => (
+        <mesh key={idx} position={[pos.x, 0.15, pos.z]}>
+          <cylinderGeometry args={[0.08, 0.08, 0.3, 8]} />
+          <meshStandardMaterial color="#334155" metalness={0.9} roughness={0.1} />
+        </mesh>
+      ))}
+
+      {/* 4 Propellers */}
+      <mesh ref={prop1Ref} position={[0.7, 0.3, 0.7]}>
+        <boxGeometry args={[0.9, 0.02, 0.08]} />
+        <meshStandardMaterial color={isLeader ? '#ffd700' : '#6ec6ff'} transparent opacity={0.8} />
+      </mesh>
+      <mesh ref={prop2Ref} position={[-0.7, 0.3, 0.7]}>
+        <boxGeometry args={[0.9, 0.02, 0.08]} />
+        <meshStandardMaterial color={isLeader ? '#ffd700' : '#6ec6ff'} transparent opacity={0.8} />
+      </mesh>
+      <mesh ref={prop3Ref} position={[0.7, 0.3, -0.7]}>
+        <boxGeometry args={[0.9, 0.02, 0.08]} />
+        <meshStandardMaterial color={isLeader ? '#ffd700' : '#6ec6ff'} transparent opacity={0.8} />
+      </mesh>
+      <mesh ref={prop4Ref} position={[-0.7, 0.3, -0.7]}>
+        <boxGeometry args={[0.9, 0.02, 0.08]} />
+        <meshStandardMaterial color={isLeader ? '#ffd700' : '#6ec6ff'} transparent opacity={0.8} />
+      </mesh>
+
+      {/* Status Light */}
+      <mesh position={[0, 0.3, 0]}>
+        <sphereGeometry args={[0.15, 8, 8]} />
+        <meshBasicMaterial color={isLeader ? '#ef4444' : '#22c55e'} />
+      </mesh>
+    </group>
+  );
+}
+
+function DroneInstance({
+  index,
+  positionsRef,
+  targetDroneIdx,
+}: {
+  index: number;
+  positionsRef: React.MutableRefObject<THREE.Vector3[]>;
+  targetDroneIdx: number;
+}) {
+  const groupRef = useRef<THREE.Group>(null);
+  const isLeader = index === 0;
+  const isTarget = index === targetDroneIdx;
+
+  useFrame(({ clock }) => {
+    if (groupRef.current) {
+      const pos = positionsRef.current[index];
+      if (pos) {
+        // subtle bobbing matching propeller rotation
+        const bob = Math.sin(clock.getElapsedTime() * 8 + index * 0.5) * 0.04;
+        groupRef.current.position.set(pos.x, pos.y + bob, pos.z);
+        groupRef.current.rotation.y = clock.getElapsedTime() * 0.4 + index * 0.3;
+      }
+    }
+  });
+
+  const color = isLeader ? '#f39c12' : isTarget ? '#ef4444' : '#3b82f6';
+
+  return (
+    <group ref={groupRef}>
+      <DroneModel color={color} isLeader={isLeader} />
+    </group>
+  );
+}
+
+function TaskTargets() {
+  const tasks = useMemo(() => [
+    { x: -8, y: 2, z: -5 },
+    { x: 10, y: -2, z: 8 },
+    { x: -5, y: 5, z: 10 },
+    { x: 6, y: -4, z: -8 },
+  ], []);
+
+  return (
+    <>
+      {tasks.map((t, idx) => (
+        <mesh key={idx} position={[t.x, t.y, t.z]}>
+          <sphereGeometry args={[0.3, 16, 16]} />
+          <meshPhongMaterial
+            color="#22c55e"
+            emissive="#22c55e"
+            emissiveIntensity={0.8}
+            transparent
+            opacity={0.85}
+          />
+        </mesh>
+      ))}
+    </>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────
+   Drone swarm controller
 ────────────────────────────────────────────────────────── */
 function DroneSwarm({
   phaseRef,
@@ -88,8 +218,6 @@ function DroneSwarm({
   phaseRef: React.MutableRefObject<number>;
   targetDroneRef: React.MutableRefObject<number>;
 }) {
-  const bodyRef   = useRef<THREE.InstancedMesh>(null);
-  const glowRef   = useRef<THREE.InstancedMesh>(null);
   const lineMatRef = useRef<THREE.LineBasicMaterial>(null);
   const netLinesRef = useRef<THREE.LineSegments>(null);
 
@@ -108,10 +236,7 @@ function DroneSwarm({
     ))
   );
 
-  const dummy  = useMemo(() => new THREE.Object3D(), []);
-  const color  = useMemo(() => new THREE.Color(), []);
-
-  // pre-calculate adjacency for network lines (nearest 3 neighbours each)
+  // pre-calculate adjacency for network lines
   const edgePositions = useMemo(() => new Float32Array(DRONE_COUNT * 3 * 6), []);
 
   useFrame(({ clock }) => {
@@ -119,63 +244,25 @@ function DroneSwarm({
     const phaseIdx = Math.floor(t / PHASE_DURATION) % PHASES.length;
     phaseRef.current = phaseIdx;
     const targets = getTargets(PHASES[phaseIdx], DRONE_COUNT);
-    const phaseT = (t % PHASE_DURATION) / PHASE_DURATION; // 0-1 within phase
-
-    if (!bodyRef.current || !glowRef.current) return;
 
     // Update drone positions
     const pos = positions.current;
     const vel = velocities.current;
     for (let i = 0; i < DRONE_COUNT; i++) {
       const tgt = targets[i];
-      // Lerp toward target + boid-style separation
       const toTarget = tgt.clone().sub(pos[i]);
       const d = toTarget.length();
       const steer = toTarget.normalize().multiplyScalar(Math.min(d * 0.04, 0.18));
       vel[i].add(steer).clampLength(0, 0.22);
       pos[i].add(vel[i]);
-
-      // Propeller spin offset as subtle Y bob
-      const bob = Math.sin(t * 8 + i * 0.5) * 0.04;
-
-      dummy.position.set(pos[i].x, pos[i].y + bob, pos[i].z);
-      dummy.rotation.y = t * 0.4 + i * 0.3;
-      dummy.updateMatrix();
-      bodyRef.current.setMatrixAt(i, dummy.matrix);
-
-      // Glow orbs at same position
-      dummy.scale.setScalar(1);
-      dummy.position.set(pos[i].x, pos[i].y + bob, pos[i].z);
-      dummy.updateMatrix();
-      glowRef.current.setMatrixAt(i, dummy.matrix);
-
-      // Colour: target drone redish-amber, command drone cyan, others blue
-      const isTarget = i === targetDroneRef.current;
-      const isCommand = i === 0;
-      if (isTarget) {
-        color.set('#ff6644');
-      } else if (isCommand) {
-        color.set('#00ffff');
-      } else {
-        // pulse between cyan and deep blue based on phase progress
-        const h = 0.54 + Math.sin(phaseT * Math.PI) * 0.06;
-        color.setHSL(h, 1, 0.55 + Math.sin(t * 2 + i) * 0.1);
-      }
-      bodyRef.current.setColorAt(i, color);
-      glowRef.current.setColorAt(i, color);
     }
-    bodyRef.current.instanceMatrix.needsUpdate = true;
-    bodyRef.current.instanceColor!.needsUpdate = true;
-    glowRef.current.instanceMatrix.needsUpdate = true;
-    glowRef.current.instanceColor!.needsUpdate = true;
 
-    // Build network mesh lines (skip far pairs)
+    // Build network mesh lines
     if (netLinesRef.current) {
       const geo = netLinesRef.current.geometry;
       const arr = edgePositions;
       let ptr = 0;
       for (let i = 0; i < DRONE_COUNT; i++) {
-        // Find 2 nearest neighbours
         let n1 = -1, n2 = -1, d1 = Infinity, d2 = Infinity;
         for (let j = 0; j < DRONE_COUNT; j++) {
           if (i === j) continue;
@@ -191,12 +278,10 @@ function DroneSwarm({
           }
         }
       }
-      // zero out rest
       for (; ptr < arr.length; ptr++) arr[ptr] = 0;
       geo.setAttribute('position', new THREE.BufferAttribute(arr.slice(), 3));
     }
 
-    // Animate network line opacity
     if (lineMatRef.current) {
       lineMatRef.current.opacity = 0.15 + Math.sin(t * 1.5) * 0.05;
     }
@@ -204,22 +289,15 @@ function DroneSwarm({
 
   return (
     <>
-      {/* Drone bodies */}
-      <instancedMesh ref={bodyRef} args={[undefined, undefined, DRONE_COUNT]} castShadow>
-        <boxGeometry args={[0.28, 0.08, 0.28]} />
-        <meshStandardMaterial
-          metalness={0.9}
-          roughness={0.15}
-          emissive="#002244"
-          emissiveIntensity={0.6}
+      {/* Detailed drones */}
+      {Array.from({ length: DRONE_COUNT }).map((_, i) => (
+        <DroneInstance
+          key={i}
+          index={i}
+          positionsRef={positions}
+          targetDroneIdx={targetDroneRef.current}
         />
-      </instancedMesh>
-
-      {/* Glow orbs */}
-      <instancedMesh ref={glowRef} args={[undefined, undefined, DRONE_COUNT]}>
-        <sphereGeometry args={[0.06, 8, 8]} />
-        <meshBasicMaterial transparent opacity={0.9} />
-      </instancedMesh>
+      ))}
 
       {/* Network lines */}
       <lineSegments ref={netLinesRef}>
@@ -231,11 +309,14 @@ function DroneSwarm({
         </bufferGeometry>
         <lineBasicMaterial
           ref={lineMatRef}
-          color="#00d4ff"
+          color="#3b82f6"
           transparent
           opacity={0.18}
         />
       </lineSegments>
+
+      {/* Target green spheres */}
+      <TaskTargets />
     </>
   );
 }
@@ -393,7 +474,7 @@ function Scene({ phaseRef, targetDroneRef }: {
 }) {
   return (
     <>
-      <fog attach="fog" args={['#fafafa', 30, 70]} />
+      <fog attach="fog" args={['#f8fafc', 30, 70]} />
 
       <ambientLight intensity={0.85} color="#ffffff" />
       <directionalLight position={[10, 20, 10]} intensity={1.8} color="#ffffff" />

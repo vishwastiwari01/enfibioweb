@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwarmBench-30+ 3D Algorithm System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+        
+        #app {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            grid-template-rows: 80px 1fr 90px;
+            height: 100vh;
+        }
+        
+        #header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #1a2332, #0f1419);
+            border-bottom: 3px solid #2a3f5f;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4a9eff, #f39c12);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4a9eff, #f39c12);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo-text .sub {
+            font-size: 11px;
+            color: #8c9db5;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .stat-pill {
+            background: rgba(74, 158, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            font-size: 13px;
+        }
+        
+        .sidebar {
+            background: #151b2e;
+            padding: 1.5rem;
+            overflow-y: auto;
+            border: 2px solid #2a3f5f;
+        }
+        
+        #canvas-container {
+            position: relative;
+            background: radial-gradient(ellipse at center, #1a2332 0%, #0a0e27 100%);
+        }
+        
+        .score-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .score-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.5rem;
+        }
+        
+        .score-value {
+            font-size: 52px;
+            font-weight: 900;
+            color: white;
+            font-family: monospace;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .metric-card {
+            background: #1a2332;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid #2a3f5f;
+        }
+        
+        .metric-label {
+            font-size: 11px;
+            color: #8c9db5;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-value {
+            font-size: 26px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #2a3f5f;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #4a9eff;
+        }
+        
+        .section-count {
+            background: #4a9eff;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        
+        .agent-item {
+            background: #1a2332;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border: 1px solid #2a3f5f;
+        }
+        
+        .agent-item.leader {
+            border-color: #f39c12;
+        }
+        
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .agent-id {
+            font-weight: 700;
+            font-size: 13px;
+            color: #4a9eff;
+        }
+        
+        .agent-item.leader .agent-id {
+            color: #f39c12;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .agent-stats {
+            font-size: 11px;
+            color: #8c9db5;
+        }
+        
+        .task-item {
+            background: #1a2332;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid #2ecc71;
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .task-id {
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .task-value {
+            font-size: 11px;
+            color: #2ecc71;
+            font-weight: 700;
+        }
+        
+        #controls {
+            grid-column: 1 / -1;
+            background: #1a2332;
+            border-top: 2px solid #2a3f5f;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #4a9eff, #357abd);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .btn-purple {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .time-display {
+            background: rgba(74, 158, 255, 0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 22px;
+            font-weight: 700;
+            color: #4a9eff;
+            margin-left: auto;
+        }
+        
+        .info-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(26, 35, 50, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid #2a3f5f;
+        }
+        
+        .controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(26, 35, 50, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid #2a3f5f;
+            font-size: 11px;
+            color: #8c9db5;
+        }
+        
+        .info-title {
+            font-size: 12px;
+            color: #8c9db5;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-value {
+            font-size: 40px;
+            font-weight: 700;
+            color: white;
+            font-family: monospace;
+        }
+        
+        .algo-status {
+            background: rgba(46, 204, 113, 0.2);
+            border-left: 4px solid #2ecc71;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-size: 12px;
+        }
+        
+         ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+         ::-webkit-scrollbar-track {
+            background: #0a0e27;
+        }
+        
+         ::-webkit-scrollbar-thumb {
+            background: #2a3f5f;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="header">
+            <div class="logo">
+                <div class="logo-icon">🚁</div>
+                <div class="logo-text">
+                    <h1>SWARMBENCH-30+ 3D</h1>
+                    <div class="sub">SWAVLAMBAN 2025 • ALGORITHM SYSTEM</div>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-pill">LIVE</div>
+                <div class="stat-pill" id="scenario-display">No Scenario</div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="score-hero">
+                <div class="score-label">FINAL SCORE</div>
+                <div class="score-value" id="score">0.0000</div>
+            </div>
+
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-label">VALUE</div>
+                    <div class="metric-value" id="value">0%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">DISTANCE</div>
+                    <div class="metric-value" id="distance">0%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">BANDWIDTH</div>
+                    <div class="metric-value" id="bandwidth">0%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">EFFICIENCY</div>
+                    <div class="metric-value" id="efficiency">--</div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <div class="section-title">ALGORITHM</div>
+            </div>
+            <div class="algo-status">✓ HYBRID Active</div>
+            <div class="algo-status">✓ AUCTION Allocation</div>
+            <div class="algo-status">✓ RRT Navigation</div>
+        </div>
+
+        <div id="canvas-container">
+            <canvas id="canvas-3d"></canvas>
+            <div class="info-overlay">
+                <div class="info-title">TIME</div>
+                <div class="info-value" id="time-display">00:00.0</div>
+            </div>
+            <div class="controls-hint">
+                <strong>Controls:</strong><br> 🖱️ Left Click + Drag: Rotate<br> 🖱️ Right Click + Drag: Pan<br> 🖱️ Scroll: Zoom In/Out
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="section-header">
+                <div class="section-title">AGENTS</div>
+                <div class="section-count" id="agent-count">0</div>
+            </div>
+            <div id="agent-list"></div>
+
+            <div class="section-header">
+                <div class="section-title">TASKS</div>
+                <div class="section-count" id="task-count">0</div>
+            </div>
+            <div id="task-list"></div>
+        </div>
+
+        <div id="controls">
+            <label class="btn btn-success">
+                📁 LOAD
+                <input type="file" id="file-input" accept=".json">
+            </label>
+            <button class="btn" id="play-btn">▶ PLAY</button>
+            <button class="btn" id="pause-btn" disabled>⏸ PAUSE</button>
+            <button class="btn btn-danger" id="reset-btn">↻ RESET</button>
+            <button class="btn btn-purple" id="demo-btn">🎲 DEMO</button>
+            <div class="time-display" id="sim-time">00:00.0</div>
+        </div>
+    </div>
+
+    <script>
+        let scene, camera, renderer;
+        let agents3D = [],
+            tasks3D = [];
+        let scenario = null;
+        let isPlaying = false;
+        let simulationTick = 0;
+
+        let isDragging = false;
+        let isPanning = false;
+        let previousMousePosition = {
+            x: 0,
+            y: 0
+        };
+        let cameraRotation = {
+            theta: Math.PI / 4,
+            phi: Math.PI / 6
+        };
+        let cameraDistance = 200;
+        let cameraTarget = {
+            x: 0,
+            y: 0,
+            z: 0
+        };
+
+        function createDrone(isLeader) {
+            const drone = new THREE.Group();
+
+            const bodyGeometry = new THREE.BoxGeometry(4, 1.5, 4);
+            const bodyMaterial = new THREE.MeshPhongMaterial({
+                color: isLeader ? 0xf39c12 : 0x4a9eff,
+                emissive: isLeader ? 0xf39c12 : 0x4a9eff,
+                emissiveIntensity: 0.3
+            });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            drone.add(body);
+
+            const propellerPositions = [{
+                x: 2,
+                z: 2
+            }, {
+                x: -2,
+                z: 2
+            }, {
+                x: 2,
+                z: -2
+            }, {
+                x: -2,
+                z: -2
+            }];
+
+            propellerPositions.forEach(pos => {
+                const armGeometry = new THREE.CylinderGeometry(0.2, 0.2, 0.5, 8);
+                const armMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x333333
+                });
+                const arm = new THREE.Mesh(armGeometry, armMaterial);
+                arm.position.set(pos.x, 0.5, pos.z);
+                drone.add(arm);
+
+                const propGeometry = new THREE.CylinderGeometry(1.2, 1.2, 0.1, 16);
+                const propMaterial = new THREE.MeshPhongMaterial({
+                    color: isLeader ? 0xffd700 : 0x6ec6ff,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const prop = new THREE.Mesh(propGeometry, propMaterial);
+                prop.position.set(pos.x, 1, pos.z);
+                prop.rotation.x = Math.PI / 2;
+                drone.add(prop);
+
+                if (!drone.userData.propellers) drone.userData.propellers = [];
+                drone.userData.propellers.push(prop);
+            });
+
+            const lightGeometry = new THREE.SphereGeometry(0.3, 8, 8);
+            const lightMaterial = new THREE.MeshBasicMaterial({
+                color: isLeader ? 0xff0000 : 0x00ff00,
+                emissive: isLeader ? 0xff0000 : 0x00ff00,
+                emissiveIntensity: 1
+            });
+            const light = new THREE.Mesh(lightGeometry, lightMaterial);
+            light.position.set(0, 0.5, 0);
+            drone.add(light);
+
+            return drone;
+        }
+
+        function updateCameraPosition() {
+            const x = cameraTarget.x + cameraDistance * Math.sin(cameraRotation.theta) * Math.cos(cameraRotation.phi);
+            const y = cameraTarget.y + cameraDistance * Math.sin(cameraRotation.phi);
+            const z = cameraTarget.z + cameraDistance * Math.cos(cameraRotation.theta) * Math.cos(cameraRotation.phi);
+
+            camera.position.set(x, y, z);
+            camera.lookAt(cameraTarget.x, cameraTarget.y, cameraTarget.z);
+        }
+
+        function init3D() {
+            const container = document.getElementById('canvas-container');
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0e27);
+            scene.fog = new THREE.Fog(0x0a0e27, 100, 500);
+
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            updateCameraPosition();
+
+            renderer = new THREE.WebGLRenderer({
+                canvas: document.getElementById('canvas-3d'),
+                antialias: true
+            });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+
+            const ambientLight = new THREE.AmbientLight(0x404040, 2);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+            dirLight.position.set(50, 100, 50);
+            dirLight.castShadow = true;
+            scene.add(dirLight);
+
+            const gridHelper = new THREE.GridHelper(300, 30, 0x2a3f5f, 0x1a2332);
+            scene.add(gridHelper);
+
+            const canvas = document.getElementById('canvas-3d');
+
+            canvas.addEventListener('mousedown', (e) => {
+                if (e.button === 0) {
+                    isDragging = true;
+                } else if (e.button === 2) {
+                    isPanning = true;
+                }
+                previousMousePosition = {
+                    x: e.clientX,
+                    y: e.clientY
+                };
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaX = e.clientX - previousMousePosition.x;
+                    const deltaY = e.clientY - previousMousePosition.y;
+
+                    cameraRotation.theta -= deltaX * 0.01;
+                    cameraRotation.phi += deltaY * 0.01;
+
+                    cameraRotation.phi = Math.max(0.1, Math.min(Math.PI - 0.1, cameraRotation.phi));
+
+                    updateCameraPosition();
+                } else if (isPanning) {
+                    const deltaX = e.clientX - previousMousePosition.x;
+                    const deltaY = e.clientY - previousMousePosition.y;
+
+                    const panSpeed = 0.5;
+                    const right = new THREE.Vector3();
+                    const up = new THREE.Vector3(0, 1, 0);
+                    camera.getWorldDirection(right);
+                    right.cross(up).normalize();
+
+                    cameraTarget.x -= right.x * deltaX * panSpeed;
+                    cameraTarget.z -= right.z * deltaX * panSpeed;
+                    cameraTarget.y += deltaY * panSpeed;
+
+                    updateCameraPosition();
+                }
+                previousMousePosition = {
+                    x: e.clientX,
+                    y: e.clientY
+                };
+            });
+
+            canvas.addEventListener('mouseup', () => {
+                isDragging = false;
+                isPanning = false;
+            });
+
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                cameraDistance += e.deltaY * 0.1;
+                cameraDistance = Math.max(50, Math.min(400, cameraDistance));
+                updateCameraPosition();
+            });
+
+            canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                agents3D.forEach(agent => {
+                    if (agent.mesh.userData.propellers) {
+                        agent.mesh.userData.propellers.forEach(prop => {
+                            prop.rotation.z += 0.3;
+                        });
+                    }
+                });
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        function createDemoScenario() {
+            return {
+                name: "Demo Scenario",
+                duration: 60.0,
+                agents: [{
+                    id: "A1",
+                    position: [50, 50],
+                    is_leader: true
+                }, {
+                    id: "A2",
+                    position: [200, 50],
+                    is_leader: false
+                }, {
+                    id: "A3",
+                    position: [50, 200],
+                    is_leader: false
+                }, {
+                    id: "A4",
+                    position: [200, 200],
+                    is_leader: false
+                }, {
+                    id: "A5",
+                    position: [125, 125],
+                    is_leader: false
+                }],
+                tasks: [{
+                    id: "T1",
+                    position: [100, 100],
+                    value: 50,
+                    spawn_time: 0
+                }, {
+                    id: "T2",
+                    position: [180, 120],
+                    value: 30,
+                    spawn_time: 5
+                }, {
+                    id: "T3",
+                    position: [80, 180],
+                    value: 40,
+                    spawn_time: 10
+                }, {
+                    id: "T4",
+                    position: [200, 80],
+                    value: 35,
+                    spawn_time: 15
+                }, {
+                    id: "T5",
+                    position: [150, 150],
+                    value: 60,
+                    spawn_time: 20
+                }, {
+                    id: "T6",
+                    position: [120, 200],
+                    value: 25,
+                    spawn_time: 25
+                }, {
+                    id: "T7",
+                    position: [220, 180],
+                    value: 45,
+                    spawn_time: 30
+                }, {
+                    id: "T8",
+                    position: [60, 120],
+                    value: 55,
+                    spawn_time: 35
+                }]
+            };
+        }
+
+        function loadScenario(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    scenario = JSON.parse(e.target.result);
+                    initSimulation();
+                    document.getElementById('scenario-display').textContent = scenario.name;
+                } catch (err) {
+                    alert('Error: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function initSimulation() {
+            agents3D.forEach(a => scene.remove(a.mesh));
+            tasks3D.forEach(t => scene.remove(t.mesh));
+            agents3D = [];
+            tasks3D = [];
+
+            // Collect all positions to compute center
+            let positions = [];
+            scenario.agents.forEach(a => positions.push({
+                x: a.position[0],
+                z: a.position[1]
+            }));
+            scenario.tasks.forEach(t => positions.push({
+                x: t.position[0],
+                z: t.position[1]
+            }));
+
+            // Compute center
+            let centerX = 0,
+                centerZ = 0;
+            if (positions.length > 0) {
+                let sumX = positions.reduce((sum, p) => sum + p.x, 0);
+                let sumZ = positions.reduce((sum, p) => sum + p.z, 0);
+                centerX = sumX / positions.length;
+                centerZ = sumZ / positions.length;
+            }
+
+            // Set camera target to center
+            cameraTarget.x = centerX;
+            cameraTarget.y = 0;
+            cameraTarget.z = centerZ;
+            updateCameraPosition();
+
+            scenario.agents.forEach(a => {
+                const drone = createDrone(a.is_leader);
+                drone.position.set(a.position[0] - centerX, 10, a.position[1] - centerZ);
+                drone.castShadow = true;
+                scene.add(drone);
+                agents3D.push({
+                    mesh: drone,
+                    data: {...a
+                    },
+                    distance: 0,
+                    targetTask: null
+                });
+            });
+
+            scenario.tasks.forEach(t => {
+                const geometry = new THREE.SphereGeometry(4, 16, 16);
+                const material = new THREE.MeshPhongMaterial({
+                    color: 0x2ecc71,
+                    emissive: 0x2ecc71,
+                    emissiveIntensity: 0.5,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(t.position[0] - centerX, 0, t.position[1] - centerZ);
+                mesh.castShadow = true;
+                scene.add(mesh);
+                tasks3D.push({
+                    mesh,
+                    data: {...t
+                    },
+                    completed: false
+                });
+            });
+
+            simulationTick = 0;
+            updateUI();
+        }
+
+        function updateUI() {
+            if (!scenario) return;
+
+            const time = simulationTick * 0.1;
+            const m = Math.floor(time / 60);
+            const s = (time % 60).toFixed(1);
+            const timeStr = `${m.toString().padStart(2,'0')}:${s.padStart(4,'0')}`;
+
+            document.getElementById('time-display').textContent = timeStr;
+            document.getElementById('sim-time').textContent = timeStr;
+
+            const completedTasks = tasks3D.filter(t => t.completed).length;
+            const totalValue = scenario.tasks.reduce((sum, t) => sum + t.value, 0);
+            const achievedValue = tasks3D.filter(t => t.completed).reduce((sum, t) => sum + t.data.value, 0);
+            const valueRatio = totalValue > 0 ? achievedValue / totalValue : 0;
+            const totalDist = agents3D.reduce((sum, a) => sum + a.distance, 0);
+            const normDist = Math.min(totalDist / 1000, 1);
+            const score = 0.6 * valueRatio - 0.2 * normDist;
+
+            document.getElementById('score').textContent = score.toFixed(4);
+            document.getElementById('value').textContent = (valueRatio * 100).toFixed(1) + '%';
+            document.getElementById('distance').textContent = (normDist * 100).toFixed(1) + '%';
+            document.getElementById('bandwidth').textContent = '0%';
+            document.getElementById('efficiency').textContent = totalDist > 0 ? (achievedValue / totalDist).toFixed(2) : '--';
+
+            document.getElementById('agent-count').textContent = agents3D.length;
+            document.getElementById('task-count').textContent = tasks3D.filter(t => !t.completed).length;
+
+            document.getElementById('agent-list').innerHTML = agents3D.slice(0, 8).map(a => `
+                <div class="agent-item ${a.data.is_leader ? 'leader' : ''}">
+                    <div class="agent-header">
+                        <div class="agent-id">${a.data.id}</div>
+                        <span class="status-badge">${a.data.is_leader ? '👑' : '✓'}</span>
+                    </div>
+                    <div class="agent-stats">Dist: ${a.distance.toFixed(1)}</div>
+                </div>
+            `).join('');
+
+            const activeTasks = tasks3D.filter(t => !t.completed).slice(0, 6);
+            document.getElementById('task-list').innerHTML = activeTasks.map(t => `
+                <div class="task-item">
+                    <div class="task-header">
+                        <div class="task-id">${t.data.id}</div>
+                        <div class="task-value">+${t.data.value}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function distance(p1, p2) {
+            const dx = p1.x - p2.x;
+            const dz = p1.z - p2.z;
+            return Math.sqrt(dx * dx + dz * dz);
+        }
+
+        function simulationStep() {
+            if (!isPlaying || !scenario) return;
+
+            const time = simulationTick * 0.1;
+            if (time >= scenario.duration) {
+                isPlaying = false;
+                document.getElementById('play-btn').disabled = false;
+                document.getElementById('pause-btn').disabled = true;
+                return;
+            }
+
+            agents3D.forEach(agent => {
+                if (!agent.targetTask || agent.targetTask.completed) {
+                    let best = null;
+                    let bestScore = -Infinity;
+
+                    tasks3D.forEach(task => {
+                        if (task.completed || task.data.spawn_time > time) return;
+
+                        const dist = distance(agent.mesh.position, task.mesh.position);
+                        const score = task.data.value / (dist + 1);
+
+                        if (score > bestScore) {
+                            bestScore = score;
+                            best = task;
+                        }
+                    });
+
+                    agent.targetTask = best;
+                }
+
+                if (agent.targetTask) {
+                    const dx = agent.targetTask.mesh.position.x - agent.mesh.position.x;
+                    const dz = agent.targetTask.mesh.position.z - agent.mesh.position.z;
+                    const dist = Math.sqrt(dx * dx + dz * dz);
+
+                    if (dist < 5) {
+                        agent.targetTask.completed = true;
+                        agent.targetTask.mesh.material.color.setHex(0x95a5a6);
+                        agent.targetTask.mesh.material.emissive.setHex(0x95a5a6);
+                        agent.targetTask.mesh.material.opacity = 0.3;
+                        agent.targetTask = null;
+                    } else {
+                        const speed = agent.data.is_leader ? 0.6 : 0.5;
+                        agent.mesh.position.x += (dx / dist) * speed;
+                        agent.mesh.position.z += (dz / dist) * speed;
+                        agent.distance += speed;
+
+                        agent.mesh.rotation.y = Math.atan2(dx, dz);
+                        agent.mesh.rotation.x = Math.sin(Date.now() * 0.003) * 0.05;
+                        agent.mesh.rotation.z = Math.cos(Date.now() * 0.004) * 0.05;
+                    }
+                }
+            });
+
+            simulationTick++;
+            updateUI();
+        }
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            if (e.target.files[0]) loadScenario(e.target.files[0]);
+        });
+
+        document.getElementById('play-btn').addEventListener('click', () => {
+            if (!scenario) return alert('Load scenario first');
+            isPlaying = true;
+            document.getElementById('play-btn').disabled = true;
+            document.getElementById('pause-btn').disabled = false;
+        });
+
+        document.getElementById('pause-btn').addEventListener('click', () => {
+            isPlaying = false;
+            document.getElementById('play-btn').disabled = false;
+            document.getElementById('pause-btn').disabled = true;
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            if (scenario) initSimulation();
+            isPlaying = false;
+            document.getElementById('play-btn').disabled = false;
+            document.getElementById('pause-btn').disabled = true;
+        });
+
+        document.getElementById('demo-btn').addEventListener('click', () => {
+            scenario = createDemoScenario();
+            initSimulation();
+            document.getElementById('scenario-display').textContent = scenario.name;
+        });
+
+        init3D();
+        setInterval(() => {
+            if (isPlaying) simulationStep();
+        }, 100);
+    </script>
+</body>
+
+</html>

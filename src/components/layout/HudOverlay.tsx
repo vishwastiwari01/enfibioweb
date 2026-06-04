@@ -25,12 +25,13 @@ export default function HudOverlay() {
   }, []);
 
   const hudStyle: React.CSSProperties = {
-    fontFamily: 'Share Tech Mono',
+    fontFamily: 'var(--font-share-tech-mono), Share Tech Mono, monospace',
     fontSize: '9px',
-    color: 'rgba(37,99,235,0.55)',
+    color: '#1e40af',
     lineHeight: 2,
     whiteSpace: 'nowrap',
     animation: 'hud-blink 8s ease-in-out infinite',
+    textShadow: '0 0 8px rgba(37,99,235,0.05)',
   };
 
   return (
@@ -39,17 +40,17 @@ export default function HudOverlay() {
       <div className="scanline-overlay" />
 
       {/* Corner bracket SVGs */}
-      <svg className="absolute top-3 left-3" width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ opacity: 0.4 }}>
-        <path d="M0 16 L0 0 L16 0" stroke="#2563eb" strokeWidth="1.2" fill="none"/>
+      <svg className="absolute top-3 left-3" width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ opacity: 0.8 }}>
+        <path d="M0 16 L0 0 L16 0" stroke="#1e40af" strokeWidth="1.5" fill="none"/>
       </svg>
-      <svg className="absolute top-3 right-3" width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ opacity: 0.4 }}>
-        <path d="M32 16 L32 0 L16 0" stroke="#2563eb" strokeWidth="1.2" fill="none"/>
+      <svg className="absolute top-3 right-3" width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ opacity: 0.8 }}>
+        <path d="M32 16 L32 0 L16 0" stroke="#1e40af" strokeWidth="1.5" fill="none"/>
       </svg>
-      <svg className="absolute bottom-8 left-3" width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ opacity: 0.4 }}>
-        <path d="M0 16 L0 32 L16 32" stroke="#2563eb" strokeWidth="1.2" fill="none"/>
+      <svg className="absolute bottom-8 left-3" width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ opacity: 0.8 }}>
+        <path d="M0 16 L0 32 L16 32" stroke="#1e40af" strokeWidth="1.5" fill="none"/>
       </svg>
-      <svg className="absolute bottom-8 right-3" width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ opacity: 0.4 }}>
-        <path d="M32 16 L32 32 L16 32" stroke="#2563eb" strokeWidth="1.2" fill="none"/>
+      <svg className="absolute bottom-8 right-3" width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ opacity: 0.8 }}>
+        <path d="M32 16 L32 32 L16 32" stroke="#1e40af" strokeWidth="1.5" fill="none"/>
       </svg>
 
       {/* Top-left HUD */}

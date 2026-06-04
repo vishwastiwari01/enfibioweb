@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import { PromptingIsAllYouNeed } from '@/components/ui/animated-hero-section';
 
 const TAGLINES = [
-  'Defense Intelligence',
-  'AI Swarm Systems',
-  'Autonomous Operations',
-  'Frontier Hardware',
-  'Execution at Scale',
+  'Decentralized Swarm Intelligence',
+  'Multi-Agent Reinforcement Learning',
+  'Hardware-in-the-Loop Edge Inference',
+  'Post-Quantum Cryptographic C2 Mesh',
+  'Frontier Neuromorphic Processing',
 ];
 
 export default function HeroSection() {
@@ -60,7 +60,7 @@ export default function HeroSection() {
         <div
           className="inline-flex items-center gap-2 mb-8 px-3 py-1.5 rounded-full border"
           style={{
-            fontFamily: 'JetBrains Mono, monospace',
+            fontFamily: 'var(--font-share-tech-mono), Share Tech Mono, monospace',
             fontSize: '11px',
             letterSpacing: '0.1em',
             color: 'var(--accent-2)',
@@ -79,7 +79,7 @@ export default function HeroSection() {
         <h1
           className="mb-6 leading-[1.05] tracking-tight"
           style={{
-            fontFamily: 'Syne, sans-serif',
+            fontFamily: 'var(--font-orbitron), Syne, sans-serif',
             fontWeight: 800,
             fontSize: 'clamp(2.6rem, 6vw, 5rem)',
             color: 'var(--text)',
@@ -106,11 +106,10 @@ export default function HeroSection() {
         </p>
 
         <p
-          className="mb-12 max-w-xl mx-auto text-sm leading-relaxed"
-          style={{ fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', fontSize: '14px' }}
+          className="mb-12 max-w-2xl mx-auto text-sm leading-relaxed"
+          style={{ fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', fontSize: '14.5px' }}
         >
-          We build autonomous drone swarms, AI-driven defense systems, and frontier hardware
-          for tomorrow's operational environment.
+          Architecting decentralized autonomy for contested domains. We design and deploy multi-agent drone swarms, real-time command-and-control mesh networks, and custom neuromorphic silicons to power next-generation operational intelligence.
         </p>
 
         {/* CTA row */}
