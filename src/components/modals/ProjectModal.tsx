@@ -31,7 +31,7 @@ export default function ProjectModal({ project, onClose }: { project: Project; o
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[600] flex items-center justify-center p-4"
-        style={{ backdropFilter: 'blur(16px)', background: 'rgba(2,4,8,0.85)' }}
+        style={{ backdropFilter: 'blur(16px)', background: 'rgba(255,255,255,0.70)' }}
         onClick={e => { if (e.target === e.currentTarget) onClose(); }}
       >
         <motion.div
@@ -54,7 +54,7 @@ export default function ProjectModal({ project, onClose }: { project: Project; o
             <div className="flex items-start justify-between mb-6">
               <div>
                 <div className="flex items-center gap-3 mb-1">
-                  <span className="text-xs" style={{ fontFamily: 'Share Tech Mono', color: 'rgba(255,255,255,0.25)', fontSize: '9px' }}>
+                  <span className="text-xs" style={{ fontFamily: 'Share Tech Mono', color: 'var(--text-dim)', fontSize: '9px' }}>
                     {project.id}
                   </span>
                   <span
@@ -64,7 +64,7 @@ export default function ProjectModal({ project, onClose }: { project: Project; o
                     {project.domain}
                   </span>
                 </div>
-                <h2 className="text-2xl font-black" style={{ fontFamily: 'Orbitron', color: 'rgba(255,255,255,0.95)' }}>
+                <h2 className="text-2xl font-black" style={{ fontFamily: 'Orbitron', color: 'var(--text)' }}>
                   {project.title}
                 </h2>
                 <p className="text-sm opacity-50 mt-1">{project.subtitle}</p>
@@ -72,7 +72,7 @@ export default function ProjectModal({ project, onClose }: { project: Project; o
               <button
                 onClick={onClose}
                 className="text-xs w-8 h-8 flex items-center justify-center rounded-sm cursor-pointer"
-                style={{ fontFamily: 'Share Tech Mono', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}
+                style={{ fontFamily: 'Share Tech Mono', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
               >
                 ✕
               </button>
@@ -94,7 +94,7 @@ export default function ProjectModal({ project, onClose }: { project: Project; o
                   <div
                     key={k}
                     className="p-3 rounded-sm"
-                    style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
+                    style={{ background: 'var(--muted)', border: '1px solid var(--border)' }}
                   >
                     <div className="text-xs opacity-40 mb-1" style={{ fontFamily: 'Share Tech Mono', fontSize: '8px' }}>
                       {k.toUpperCase()}
@@ -118,9 +118,9 @@ export default function ProjectModal({ project, onClose }: { project: Project; o
                     style={{
                       fontFamily: 'Share Tech Mono',
                       fontSize: '9px',
-                      color: 'rgba(255,255,255,0.5)',
-                      background: 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: 'var(--text-muted)',
+                      background: 'var(--muted)',
+                      border: '1px solid var(--border)',
                     }}
                   >
                     {tag}

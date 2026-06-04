@@ -57,7 +57,7 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: (p: Projec
       className="group relative flex flex-col cursor-pointer rounded-sm overflow-hidden"
       style={{
         background: 'var(--bg-secondary)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        border: '1px solid var(--border)',
       }}
     >
       <motion.div
@@ -80,7 +80,7 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: (p: Projec
       <div className="pl-4 pr-4 pt-4 pb-4 flex flex-col gap-3 flex-1">
         {/* Top row */}
         <div className="flex items-center justify-between">
-          <span className="text-xs" style={{ fontFamily: 'Share Tech Mono', color: 'rgba(255,255,255,0.25)', fontSize: '9px' }}>
+          <span className="text-xs" style={{ fontFamily: 'Share Tech Mono', color: 'var(--text-dim)', fontSize: '9px' }}>
             {project.id}
           </span>
           <span
@@ -102,7 +102,7 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: (p: Projec
           <div className="text-xs mb-0.5 opacity-40" style={{ fontFamily: 'JetBrains Mono, monospace', color, fontSize: '9px' }}>
             {project.domain}
           </div>
-          <div className="text-base font-bold leading-tight" style={{ fontFamily: 'Syne, sans-serif', color: 'rgba(255,255,255,0.9)' }}>
+          <div className="text-base font-bold leading-tight" style={{ fontFamily: 'Syne, sans-serif', color: 'var(--text)' }}>
             {project.title}
           </div>
           <div className="text-xs opacity-50 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -174,7 +174,7 @@ export default function ProjectsSection() {
                 fontFamily: 'Inter, sans-serif',
                 fontWeight: 500,
                 fontSize: '12px',
-                color: activeCategory === cat.key ? '#fff' : 'var(--text-muted)',
+                color: activeCategory === cat.key ? 'var(--primary-foreground)' : 'var(--text-muted)',
                 background: activeCategory === cat.key ? 'var(--accent)' : 'var(--surface-2)',
                 border: activeCategory === cat.key ? '1px solid var(--accent)' : '1px solid var(--border)',
               }}

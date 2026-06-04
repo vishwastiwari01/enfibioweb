@@ -63,7 +63,7 @@ export default function ArchitectureSection() {
               style={{
                 background: 'var(--bg-secondary)',
                 borderTop: `2px solid ${layer.accentColor}`,
-                border: '1px solid rgba(0,212,255,0.06)',
+                border: '1px solid var(--border)',
                 transitionDelay: `${i * 0.15}s`,
               }}
             >
@@ -91,7 +91,7 @@ export default function ArchitectureSection() {
                 </div>
                 <h3
                   className="text-lg font-black"
-                  style={{ fontFamily: 'Orbitron', color: 'rgba(255,255,255,0.9)' }}
+                  style={{ fontFamily: 'Orbitron', color: 'var(--text)' }}
                 >
                   {layer.title}
                 </h3>
@@ -134,7 +134,7 @@ export default function ArchitectureSection() {
                     />
                     <span
                       className="text-xs"
-                      style={{ fontFamily: 'Share Tech Mono', color: 'rgba(255,255,255,0.55)', fontSize: '10px' }}
+                      style={{ fontFamily: 'Share Tech Mono', color: 'var(--text-muted)', fontSize: '10px' }}
                     >
                       {cap}
                     </span>

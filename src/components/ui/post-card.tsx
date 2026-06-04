@@ -18,7 +18,7 @@ export const PostCard: React.FC<PostCardProps> = ({ founder }) => {
   const handleBookmark = () => setBookmarked((prev) => !prev);
 
   return (
-    <div className="w-full rounded-3xl bg-[var(--surface-2)] border border-white/5 shadow-2xl p-5 hover:border-white/10 transition-colors">
+    <div className="w-full rounded-3xl bg-[var(--surface-2)] border border-[var(--border)] shadow-2xl p-5 hover:border-[var(--border-mid)] transition-colors">
       {/* Header */}
       <div className="flex items-center gap-4 mb-4">
         <div
@@ -34,7 +34,7 @@ export const PostCard: React.FC<PostCardProps> = ({ founder }) => {
           {founder.initials}
         </div>
         <div>
-          <h3 className="font-display font-semibold text-white tracking-wide flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+          <h3 className="font-display font-semibold text-[var(--text)] tracking-wide flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
             {founder.name}
             <span className="flex items-center gap-2 opacity-60 text-xs font-mono">
               <small>@{founder.name.split(" ")[0].toLowerCase()}</small>
@@ -63,10 +63,10 @@ export const PostCard: React.FC<PostCardProps> = ({ founder }) => {
       </div>
 
       {/* Actions */}
-      <div className="mt-6 flex justify-evenly gap-2 border-t border-white/5 pt-4">
+      <div className="mt-6 flex justify-evenly gap-2 border-t border-[var(--border)] pt-4">
         <button
           onClick={handleLike}
-          className="flex grow items-center justify-center gap-2.5 rounded-xl px-4 py-2 transition hover:bg-white/5 text-[var(--text-muted)] hover:text-white"
+          className="flex grow items-center justify-center gap-2.5 rounded-xl px-4 py-2 transition hover:bg-[var(--muted)] text-[var(--text-muted)] hover:text-[var(--text)]"
         >
           {liked ? <FaHeart color="#ef4444" /> : <FaRegHeart />}
           <span className="font-medium text-xs tracking-wide max-sm:hidden">
@@ -76,7 +76,7 @@ export const PostCard: React.FC<PostCardProps> = ({ founder }) => {
 
         <button
           onClick={handleBookmark}
-          className="flex grow items-center justify-center gap-2.5 rounded-xl px-4 py-2 transition hover:bg-white/5 text-[var(--text-muted)] hover:text-white"
+          className="flex grow items-center justify-center gap-2.5 rounded-xl px-4 py-2 transition hover:bg-[var(--muted)] text-[var(--text-muted)] hover:text-[var(--text)]"
         >
           {bookmarked ? <FaBookmark color="#3b82f6" /> : <FaRegBookmark />}
           <span className="font-medium text-xs tracking-wide max-sm:hidden">
@@ -84,7 +84,7 @@ export const PostCard: React.FC<PostCardProps> = ({ founder }) => {
           </span>
         </button>
 
-        <button className="flex grow items-center justify-center gap-2.5 rounded-xl px-4 py-2 transition hover:bg-white/5 text-[var(--text-muted)] hover:text-white">
+        <button className="flex grow items-center justify-center gap-2.5 rounded-xl px-4 py-2 transition hover:bg-[var(--muted)] text-[var(--text-muted)] hover:text-[var(--text)]">
           <FaRegPaperPlane />
           <span className="font-medium text-xs tracking-wide max-sm:hidden">
             Uplink

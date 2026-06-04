@@ -82,7 +82,7 @@ export default function HeroSection() {
             fontFamily: 'Syne, sans-serif',
             fontWeight: 800,
             fontSize: 'clamp(2.6rem, 6vw, 5rem)',
-            color: 'rgba(255,255,255,0.95)',
+            color: 'var(--text)',
             letterSpacing: '-0.03em',
           }}
         >
@@ -107,7 +107,7 @@ export default function HeroSection() {
 
         <p
           className="mb-12 max-w-xl mx-auto text-sm leading-relaxed"
-          style={{ fontFamily: 'Inter, sans-serif', color: 'var(--text-dim)', fontSize: '14px' }}
+          style={{ fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', fontSize: '14px' }}
         >
           We build autonomous drone swarms, AI-driven defense systems, and frontier hardware
           for tomorrow's operational environment.

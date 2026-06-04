@@ -32,14 +32,14 @@ function ModelPane({
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <div className="relative flex-1 min-w-0" style={{ background: '#020c18' }}>
+    <div className="relative flex-1 min-w-0" style={{ background: 'var(--bg)' }}>
       {/* Model label */}
       <div
         className="absolute top-3 left-3 z-10 text-[9px] tracking-widest pointer-events-none"
         style={{ fontFamily: 'Share Tech Mono, monospace', color: badgeColor }}
       >
         <div className="opacity-80 mb-0.5">{label}</div>
-        <div className="opacity-40 text-white">{sublabel}</div>
+        <div className="opacity-40 text-[var(--text-muted)]">{sublabel}</div>
       </div>
 
       {/* Status badge */}
@@ -60,7 +60,7 @@ function ModelPane({
         <div
           className="absolute inset-0 flex items-center justify-center z-20"
           style={{
-            background: '#020c18',
+            background: 'var(--bg)',
             fontFamily: 'Share Tech Mono, monospace',
             color: badgeColor,
             fontSize: '9px',
@@ -95,12 +95,12 @@ function LaunchTrajectory() {
   return (
     <div
       className="relative flex-shrink-0 flex flex-col items-center justify-center"
-      style={{ width: '64px', background: '#020c18' }}
+      style={{ width: '64px', background: 'var(--bg)' }}
     >
       {/* Vertical divider line */}
       <div
         className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px"
-        style={{ background: 'linear-gradient(to bottom, transparent, #00d4ff44, transparent)' }}
+        style={{ background: 'linear-gradient(to bottom, transparent, rgba(37,99,235,0.25), transparent)' }}
       />
 
       {/* Arrow & label */}
@@ -109,7 +109,7 @@ function LaunchTrajectory() {
           {/* Dashed trajectory curve */}
           <path
             d="M 28 5 Q 16 30 4 55"
-            stroke="#00d4ff"
+            stroke="#2563eb"
             strokeWidth="1"
             strokeDasharray="3 3"
             opacity="0.5"
@@ -117,9 +117,9 @@ function LaunchTrajectory() {
             <animate attributeName="stroke-dashoffset" from="0" to="-100" dur="2s" repeatCount="indefinite" />
           </path>
           {/* Arrowhead */}
-          <polygon points="4,55 0,46 8,48" fill="#00d4ff" opacity="0.7" />
+          <polygon points="4,55 0,46 8,48" fill="#2563eb" opacity="0.7" />
           {/* Drone dot travelling */}
-          <circle r="2.5" fill="#00ffcc" opacity="0.9">
+          <circle r="2.5" fill="#16a34a" opacity="0.9">
             <animateMotion dur="2s" repeatCount="indefinite">
               <mpath href="#traj" />
             </animateMotion>
@@ -129,7 +129,7 @@ function LaunchTrajectory() {
 
         <div
           className="text-[7px] tracking-widest text-center"
-          style={{ fontFamily: 'Share Tech Mono, monospace', color: '#00d4ff', opacity: 0.6 }}
+          style={{ fontFamily: 'Share Tech Mono, monospace', color: '#2563eb', opacity: 0.8 }}
         >
           DEPLOY
           <br />
@@ -149,7 +149,7 @@ export default function HangarCanvas() {
     <div
       style={{
         height: '500px',
-        background: '#020c18',
+        background: 'var(--bg)',
         borderRadius: '4px',
         overflow: 'hidden',
         position: 'relative',
@@ -161,20 +161,20 @@ export default function HangarCanvas() {
       <div
         className="flex-shrink-0 flex items-center justify-between px-4 py-2 border-b"
         style={{
-          borderColor: 'rgba(0,212,255,0.12)',
+          borderColor: 'var(--border)',
           fontFamily: 'Share Tech Mono, monospace',
-          background: '#020c18',
+          background: 'var(--bg)',
         }}
       >
-        <span className="text-[9px] tracking-widest" style={{ color: '#00d4ff', opacity: 0.7 }}>
+        <span className="text-[9px] tracking-widest" style={{ color: '#2563eb', opacity: 0.8 }}>
           ◈ DEPLOYMENT SEQUENCE — LAUNCH AUTHORISED
         </span>
         <div className="flex items-center gap-3">
           {['CARRIER', 'PAYLOAD', 'LINK'].map((s, i) => (
-            <span key={s} className="flex items-center gap-1 text-[8px]" style={{ color: i === 2 ? '#00ff88' : '#00d4ff', opacity: 0.6 }}>
+            <span key={s} className="flex items-center gap-1 text-[8px]" style={{ color: i === 2 ? 'var(--green)' : 'var(--primary)', opacity: 0.8 }}>
               <span
                 className="inline-block w-1.5 h-1.5 rounded-full"
-                style={{ background: i === 2 ? '#00ff88' : '#00d4ff', boxShadow: `0 0 4px ${i === 2 ? '#00ff88' : '#00d4ff'}` }}
+                style={{ background: i === 2 ? 'var(--green)' : 'var(--primary)', boxShadow: `0 0 4px ${i === 2 ? 'var(--green)' : 'var(--primary)'}` }}
               />
               {s}
             </span>

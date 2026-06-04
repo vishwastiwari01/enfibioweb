@@ -33,7 +33,7 @@ export default function CapabilitiesSection() {
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         <div className="fade-in mb-16 text-center">
           <div className="section-header inline-block mx-auto mb-2">◈ SYSTEM CAPABILITIES</div>
-          <h2 className="section-title text-4xl mb-4 text-white">INTEGRATION RADAR</h2>
+          <h2 className="section-title text-4xl mb-4 text-[var(--text)]">INTEGRATION RADAR</h2>
           <p className="max-w-2xl mx-auto text-sm opacity-60" style={{ fontFamily: 'Barlow' }}>
             Scanning active sectors for intelligence mapping, robust infrastructure, and deployed endpoints within the Enfibio ecosystem.
           </p>

@@ -71,7 +71,7 @@ export default function HangarSection() {
           </div>
 
           <div className="absolute top-12 right-6 z-20 hidden md:block">
-            <div style={{ fontFamily: 'JetBrains Mono, monospace', background: 'rgba(13,17,23,0.85)', border: '1px solid var(--border)', borderRadius: '6px', padding: '14px 16px', backdropFilter: 'blur(10px)' }}>
+            <div style={{ fontFamily: 'JetBrains Mono, monospace', background: 'var(--surface-3)', border: '1px solid var(--border)', borderRadius: '6px', padding: '14px 16px', backdropFilter: 'blur(10px)' }}>
               <div style={{ fontSize: '9px', color: 'var(--text-muted)', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid var(--border)', letterSpacing: '0.1em' }}>
                 DIAGNOSTICS
               </div>
@@ -84,7 +84,7 @@ export default function HangarSection() {
                 {Array.from({ length: 12 }).map((_, i) => (
                   <div 
                     key={i} 
-                    className={`h-1 w-1 rounded-full ${i < 10 ? 'bg-[var(--cyan)] animate-pulse' : 'bg-white/10'}`} 
+                    className={`h-1 w-1 rounded-full ${i < 10 ? 'bg-[var(--cyan)] animate-pulse' : 'bg-[var(--border-mid)]'}`} 
                   />
                 ))}
               </div>

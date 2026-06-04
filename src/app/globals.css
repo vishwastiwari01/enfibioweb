@@ -41,14 +41,14 @@
 
 :root {
   /* ── Enfibio Brand — Corporate Tier (Light Theme) ── */
-  --bg:          #ffffff;
-  --surface:     #f8fafc;
-  --surface-2:   #f1f5f9;
-  --surface-3:   #e2e8f0;
+  --bg:          #fafafa;
+  --surface:     rgba(255, 255, 255, 0.70);
+  --surface-2:   rgba(255, 255, 255, 0.85);
+  --surface-3:   rgba(255, 255, 255, 0.95);
 
   --accent:      #2563eb;
   --accent-2:    #0ea5e9;
-  --accent-glow: rgba(37,99,235,0.10);
+  --accent-glow: rgba(37,99,235,0.08);
 
   --green:       #16a34a;
   --amber:       #d97706;
@@ -58,36 +58,36 @@
   --text:        rgba(15,23,42,0.90);
   --text-muted:  rgba(15,23,42,0.56);
   --text-dim:    rgba(15,23,42,0.24);
-  --border:      rgba(15,23,42,0.08);
-  --border-mid:  rgba(15,23,42,0.16);
+  --border:      rgba(15,23,42,0.06);
+  --border-mid:  rgba(15,23,42,0.12);
 
   /* shadcn */
-  --background: #ffffff;
+  --background: #fafafa;
   --foreground: rgba(15,23,42,0.90);
-  --card: #f8fafc;
+  --card: rgba(255, 255, 255, 0.70);
   --card-foreground: rgba(15,23,42,0.90);
   --popover: #ffffff;
   --popover-foreground: rgba(15,23,42,0.90);
   --primary: #2563eb;
   --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
+  --secondary: rgba(255, 255, 255, 0.85);
   --secondary-foreground: rgba(15,23,42,0.90);
-  --muted: rgba(15,23,42,0.05);
+  --muted: rgba(15,23,42,0.04);
   --muted-foreground: rgba(15,23,42,0.56);
-  --accent: #f1f5f9;
+  --accent: rgba(255, 255, 255, 0.85);
   --accent-foreground: rgba(15,23,42,0.90);
   --destructive: #dc2626;
-  --border: rgba(15,23,42,0.08);
-  --input: rgba(15,23,42,0.06);
+  --border: rgba(15,23,42,0.06);
+  --input: rgba(15,23,42,0.04);
   --ring: #2563eb;
   --radius: 0.5rem;
-  --sidebar: #f8fafc;
+  --sidebar: rgba(255, 255, 255, 0.70);
   --sidebar-foreground: rgba(15,23,42,0.90);
   --sidebar-primary: #2563eb;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f5f9;
+  --sidebar-accent: rgba(255, 255, 255, 0.85);
   --sidebar-accent-foreground: rgba(15,23,42,0.90);
-  --sidebar-border: rgba(15,23,42,0.08);
+  --sidebar-border: rgba(15,23,42,0.06);
   --sidebar-ring: #2563eb;
 
   /* Legacy aliases (kept for components that still reference them) */
@@ -98,7 +98,7 @@
   --amber-2:      var(--amber);
   --neon-blue:    var(--accent);
   --muted-color:  var(--text-muted);
-  --dim:          rgba(15,23,42,0.05);
+  --dim:          rgba(15,23,42,0.04);
 }
 
 /* ── Base ─────────────────────────────────────────────── */
@@ -109,7 +109,14 @@
   }
 
   body {
-    background: var(--bg);
+    background-color: #fafafa;
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.05) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 45%),
+      linear-gradient(rgba(15, 23, 42, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
+    background-attachment: fixed;
     color: var(--text);
     font-family: 'Inter', sans-serif;
     font-size: 15px;

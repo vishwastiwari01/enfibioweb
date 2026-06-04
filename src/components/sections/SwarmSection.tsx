@@ -11,11 +11,11 @@ const CinematicSwarm = dynamic(
       <div
         style={{
           height: '600px',
-          background: '#020a12',
+          background: 'var(--surface-3)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          border: '1px solid rgba(0,212,255,0.08)',
+          border: '1px solid var(--border)',
         }}
       >
         <span
@@ -86,7 +86,7 @@ export default function SwarmSection() {
         {/* Canvas wrapper */}
         <div
           className="fade-in fade-in-delay-2 relative"
-          style={{ border: '1px solid rgba(0,212,255,0.12)', borderRadius: '2px' }}
+          style={{ border: '1px solid var(--border)', borderRadius: '2px' }}
         >
           <CinematicSwarm />
         </div>

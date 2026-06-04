@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react"
 
 // Color Palette to match Enfibio Theme
-const COLOR = "#ffffff" // pixels
+const COLOR = "#0f172a" // pixels
 const HIT_COLOR = "#2563eb" // Accent blue when hit
 const BACKGROUND_COLOR = "transparent"
 const BALL_COLOR = "#0ea5e9" // secondary accent
@@ -337,7 +337,7 @@ export function PromptingIsAllYouNeed() {
 
       pixelsRef.current.forEach((pixel) => {
         // Enfibio touch: 20% opacity for intact blocks, full for hit blocks
-        ctx.fillStyle = pixel.hit ? HIT_COLOR : `rgba(255,255,255,0.15)`
+        ctx.fillStyle = pixel.hit ? HIT_COLOR : `rgba(15,23,42,0.08)`
         ctx.fillRect(pixel.x, pixel.y, pixel.size, pixel.size)
         
         // subtle glow for hits
@@ -378,8 +378,8 @@ export function PromptingIsAllYouNeed() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute top-0 left-0 w-full h-full opacity-30 select-none pointer-events-none"
-      style={{ mixBlendMode: 'screen' }}
+      className="absolute top-0 left-0 w-full h-full opacity-[0.22] select-none pointer-events-none"
+      style={{ mixBlendMode: 'normal' }}
       aria-hidden="true"
     />
   )

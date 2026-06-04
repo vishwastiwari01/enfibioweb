@@ -78,7 +78,7 @@ export const IconContainer = ({
       <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--cyan)] bg-[var(--bg-secondary)] shadow-[0_0_15px_rgba(0,212,255,0.1)]">
         {icon}
       </div>
-      <div className="hidden rounded-md px-2 py-1 md:block bg-black/40 backdrop-blur-sm border border-white/5">
+      <div className="hidden rounded-md px-2 py-1 md:block bg-white/70 backdrop-blur-sm border border-slate-200/50">
         <div className="text-center text-xs font-bold tracking-widest text-[var(--cyan)]" style={{ fontFamily: 'Share Tech Mono' }}>
           {text}
         </div>

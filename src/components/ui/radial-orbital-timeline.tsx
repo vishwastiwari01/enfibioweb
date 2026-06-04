@@ -147,13 +147,13 @@ export default function RadialOrbitalTimeline({
   const getStatusStyles = (status: TimelineItem["status"]): string => {
     switch (status) {
       case "completed":
-        return "text-white bg-black border-white";
+        return "text-white bg-[var(--green)] border-transparent";
       case "in-progress":
-        return "text-black bg-white border-black";
+        return "text-white bg-[var(--primary)] border-transparent";
       case "pending":
-        return "text-white bg-black/40 border-white/50";
+        return "text-[var(--text-muted)] bg-[var(--surface-3)] border-[var(--border-mid)]";
       default:
-        return "text-white bg-black/40 border-white/50";
+        return "text-[var(--text-muted)] bg-[var(--surface-3)] border-[var(--border-mid)]";
     }
   };
 
@@ -181,15 +181,15 @@ export default function RadialOrbitalTimeline({
           }}
         >
           <div className="absolute w-16 h-16 rounded-full bg-gradient-to-br from-[#00d4ff] via-[#4facfe] to-[#eab308] animate-pulse flex items-center justify-center z-10">
-            <div className="absolute w-20 h-20 rounded-full border border-white/20 animate-ping opacity-70"></div>
+            <div className="absolute w-20 h-20 rounded-full border border-[var(--border-mid)] animate-ping opacity-70"></div>
             <div
-              className="absolute w-24 h-24 rounded-full border border-white/10 animate-ping opacity-50"
+              className="absolute w-24 h-24 rounded-full border border-[var(--border)] animate-ping opacity-50"
               style={{ animationDelay: "0.5s" }}
             ></div>
-            <div className="w-8 h-8 rounded-full bg-black backdrop-blur-md"></div>
+            <div className="w-8 h-8 rounded-full bg-[var(--surface-3)] backdrop-blur-md"></div>
           </div>
 
-          <div className="absolute w-[400px] h-[400px] rounded-full border border-white/10"></div>
+          <div className="absolute w-[400px] h-[400px] rounded-full border border-[var(--border)]"></div>
 
           {timelineData.map((item, index) => {
             const position = calculateNodePosition(index, timelineData.length);
@@ -237,8 +237,8 @@ export default function RadialOrbitalTimeline({
                     isExpanded
                       ? "bg-[var(--cyan)] text-black"
                       : isRelated
-                      ? "bg-white/10 text-white"
-                      : "bg-black text-[var(--cyan)]"
+                      ? "bg-[var(--surface-2)] text-[var(--text)]"
+                      : "bg-[var(--surface-3)] text-[var(--primary)]"
                   }
                   border-2 
                   ${
@@ -260,14 +260,14 @@ export default function RadialOrbitalTimeline({
                   absolute top-12 whitespace-nowrap
                   text-xs font-semibold tracking-wider
                   transition-all duration-300
-                  ${isExpanded ? "text-white scale-125" : "text-[var(--cyan)]/70"}
+                  ${isExpanded ? "text-[var(--text)] scale-125" : "text-[var(--cyan)]/70"}
                 `}
                 >
                   {item.title}
                 </div>
 
                 {isExpanded && (
-                  <Card className="absolute top-20 left-1/2 -translate-x-1/2 w-64 bg-black/95 backdrop-blur-lg border-[var(--cyan)]/30 shadow-xl shadow-[var(--cyan)]/10 overflow-visible z-[1000]">
+                  <Card className="absolute top-20 left-1/2 -translate-x-1/2 w-64 bg-[var(--surface-3)]/95 backdrop-blur-lg border-[var(--cyan)]/30 shadow-xl shadow-[var(--cyan)]/10 overflow-visible z-[1000]">
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-[var(--cyan)]/50"></div>
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
@@ -282,26 +282,26 @@ export default function RadialOrbitalTimeline({
                             ? "IN PROGRESS"
                             : "PENDING"}
                         </Badge>
-                        <span className="text-[10px] font-mono text-white/50">
+                        <span className="text-[10px] font-mono text-[var(--text-dim)]">
                           {item.date}
                         </span>
                       </div>
-                      <CardTitle className="text-sm mt-2 text-white">
+                      <CardTitle className="text-sm mt-2 text-[var(--text)]">
                         {item.title}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="text-xs text-white/80">
+                    <CardContent className="text-xs text-[var(--text-muted)]">
                       <p>{item.content}</p>
 
-                      <div className="mt-4 pt-3 border-t border-white/10">
+                      <div className="mt-4 pt-3 border-t border-[var(--border)]">
                         <div className="flex justify-between items-center text-[10px] mb-1">
                           <span className="flex items-center text-[var(--cyan)]">
                             <Zap size={10} className="mr-1" />
                             Energy Level
                           </span>
-                          <span className="font-mono text-white/70">{item.energy}%</span>
+                          <span className="font-mono text-[var(--text-muted)]">{item.energy}%</span>
                         </div>
-                        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                        <div className="w-full h-1 bg-[var(--muted)] rounded-full overflow-hidden">
                           <div
                             className="h-full bg-gradient-to-r from-[var(--cyan)] to-[var(--neon-blue)]"
                             style={{ width: `${item.energy}%` }}
@@ -321,7 +321,7 @@ export default function RadialOrbitalTimeline({
                                   key={relatedId}
                                   variant="outline"
                                   size="sm"
-                                  className="flex items-center h-6 px-2 py-0 text-[10px] rounded-none border-[var(--cyan)]/20 bg-transparent hover:bg-[var(--cyan)]/10 text-white/80 hover:text-white transition-all"
+                                  className="flex items-center h-6 px-2 py-0 text-[10px] rounded-none border-[var(--cyan)]/20 bg-transparent hover:bg-[var(--cyan)]/10 text-[var(--text-muted)] hover:text-[var(--text)] transition-all"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     toggleItem(relatedId);

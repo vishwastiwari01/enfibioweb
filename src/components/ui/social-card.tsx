@@ -50,9 +50,9 @@ const StyledWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #0d1117;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     overflow: hidden;
@@ -74,19 +74,21 @@ const StyledWrapper = styled.div`
     content: "";
     left: 0;
     justify-content: flex-end;
-    background-color: #1e3a8a;
+    background-color: var(--primary);
+    opacity: 0.8;
   }
 
   .card::after {
     content: "";
     right: 0;
     justify-content: flex-start;
-    background-color: #2563eb;
+    background-color: var(--accent);
+    opacity: 0.9;
   }
 
   .card:hover {
-    box-shadow: 0 14px 28px rgba(0,0,0,0.5), 0 10px 10px rgba(0,0,0,0.4);
-    border: 1px solid rgba(37, 99, 235, 0.5);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.08), 0 10px 10px rgba(0,0,0,0.06);
+    border: 1px solid rgba(37, 99, 235, 0.3);
   }
 
   .card:hover span {
@@ -111,7 +113,7 @@ const StyledWrapper = styled.div`
     justify-content: center;
     width: 100%;
     height: 100%;
-    color: whitesmoke;
+    color: var(--text);
     font-family: 'JetBrains Mono', monospace;
     font-size: 14px;
     letter-spacing: 0.2em;
@@ -129,7 +131,7 @@ const StyledWrapper = styled.div`
     justify-content: center;
     width: 25%;
     height: 100%;
-    color: whitesmoke;
+    color: var(--text-muted);
     font-size: 24px;
     text-decoration: none;
     transition: 0.25s;
@@ -158,12 +160,12 @@ const StyledWrapper = styled.div`
   }
 
   .card .social-link:hover svg {
-    fill: #fff;
-    stroke: #fff;
+    fill: var(--text);
+    stroke: var(--text);
   }
   
   .card .social-link.discord:hover svg {
-    stroke: #fff;
+    stroke: var(--text);
     fill: none;
   }
 

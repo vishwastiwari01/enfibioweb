@@ -37,7 +37,7 @@ export default function Footer() {
           
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-3">
-              <span className="text-white text-xl font-display font-bold tracking-tight">ENFIBIO</span>
+              <span className="text-[var(--text)] text-xl font-display font-bold tracking-tight">ENFIBIO</span>
             </div>
             <p className="text-sm leading-relaxed text-[var(--text-muted)] font-sans-ui">
               Building the Intelligence Layer of the Real World. Autonomous drone swarms and defense tech.
@@ -46,11 +46,11 @@ export default function Footer() {
 
           {footerLinks.map((section) => (
             <div key={section.title}>
-              <h4 className="text-white text-sm font-semibold mb-6 uppercase tracking-widest">{section.title}</h4>
+              <h4 className="text-[var(--text)] text-sm font-semibold mb-6 uppercase tracking-widest">{section.title}</h4>
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.label} className="relative inline-block text-[13px]">
-                    <a href={link.href} className="text-[var(--text-muted)] hover:text-white transition-colors">
+                    <a href={link.href} className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
                       {link.label}
                     </a>
                     {link.pulse && (
@@ -63,7 +63,7 @@ export default function Footer() {
           ))}
 
           <div>
-            <h4 className="text-white text-sm font-semibold mb-6 uppercase tracking-widest">Connect</h4>
+            <h4 className="text-[var(--text)] text-sm font-semibold mb-6 uppercase tracking-widest">Connect</h4>
             <div className="mt-2">
               <SocialCard />
             </div>

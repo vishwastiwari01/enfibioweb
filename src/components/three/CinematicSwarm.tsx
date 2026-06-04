@@ -298,7 +298,7 @@ function Ground() {
   return (
     <gridHelper
       ref={ref as any}
-      args={[80, 80, '#002244', '#001122']}
+      args={[80, 80, '#cbd5e1', '#e2e8f0']}
       position={[0, -10, 0]}
     />
   );
@@ -379,7 +379,7 @@ function AmbientParticles() {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial color="#004466" size={0.08} transparent opacity={0.5} />
+      <pointsMaterial color="#2563eb" size={0.08} transparent opacity={0.3} />
     </points>
   );
 }
@@ -393,11 +393,10 @@ function Scene({ phaseRef, targetDroneRef }: {
 }) {
   return (
     <>
-      <color attach="background" args={['#020a12']} />
-      <fog attach="fog" args={['#020a12', 30, 70]} />
+      <fog attach="fog" args={['#fafafa', 30, 70]} />
 
-      <ambientLight intensity={0.3} color="#1a3a5c" />
-      <directionalLight position={[10, 20, 10]} intensity={1.5} color="#ffffff" />
+      <ambientLight intensity={0.85} color="#ffffff" />
+      <directionalLight position={[10, 20, 10]} intensity={1.8} color="#ffffff" />
       <pointLight position={[0, 0, 0]} intensity={3} color="#00d4ff" distance={40} />
       <pointLight position={[15, 5, -15]} intensity={2} color="#6644ff" distance={30} />
       <pointLight position={[-15, 5, 15]} intensity={2} color="#00ffaa" distance={30} />
@@ -438,15 +437,15 @@ function HUDOverlay({
       style={{ fontFamily: 'Share Tech Mono, monospace', zIndex: 10 }}
     >
       {/* TOP-LEFT — Signal links */}
-      <div className="absolute top-4 left-4 text-[10px] opacity-70">
+      <div className="absolute top-4 left-4 text-[10px] opacity-90">
         <div style={{ color: info.color }} className="text-xs font-bold tracking-widest mb-1">
           ◈ SWARM CONTROL SYSTEM
         </div>
-        <div className="text-gray-400">NODES ACTIVE: <span style={{ color: '#00d4ff' }}>36 / 36</span></div>
-        <div className="text-gray-400">MESH LINKS: <span style={{ color: '#00d4ff' }}>72</span></div>
-        <div className="text-gray-400">AI DECISIONS/s: <span style={{ color: '#00ff88' }}>1,842</span></div>
-        <div className="text-gray-400">LATENCY: <span style={{ color: '#ff9900' }}>4ms</span></div>
-        <div className="text-gray-400">ENCRYPTION: <span style={{ color: '#00ff88' }}>AES-256 ACTIVE</span></div>
+        <div className="text-[var(--text-muted)]">NODES ACTIVE: <span style={{ color: '#0ea5e9' }}>36 / 36</span></div>
+        <div className="text-[var(--text-muted)]">MESH LINKS: <span style={{ color: '#0ea5e9' }}>72</span></div>
+        <div className="text-[var(--text-muted)]">AI DECISIONS/s: <span style={{ color: 'var(--green)' }}>1,842</span></div>
+        <div className="text-[var(--text-muted)]">LATENCY: <span style={{ color: 'var(--amber)' }}>4ms</span></div>
+        <div className="text-[var(--text-muted)]">ENCRYPTION: <span style={{ color: 'var(--green)' }}>AES-256 ACTIVE</span></div>
       </div>
 
       {/* TOP-RIGHT — Formation info */}
@@ -454,9 +453,9 @@ function HUDOverlay({
         <div style={{ color: info.color }} className="text-sm font-bold tracking-widest">
           {info.label}
         </div>
-        <div className="text-gray-400 mt-1">{info.desc}</div>
-        <div className="mt-3 text-gray-600 text-[9px] tracking-widest">TRANSITION IN</div>
-        <div className="mt-1 w-40 h-[2px] bg-gray-800 ml-auto">
+        <div className="text-[var(--text-muted)] mt-1">{info.desc}</div>
+        <div className="mt-3 text-[var(--text-dim)] text-[9px] tracking-widest">TRANSITION IN</div>
+        <div className="mt-1 w-40 h-[2px] bg-slate-200 ml-auto">
           <div
             className="h-full transition-none"
             style={{
@@ -484,9 +483,9 @@ function HUDOverlay({
       </div>
 
       {/* BOTTOM-LEFT — Telemetry stream */}
-      <div className="absolute bottom-4 left-4 text-[9px] opacity-50">
-        <div className="text-gray-500">SYS_CLK {new Date().toLocaleTimeString()}</div>
-        <div style={{ color: '#004466' }}>
+      <div className="absolute bottom-4 left-4 text-[9px] opacity-70">
+        <div className="text-[var(--text-dim)]">SYS_CLK {new Date().toLocaleTimeString()}</div>
+        <div style={{ color: 'var(--primary)' }}>
           {Array.from({ length: 3 }, (_, i) => (
             <div key={i} className="text-[8px]">
               ▸ DRONE_{String(Math.floor(Math.random() * 36) + 1).padStart(3, '0')}&nbsp;
@@ -498,9 +497,9 @@ function HUDOverlay({
 
       {/* BOTTOM-RIGHT — Status */}
       <div className="absolute bottom-4 right-4 text-right text-[10px]">
-        <div className="text-gray-600">PHASE {PHASES.indexOf(phase) + 1} / {PHASES.length}</div>
-        <div className="text-gray-600 mt-1">AUTO-TRANSITIONING</div>
-        <div className="mt-1" style={{ color: '#00ff88' }}>● NOMINAL</div>
+        <div className="text-[var(--text-dim)]">PHASE {PHASES.indexOf(phase) + 1} / {PHASES.length}</div>
+        <div className="text-[var(--text-dim)] mt-1">AUTO-TRANSITIONING</div>
+        <div className="mt-1" style={{ color: 'var(--green)' }}>● NOMINAL</div>
       </div>
 
       {/* Corner brackets */}
@@ -551,11 +550,11 @@ export default function CinematicSwarm() {
   if (!mounted) return null;
 
   return (
-    <div className="relative w-full" style={{ height: '600px', background: '#020a12', overflow: 'hidden' }}>
+    <div className="relative w-full" style={{ height: '600px', background: 'var(--bg)', overflow: 'hidden' }}>
       {/* 3D Canvas */}
       <Canvas
         camera={{ position: [0, 6, 28], fov: 50 }}
-        gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
+        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       >
         <Scene phaseRef={phaseRef} targetDroneRef={targetDroneRef} />
       </Canvas>
