@@ -69,39 +69,32 @@ function ModelPane({
 
       {isLocalGLB ? (
         <div className="w-full h-full relative" style={{ minHeight: '300px' }}>
-          <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
-            <ambientLight intensity={1.5} />
-            <directionalLight position={[10, 10, 10]} intensity={1.8} />
-            <directionalLight position={[-10, -10, -10]} intensity={0.6} />
-            <pointLight position={[0, 0, 5]} intensity={1.2} color={badgeColor} />
-            <Suspense fallback={
-              <div
-                className="absolute inset-0 flex items-center justify-center z-20"
-                style={{
-                  background: 'var(--surface)',
-                  fontFamily: 'var(--font-share-tech-mono), Share Tech Mono, monospace',
-                  color: badgeColor,
-                  fontSize: '9px',
-                  letterSpacing: '0.2em',
-                  opacity: 0.5,
-                }}
-              >
-                ▸ LOADING 3D MODEL...
-              </div>
-            }>
+          <Suspense fallback={
+            <div
+              className="absolute inset-0 flex items-center justify-center z-20"
+              style={{
+                background: 'var(--surface)',
+                fontFamily: 'var(--font-share-tech-mono), Share Tech Mono, monospace',
+                color: badgeColor,
+                fontSize: '9px',
+                letterSpacing: '0.2em',
+                opacity: 0.5,
+              }}
+            >
+              ▸ LOADING 3D MODEL...
+            </div>
+          }>
+            <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
+              <ambientLight intensity={1.5} />
+              <directionalLight position={[10, 10, 10]} intensity={1.8} />
+              <directionalLight position={[-10, -10, -10]} intensity={0.6} />
+              <pointLight position={[0, 0, 5]} intensity={1.2} color={badgeColor} />
               <Center>
                 <GLBModel url={src} />
               </Center>
-            </Suspense>
-            <OrbitControls enableZoom={true} enablePan={true} autoRotate autoRotateSpeed={0.8} />
-          </Canvas>
-          
-          <div 
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-40 pointer-events-none"
-            style={{ fontFamily: 'var(--font-share-tech-mono), Share Tech Mono, monospace', fontSize: '8px', color: 'var(--text-muted)' }}
-          >
-            <span>click & hold to rotate</span>
-          </div>
+              <OrbitControls enableZoom={true} enablePan={true} autoRotate autoRotateSpeed={0.8} />
+            </Canvas>
+          </Suspense>
         </div>
       ) : (
         <>
