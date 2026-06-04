@@ -50,7 +50,7 @@ export default function RootLayout({
       className={`${orbitron.variable} ${barlow.variable} ${barlowCondensed.variable} ${shareTechMono.variable}`}
     >
       <body className="min-h-full antialiased">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           {children}
         </ThemeProvider>
       </body>

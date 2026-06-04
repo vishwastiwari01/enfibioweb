@@ -57,16 +57,16 @@ export default function MissionLog() {
           right: isOpen ? '284px' : '0px',
           top: '50%',
           transform: 'translateY(-50%)',
-          background: 'rgba(6,12,20,0.95)',
-          border: '1px solid rgba(0,212,255,0.15)',
-          borderRight: isOpen ? '1px solid rgba(0,212,255,0.15)' : 'none',
+          background: 'rgba(255,255,255,0.95)',
+          border: '1px solid var(--border)',
+          borderRight: isOpen ? '1px solid var(--border)' : 'none',
           padding: '10px 6px',
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           fontFamily: 'Share Tech Mono',
           fontSize: '9px',
           letterSpacing: '0.15em',
-          color: 'rgba(0,212,255,0.5)',
+          color: 'var(--accent)',
           backdropFilter: 'blur(8px)',
           borderRadius: isOpen ? '4px 0 0 4px' : '4px 0 0 4px',
         }}
@@ -82,20 +82,20 @@ export default function MissionLog() {
         className="fixed right-0 top-[60px] bottom-[28px] z-[350] flex flex-col"
         style={{
           width: '284px',
-          background: 'rgba(2,4,8,0.97)',
-          borderLeft: '1px solid rgba(0,212,255,0.1)',
+          background: 'rgba(255,255,255,0.97)',
+          borderLeft: '1px solid var(--border)',
           backdropFilter: 'blur(16px)',
         }}
       >
         {/* Header */}
         <div
           className="flex items-center justify-between px-3 py-2 border-b"
-          style={{ borderColor: 'rgba(0,212,255,0.1)' }}
+          style={{ borderColor: 'var(--border)' }}
         >
-          <span className="text-xs tracking-widest" style={{ fontFamily: 'Share Tech Mono', color: 'var(--cyan)', opacity: 0.6 }}>
+          <span className="text-xs tracking-widest" style={{ fontFamily: 'Share Tech Mono', color: 'var(--cyan)', opacity: 0.8 }}>
             ◈ MISSION LOG
           </span>
-          <span className="text-xs" style={{ fontFamily: 'Share Tech Mono', color: 'rgba(255,255,255,0.3)' }}>
+          <span className="text-xs" style={{ fontFamily: 'Share Tech Mono', color: 'var(--text-muted)' }}>
             {entries.length} entries
           </span>
         </div>
@@ -110,7 +110,7 @@ export default function MissionLog() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
                 className="px-3 py-2 border-b"
-                style={{ borderColor: 'rgba(0,212,255,0.04)' }}
+                style={{ borderColor: 'var(--border)' }}
               >
                 <div className="flex items-center justify-between mb-0.5">
                   <div className="flex items-center gap-1.5">
@@ -122,11 +122,11 @@ export default function MissionLog() {
                       {entry.node}
                     </span>
                   </div>
-                  <span className="text-xs" style={{ fontFamily: 'Share Tech Mono', color: 'rgba(255,255,255,0.2)', fontSize: '8px' }}>
+                  <span className="text-xs" style={{ fontFamily: 'Share Tech Mono', color: 'var(--text-dim)', fontSize: '8px' }}>
                     {entry.ts}
                   </span>
                 </div>
-                <div className="text-xs" style={{ fontFamily: 'Share Tech Mono', color: 'rgba(255,255,255,0.45)', fontSize: '9px', lineHeight: 1.5 }}>
+                <div className="text-xs" style={{ fontFamily: 'Share Tech Mono', color: 'var(--text-muted)', fontSize: '9px', lineHeight: 1.5 }}>
                   {entry.msg}
                 </div>
               </motion.div>
@@ -137,7 +137,7 @@ export default function MissionLog() {
         {/* Footer */}
         <div
           className="px-3 py-2 border-t"
-          style={{ borderColor: 'rgba(0,212,255,0.1)' }}
+          style={{ borderColor: 'var(--border)' }}
         >
           <div
             className="text-xs flex items-center gap-1"

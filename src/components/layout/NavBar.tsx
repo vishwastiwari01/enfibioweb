@@ -52,9 +52,9 @@ export default function NavBar() {
       className="fixed top-0 left-0 right-0 z-[500] flex items-center justify-between px-6"
       style={{
         height: '60px',
-        background: scrolled ? 'rgba(8,11,15,0.96)' : 'rgba(8,11,15,0.80)',
+        background: scrolled ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.80)',
         backdropFilter: 'blur(16px)',
-        borderBottom: `1px solid ${scrolled ? 'rgba(255,255,255,0.08)' : 'transparent'}`,
+        borderBottom: `1px solid ${scrolled ? 'rgba(15,23,42,0.08)' : 'transparent'}`,
         transition: 'background 0.3s ease, border-color 0.3s ease',
       }}
     >
@@ -70,7 +70,7 @@ export default function NavBar() {
             fontWeight: 800,
             fontSize: '16px',
             letterSpacing: '-0.02em',
-            color: '#fff',
+            color: 'var(--text)',
           }}
         >
           ENFIBIO
@@ -79,7 +79,7 @@ export default function NavBar() {
           style={{
             height: '16px',
             width: '1px',
-            background: 'rgba(255,255,255,0.2)',
+            background: 'rgba(15,23,42,0.2)',
             display: 'block',
           }}
         />
@@ -108,7 +108,7 @@ export default function NavBar() {
                 fontFamily: 'Inter, sans-serif',
                 fontWeight: 500,
                 fontSize: '13px',
-                color: isActive ? '#fff' : 'var(--text-muted)',
+                color: isActive ? 'var(--text)' : 'var(--text-muted)',
                 background: 'none',
                 border: 'none',
                 letterSpacing: '0.01em',

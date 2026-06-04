@@ -40,54 +40,54 @@
 }
 
 :root {
-  /* ── Enfibio Brand — Corporate Tier ── */
-  --bg:          #080b0f;
-  --surface:     #0d1117;
-  --surface-2:   #141b24;
-  --surface-3:   #1a2233;
+  /* ── Enfibio Brand — Corporate Tier (Light Theme) ── */
+  --bg:          #ffffff;
+  --surface:     #f8fafc;
+  --surface-2:   #f1f5f9;
+  --surface-3:   #e2e8f0;
 
   --accent:      #2563eb;
   --accent-2:    #0ea5e9;
-  --accent-glow: rgba(37,99,235,0.20);
+  --accent-glow: rgba(37,99,235,0.10);
 
-  --green:       #22c55e;
-  --amber:       #f59e0b;
-  --red:         #ef4444;
-  --purple:      #8b5cf6;
+  --green:       #16a34a;
+  --amber:       #d97706;
+  --red:         #dc2626;
+  --purple:      #7c3aed;
 
-  --text:        rgba(255,255,255,0.90);
-  --text-muted:  rgba(255,255,255,0.42);
-  --text-dim:    rgba(255,255,255,0.18);
-  --border:      rgba(255,255,255,0.07);
-  --border-mid:  rgba(255,255,255,0.12);
+  --text:        rgba(15,23,42,0.90);
+  --text-muted:  rgba(15,23,42,0.56);
+  --text-dim:    rgba(15,23,42,0.24);
+  --border:      rgba(15,23,42,0.08);
+  --border-mid:  rgba(15,23,42,0.16);
 
   /* shadcn */
-  --background: #080b0f;
-  --foreground: rgba(255,255,255,0.88);
-  --card: #0d1117;
-  --card-foreground: rgba(255,255,255,0.88);
-  --popover: #0d1117;
-  --popover-foreground: rgba(255,255,255,0.88);
+  --background: #ffffff;
+  --foreground: rgba(15,23,42,0.90);
+  --card: #f8fafc;
+  --card-foreground: rgba(15,23,42,0.90);
+  --popover: #ffffff;
+  --popover-foreground: rgba(15,23,42,0.90);
   --primary: #2563eb;
   --primary-foreground: #ffffff;
-  --secondary: #141b24;
-  --secondary-foreground: rgba(255,255,255,0.88);
-  --muted: rgba(255,255,255,0.06);
-  --muted-foreground: rgba(255,255,255,0.42);
-  --accent: #141b24;
-  --accent-foreground: rgba(255,255,255,0.88);
-  --destructive: #ef4444;
-  --border: rgba(255,255,255,0.07);
-  --input: rgba(255,255,255,0.06);
+  --secondary: #f1f5f9;
+  --secondary-foreground: rgba(15,23,42,0.90);
+  --muted: rgba(15,23,42,0.05);
+  --muted-foreground: rgba(15,23,42,0.56);
+  --accent: #f1f5f9;
+  --accent-foreground: rgba(15,23,42,0.90);
+  --destructive: #dc2626;
+  --border: rgba(15,23,42,0.08);
+  --input: rgba(15,23,42,0.06);
   --ring: #2563eb;
   --radius: 0.5rem;
-  --sidebar: #0d1117;
-  --sidebar-foreground: rgba(255,255,255,0.88);
+  --sidebar: #f8fafc;
+  --sidebar-foreground: rgba(15,23,42,0.90);
   --sidebar-primary: #2563eb;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #141b24;
-  --sidebar-accent-foreground: rgba(255,255,255,0.88);
-  --sidebar-border: rgba(255,255,255,0.07);
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: rgba(15,23,42,0.90);
+  --sidebar-border: rgba(15,23,42,0.08);
   --sidebar-ring: #2563eb;
 
   /* Legacy aliases (kept for components that still reference them) */
@@ -98,7 +98,7 @@
   --amber-2:      var(--amber);
   --neon-blue:    var(--accent);
   --muted-color:  var(--text-muted);
-  --dim:          rgba(255,255,255,0.06);
+  --dim:          rgba(15,23,42,0.05);
 }
 
 /* ── Base ─────────────────────────────────────────────── */
@@ -120,14 +120,14 @@
   }
 
   ::selection {
-    background: rgba(37,99,235,0.28);
-    color: #fff;
+    background: rgba(37,99,235,0.20);
+    color: var(--text);
   }
 
   ::-webkit-scrollbar { width: 3px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
 }
 
 /* ── Typography ───────────────────────────────────────── */
@@ -319,13 +319,26 @@
 .scale-150 { transform: scale(1.5);  }
 .opacity-70 { opacity: 0.7; }
 .opacity-50 { opacity: 0.5; }
-.border-white\/10 { border-color: rgba(255,255,255,0.10); }
-.border-white\/20 { border-color: rgba(255,255,255,0.20); }
-.border-white\/30 { border-color: rgba(255,255,255,0.30); }
-.border-white\/40 { border-color: rgba(255,255,255,0.40); }
-.bg-black\/90 { background-color: rgba(0,0,0,0.90); }
-.text-white\/70 { color: rgba(255,255,255,0.70); }
-.text-white\/80 { color: rgba(255,255,255,0.80); }
+
+/* Dynamic overrides for white utility classes on light backgrounds */
+.text-white { color: var(--text) !important; }
+.hover\:text-white:hover { color: var(--text) !important; }
+.text-white\/50 { color: rgba(15, 23, 42, 0.50) !important; }
+.text-white\/70 { color: rgba(15, 23, 42, 0.70) !important; }
+.text-white\/80 { color: rgba(15, 23, 42, 0.80) !important; }
+
+.border-white\/5 { border-color: rgba(15, 23, 42, 0.05) !important; }
+.border-white\/10 { border-color: rgba(15, 23, 42, 0.08) !important; }
+.border-white\/20 { border-color: rgba(15, 23, 42, 0.16) !important; }
+.border-white\/30 { border-color: rgba(15, 23, 42, 0.24) !important; }
+.border-white\/40 { border-color: rgba(15, 23, 42, 0.32) !important; }
+.hover\:border-white\/10:hover { border-color: rgba(15, 23, 42, 0.08) !important; }
+
+.bg-white\/5 { background-color: rgba(15, 23, 42, 0.04) !important; }
+.bg-white\/10 { background-color: rgba(15, 23, 42, 0.08) !important; }
+.hover\:bg-white\/5:hover { background-color: rgba(15, 23, 42, 0.05) !important; }
+
+.bg-black\/90 { background-color: rgba(255, 255, 255, 0.90) !important; }
 
 /* Clip utility — keep for modal if needed */
 .clip-hex    { clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%); }

@@ -16,8 +16,8 @@ export default function Ticker() {
       className="fixed bottom-0 left-0 right-0 z-[300] flex items-center overflow-hidden"
       style={{
         height: '28px',
-        background: 'rgba(2,4,8,0.95)',
-        borderTop: '1px solid rgba(0,212,255,0.1)',
+        background: 'rgba(255,255,255,0.95)',
+        borderTop: '1px solid var(--border)',
       }}
     >
       {/* Label */}
