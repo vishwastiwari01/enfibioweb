@@ -115,7 +115,7 @@ export default function Home() {
           <div className="founder-card reveal">
             <div className="founder-badge badge-exec font-bold">Execution Layer</div>
             <div className="founder-name font-bold">
-              <LinkPreview url="https://portfolio-jade-psi-53.vercel.app/V" isStatic={true} imageSrc="/assets/battle_drone.glb" className="hover:text-accent transition-colors">
+              <LinkPreview url="https://portfolio-jade-psi-53.vercel.app" isStatic={true} imageSrc="/assets/battle_drone.glb" className="hover:text-accent transition-colors">
                 Vishwas Tiwari
               </LinkPreview>
             </div>
@@ -279,6 +279,11 @@ export default function Home() {
               <li>
                 <LinkPreview url="https://awaasdirect.vercel.app" className="hover:text-white font-semibold transition-colors">
                   Awaas Direct<span className="blive font-bold">Live</span>
+                </LinkPreview>
+              </li>
+              <li>
+                <LinkPreview url="https://learnmate-nextjs.vercel.app" className="hover:text-white font-semibold transition-colors">
+                  Learnmate<span className="blive font-bold">Live</span>
                 </LinkPreview>
               </li>
               <li>
