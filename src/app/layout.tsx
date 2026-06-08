@@ -51,11 +51,6 @@ export default function RootLayout({
     >
       <body className="min-h-full antialiased">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <div className="bg-mesh-glow">
-            <div className="bg-mesh-bubble bg-mesh-bubble-1" />
-            <div className="bg-mesh-bubble bg-mesh-bubble-2" />
-            <div className="bg-mesh-bubble bg-mesh-bubble-3" />
-          </div>
           {children}
         </ThemeProvider>
       </body>
