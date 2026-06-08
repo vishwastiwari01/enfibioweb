@@ -28,6 +28,22 @@ export default function Home() {
   const getProjectUrl = (code: string) => {
     if (code === 'HONEYPOT') return 'https://cyber-rakshak-frontend.vercel.app';
     if (code === 'MEDGPT') return 'https://medgpt-website.vercel.app';
+    if (code === 'MINAR') return 'https://minar-theta.vercel.app';
+    if (code === 'AWAAS') return 'https://awaasdirect.vercel.app';
+    if (code === 'SMART-SEWAGE') return 'https://smart-sewage-system-rytr.vercel.app/login';
+    if (code === 'LEARNMATE') return 'https://learnmate-nextjs.vercel.app';
+    return null;
+  };
+
+  const getProjectImage = (code: string) => {
+    if (code === 'HONEYPOT') return '/assets/SAM.jpeg';
+    if (code === 'MEDGPT') return '/assets/medgpt.png';
+    if (code === 'SIGINT') return '/assets/signit.png';
+    if (code === 'MINAR') return '/assets/minar.png';
+    if (code === 'AWAAS') return '/assets/awasdirect.png';
+    if (code === 'SMART-SEWAGE') return '/assets/Smartflow.png';
+    if (code === 'LEARNMATE') return '/assets/learnmate.png';
+    if (code === 'FUNDRADAR') return '/assets/fundradar.png';
     return null;
   };
 
@@ -70,7 +86,7 @@ export default function Home() {
           <a href="#founders" className="navlink font-semibold">The Founders</a>
           <a href="#projects" className="navlink font-semibold">Project Board</a>
           <a href="#capabilities" className="navlink font-semibold">Capabilities</a>
-          <a href="mailto:info@enfibio.com" className="nav-contact font-bold">info@enfibio.com</a>
+          <a href="mailto:enfibiotechnologiespvtltd@gmail.com" className="nav-contact font-bold">enfibiotechnologiespvtltd@gmail.com</a>
         </nav>
       </header>
 
@@ -115,7 +131,7 @@ export default function Home() {
           <div className="founder-card reveal">
             <div className="founder-badge badge-exec font-bold">Execution Layer</div>
             <div className="founder-name font-bold">
-              <LinkPreview url="https://portfolio-jade-psi-53.vercel.app" isStatic={true} imageSrc="/assets/battle_drone.glb" className="hover:text-accent transition-colors">
+              <LinkPreview url="https://portfolio-jade-psi-53.vercel.app" isStatic={true} imageSrc="/assets/vishwas.png" className="hover:text-accent transition-colors">
                 Vishwas Tiwari
               </LinkPreview>
             </div>
@@ -170,11 +186,18 @@ export default function Home() {
 
             const cardContent = (
               <div className={`proj-card reveal ${isWide ? 'wide' : ''}`} data-cat={proj.cat} key={proj.id}>
-                {/* Fallback image block since base64 strings are large, we use a colored block with title or a default image */}
-                <div className="w-full bg-slate-800 flex items-center justify-center overflow-hidden relative" style={{ height: isWide ? '200px' : '160px' }}>
-                  <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 opacity-90"></div>
-                  <span className="relative text-white/20 font-bold text-4xl tracking-widest uppercase">{proj.code}</span>
-                </div>
+                {getProjectImage(proj.code) ? (
+                  <div className="w-full relative overflow-hidden" style={{ height: isWide ? '200px' : '160px' }}>
+                    <img src={getProjectImage(proj.code)!} alt={proj.title} className="w-full h-full object-cover grayscale opacity-70 transition-all duration-300" />
+                    <div className="absolute inset-0 bg-slate-900/30 mix-blend-multiply"></div>
+                    <span className="absolute bottom-2 left-3 text-white/40 font-bold text-2xl tracking-widest uppercase">{proj.code}</span>
+                  </div>
+                ) : (
+                  <div className="w-full bg-slate-800 flex items-center justify-center overflow-hidden relative" style={{ height: isWide ? '200px' : '160px' }}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 opacity-90"></div>
+                    <span className="relative text-white/20 font-bold text-4xl tracking-widest uppercase">{proj.code}</span>
+                  </div>
+                )}
                 
                 <div className="proj-meta">
                   <div className="proj-id font-bold">{proj.id}</div>
@@ -257,7 +280,7 @@ export default function Home() {
           <div>
             <div className="foot-brand font-bold">Enfibio<span>.</span></div>
             <p className="foot-tagline font-medium">Architecting decentralized autonomy for contested domains.</p>
-            <a href="mailto:info@enfibio.com" className="foot-email font-bold">info@enfibio.com</a>
+            <a href="mailto:enfibiotechnologiespvtltd@gmail.com" className="foot-email font-bold">enfibiotechnologiespvtltd@gmail.com</a>
           </div>
           <div>
             <div className="foot-col-head font-bold">Platform</div>
@@ -306,7 +329,21 @@ export default function Home() {
                   YouTube
                 </LinkPreview>
               </li>
-              <li><a href="#" className="font-semibold">GitHub (Restricted)</a></li>
+              <li>
+                <LinkPreview url="https://github.com/enfibiotech" className="hover:text-white font-semibold transition-colors">
+                  GitHub (Enfibio)
+                </LinkPreview>
+              </li>
+              <li>
+                <LinkPreview url="https://github.com/vishwastiwari01" className="hover:text-white font-semibold transition-colors">
+                  GitHub (Vishwas)
+                </LinkPreview>
+              </li>
+              <li>
+                <LinkPreview url="https://www.instagram.com/enfibio_tech?igsh=MXMwdnRrMGhkNDA3aQ==" className="hover:text-white font-semibold transition-colors">
+                  Instagram
+                </LinkPreview>
+              </li>
             </ul>
           </div>
         </div>
