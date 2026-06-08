@@ -32,6 +32,7 @@ export default function Home() {
     if (code === 'AWAAS') return 'https://awaasdirect.vercel.app';
     if (code === 'SMART-SEWAGE') return 'https://smart-sewage-system-rytr.vercel.app/login';
     if (code === 'LEARNMATE') return 'https://learnmate-nextjs.vercel.app';
+    if (code === 'BHARATMAPS') return 'https://idex-aditi-4-0.vercel.app';
     return null;
   };
 
@@ -44,6 +45,11 @@ export default function Home() {
     if (code === 'SMART-SEWAGE') return '/assets/Smartflow.png';
     if (code === 'LEARNMATE') return '/assets/learnmate.png';
     if (code === 'FUNDRADAR') return '/assets/fundradar.png';
+    if (code === 'FREEZER') return '/assets/smartportablefreezer.jpeg';
+    if (code === 'ASTRA') return '/assets/swarm.jpeg';
+    if (code === 'AIROS') return '/assets/disaster reponse drone.jpeg';
+    if (code === 'TWINSPACE') return '/assets/autonomoustruck.png';
+    if (code === 'BHARATMAPS') return '/assets/bharatmapspreview.jpeg';
     return null;
   };
 

@@ -16,25 +16,11 @@ export const PROJECTS: Project[] = [
     tags: ['SIGINT', 'RF', 'ISR', 'Spectrum', 'Passive Collection'],
   },
   {
-    id: 'PROJ-003', cat: 'defense', code: 'EMITTER', title: 'Emitter Location System',
-    subtitle: 'RF Source Geolocation Engine', domain: 'DEFENSE INTELLIGENCE',
-    desc: 'Multi-sensor triangulation for precise geolocation of RF emitters. Combines TDOA, AOA, and power-based methods with Kalman filtering.',
-    specs: { Accuracy: '<10m CEP', Method: 'TDOA + AOA', Latency: '<2s', Layer: 'Intelligence' },
-    tags: ['Geolocation', 'RF', 'TDOA', 'Kalman Filter', 'EW'],
-  },
-  {
     id: 'PROJ-004', cat: 'intel', code: 'MEDGPT', title: 'MedGPT',
     subtitle: 'Clinical Decision Intelligence System', domain: 'AI INTELLIGENCE',
     desc: 'Specialized medical intelligence on fine-tuned LLMs with RAG over clinical databases. Provides decision-grade diagnostic support with full source attribution.',
     specs: { Base: 'Fine-tuned LLM', Knowledge: 'Clinical DB RAG', Output: 'Decision-grade', Layer: 'Intelligence' },
     tags: ['Medical AI', 'RAG', 'LLM', 'Clinical', 'Interpretable AI'],
-  },
-  {
-    id: 'PROJ-005', cat: 'intel', code: 'OPENCLAW', title: 'OpenClaw Agents',
-    subtitle: 'Autonomous Multi-Agent Framework', domain: 'AI INTELLIGENCE',
-    desc: 'Open-architecture multi-agent framework for deploying coordinated AI agents. Features dynamic tool use, persistent memory, and inter-agent communication.',
-    specs: { Architecture: 'Multi-Agent', Memory: 'Persistent RAG', Tools: 'Dynamic', Layer: 'Execution + Intel' },
-    tags: ['Agents', 'LLM', 'Orchestration', 'Tool Use', 'Memory'],
   },
   {
     id: 'PROJ-006', cat: 'intel', code: 'HONEYPOT', title: 'AI Honeypot',
@@ -44,13 +30,6 @@ export const PROJECTS: Project[] = [
     tags: ['Cybersecurity', 'Deception', 'TTP', 'Threat Intel', 'AI'],
   },
   {
-    id: 'PROJ-007', cat: 'hardware', code: 'CHIP', title: 'Post-Silicon AI Chip',
-    subtitle: 'Next-Gen Neuromorphic Processing Unit', domain: 'FRONTIER HARDWARE',
-    desc: 'Custom neuromorphic processing architecture for ultra-low-power AI inference at the edge, moving beyond CMOS silicon with novel compute paradigms.',
-    specs: { Architecture: 'Neuromorphic', Power: '<5W Envelope', Target: 'Edge Inference', Layer: 'Embedded' },
-    tags: ['Silicon', 'Neuromorphic', 'Edge AI', 'Custom Hardware', 'VLSI'],
-  },
-  {
     id: 'PROJ-008', cat: 'hardware', code: 'FREEZER', title: 'Smart Portable Freezer',
     subtitle: 'AI-Managed Cold Chain System', domain: 'FRONTIER HARDWARE',
     desc: 'Intelligent portable refrigeration with predictive thermal management and autonomous power optimization for medical logistics and field operations.',
@@ -58,39 +37,11 @@ export const PROJECTS: Project[] = [
     tags: ['IoT', 'Cold Chain', 'Medical', 'Embedded', 'Power Management'],
   },
   {
-    id: 'PROJ-009', cat: 'hardware', code: 'HELI-GLIDE', title: 'Helicopter Glide System',
-    subtitle: 'Emergency Autorotation Assistance', domain: 'FRONTIER HARDWARE',
-    desc: 'AI-assisted emergency glide system for rotary-wing aircraft providing real-time autorotation guidance and landing zone selection during engine failure.',
-    specs: { Platform: 'Rotary Wing', Mode: 'Autorotation Assist', Sensor: 'Multi-modal', Layer: 'Execution + Embedded' },
-    tags: ['Aviation', 'Safety', 'Autorotation', 'RTOS', 'Embedded'],
-  },
-  {
     id: 'PROJ-010', cat: 'systems', code: 'AIROS', title: 'Air OS',
     subtitle: 'Autonomous Aerial Operating System', domain: 'SYSTEMS PLATFORM',
     desc: 'Full-stack OS for autonomous aerial vehicles. Abstracts hardware complexity with deterministic real-time scheduling, sensor fusion, and mission planning.',
     specs: { Core: 'RTOS + Linux', Fusion: 'Multi-sensor', Planning: 'Autonomous', Layer: 'All Layers' },
     tags: ['OS', 'RTOS', 'UAV', 'Middleware', 'ROS2', 'Sensor Fusion'],
-  },
-  {
-    id: 'PROJ-011', cat: 'defense', code: 'C2-NET', title: 'C2 Network Fabric',
-    subtitle: 'Command & Control Mesh Infrastructure', domain: 'DEFENSE INTELLIGENCE',
-    desc: 'Resilient encrypted C2 network fabric supporting disconnected operations, delay-tolerant networking, and dynamic re-routing under degraded comms.',
-    specs: { Protocol: 'DTN + Mesh', Encryption: 'AES-256 + PQC', Mode: 'PACE', Layer: 'Execution' },
-    tags: ['C2', 'Mesh Network', 'Encryption', 'Defense', 'DTN'],
-  },
-  {
-    id: 'PROJ-012', cat: 'intel', code: 'ISR-FUSE', title: 'ISR Fusion Engine',
-    subtitle: 'Multi-Source Intelligence Fusion', domain: 'AI INTELLIGENCE',
-    desc: 'Cross-domain intelligence fusion combining IMINT, SIGINT, HUMINT, and OSINT into actionable intelligence products with automated confidence scoring.',
-    specs: { Sources: 'IMINT+SIGINT+OSINT', Output: 'Fused Intelligence', Latency: 'Near Real-time', Layer: 'Intelligence' },
-    tags: ['Intelligence', 'Fusion', 'IMINT', 'SIGINT', 'OSINT', 'ML'],
-  },
-  {
-    id: 'PROJ-013', cat: 'hardware', code: 'EDGE-NODE', title: 'Edge Intelligence Node',
-    subtitle: 'Deployable AI Compute Unit', domain: 'FRONTIER HARDWARE',
-    desc: 'Ruggedized field-deployable AI compute node with GPU acceleration, multi-radio connectivity, and hardened enclosure for tactical edge operations.',
-    specs: { Compute: 'GPU + NPU', Power: 'MilSpec', Connectivity: 'Multi-Radio', Layer: 'Embedded' },
-    tags: ['Edge AI', 'Hardware', 'Ruggedized', 'Tactical', 'Computing'],
   },
   {
     id: 'PROJ-014', cat: 'systems', code: 'TWINSPACE', title: 'TwinSpace',
@@ -133,5 +84,12 @@ export const PROJECTS: Project[] = [
     desc: 'A deployed intelligence tool for tracking and analyzing funding data, demonstrating our capability in building data-heavy fintech dashboards.',
     specs: { Status: 'Live', Focus: 'Fintech Analytics', Data: 'Real-time', Layer: 'Intelligence' },
     tags: ['Fintech', 'Analytics', 'Dashboard', 'Live'],
+  },
+  {
+    id: 'PROJ-020', cat: 'defense', code: 'BHARATMAPS', title: 'BharatMaps Citation',
+    subtitle: 'DRDO Dare to Dream Winner', domain: 'DEFENSE INTELLIGENCE',
+    desc: 'An offline-first emergency communication and navigation platform that enables secure messaging, verified alerts, and safe routing even during internet blackouts.',
+    specs: { Status: 'Live', Focus: 'Offline Comms', Interface: 'Web/Mobile', Layer: 'Execution' },
+    tags: ['DRDO', 'Offline Navigation', 'Emergency Comms', 'Live'],
   },
 ];
