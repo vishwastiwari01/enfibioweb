@@ -53,6 +53,12 @@ export default function Home() {
     return null;
   };
 
+  const getProjectVideo = (code: string) => {
+    if (code === 'BHARATMAPS') return '/assets/bharatmaps.mp4';
+    if (code === 'AGRISWARM') return '/assets/agriswarm_sim.mp4';
+    return null;
+  };
+
   return (
     <>
       <Head>
@@ -192,7 +198,13 @@ export default function Home() {
 
             const cardContent = (
               <div className={`proj-card reveal ${isWide ? 'wide' : ''}`} data-cat={proj.cat} key={proj.id}>
-                {getProjectImage(proj.code) ? (
+                {getProjectVideo(proj.code) ? (
+                  <div className="w-full relative overflow-hidden" style={{ height: isWide ? '200px' : '160px' }}>
+                    <video src={getProjectVideo(proj.code)!} autoPlay loop muted playsInline className="w-full h-full object-cover grayscale opacity-70 transition-all duration-300" />
+                    <div className="absolute inset-0 bg-slate-900/30 mix-blend-multiply"></div>
+                    <span className="absolute bottom-2 left-3 text-white/40 font-bold text-2xl tracking-widest uppercase">{proj.code}</span>
+                  </div>
+                ) : getProjectImage(proj.code) ? (
                   <div className="w-full relative overflow-hidden" style={{ height: isWide ? '200px' : '160px' }}>
                     <img src={getProjectImage(proj.code)!} alt={proj.title} className="w-full h-full object-cover grayscale opacity-70 transition-all duration-300" />
                     <div className="absolute inset-0 bg-slate-900/30 mix-blend-multiply"></div>

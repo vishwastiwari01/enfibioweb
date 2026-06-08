@@ -92,4 +92,11 @@ export const PROJECTS: Project[] = [
     specs: { Status: 'Live', Focus: 'Offline Comms', Interface: 'Web/Mobile', Layer: 'Execution' },
     tags: ['DRDO', 'Offline Navigation', 'Emergency Comms', 'Live'],
   },
+  {
+    id: 'PROJ-021', cat: 'systems', code: 'AGRISWARM', title: 'Agri Swarm System',
+    subtitle: 'Rover and Swarm Drones Simulation', domain: 'SYSTEMS PLATFORM',
+    desc: 'Advanced simulation of an agricultural swarm system featuring coordinated operations between ground rovers and aerial swarm drones for precision agriculture.',
+    specs: { Status: 'Simulation', Focus: 'Precision Agri', Platforms: 'Rover + UAVs', Layer: 'Systems' },
+    tags: ['Swarm AI', 'Agriculture', 'Simulation', 'Robotics'],
+  },
 ];
