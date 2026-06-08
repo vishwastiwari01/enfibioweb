@@ -200,13 +200,13 @@ export default function Home() {
               <div className={`proj-card reveal ${isWide ? 'wide' : ''}`} data-cat={proj.cat} key={proj.id}>
                 {getProjectVideo(proj.code) ? (
                   <div className="w-full relative overflow-hidden" style={{ height: isWide ? '200px' : '160px' }}>
-                    <video src={getProjectVideo(proj.code)!} autoPlay loop muted playsInline className="w-full h-full object-cover grayscale opacity-70 transition-all duration-300" />
+                    <video src={getProjectVideo(proj.code)!} autoPlay loop muted playsInline className="w-full h-full object-cover opacity-90 transition-all duration-300 group-hover:opacity-100" />
                     <div className="absolute inset-0 bg-slate-900/30 mix-blend-multiply"></div>
                     <span className="absolute bottom-2 left-3 text-white/40 font-bold text-2xl tracking-widest uppercase">{proj.code}</span>
                   </div>
                 ) : getProjectImage(proj.code) ? (
                   <div className="w-full relative overflow-hidden" style={{ height: isWide ? '200px' : '160px' }}>
-                    <img src={getProjectImage(proj.code)!} alt={proj.title} className="w-full h-full object-cover grayscale opacity-70 transition-all duration-300" />
+                    <img src={getProjectImage(proj.code)!} alt={proj.title} className="w-full h-full object-cover opacity-90 transition-all duration-300 group-hover:opacity-100" />
                     <div className="absolute inset-0 bg-slate-900/30 mix-blend-multiply"></div>
                     <span className="absolute bottom-2 left-3 text-white/40 font-bold text-2xl tracking-widest uppercase">{proj.code}</span>
                   </div>
@@ -220,7 +220,7 @@ export default function Home() {
                 <div className="proj-meta">
                   <div className="proj-id font-bold">{proj.id}</div>
                   <div className="proj-name font-bold">{proj.title}</div>
-                  <div className="proj-desc font-medium">{proj.desc.substring(0, 80)}...</div>
+                  <div className="proj-desc font-medium">{proj.desc}</div>
                   <div className="proj-tags font-semibold">
                     {proj.tags.slice(0, 3).map((t, idx) => (
                       <span className="ptag font-bold" key={idx}>{t}</span>
@@ -255,6 +255,14 @@ export default function Home() {
             );
 
             if (url) {
+              const staticImage = getProjectImage(proj.code);
+              if (staticImage) {
+                return (
+                  <LinkPreview key={proj.id} url={url} isStatic={true} imageSrc={staticImage} className="block cursor-pointer">
+                    {cardContent}
+                  </LinkPreview>
+                );
+              }
               return (
                 <LinkPreview key={proj.id} url={url} className="block cursor-pointer">
                   {cardContent}
