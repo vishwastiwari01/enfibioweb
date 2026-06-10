@@ -30,6 +30,7 @@ export interface Founder {
   specialty: string;
   color: string;
   avatar?: string;
+  linkedin?: string;
 }
 
 export interface TelemetryEntry {

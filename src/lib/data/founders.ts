@@ -11,6 +11,7 @@ export const FOUNDERS: Founder[] = [
     specialty: 'Autonomous AI Agents, Edge AI deployment, Defense Simulation, and Real-world AI Autonomy.',
     color: 'var(--amber)',
     avatar: '/assets/vishwas.png',
+    linkedin: 'https://www.linkedin.com/in/vishwas-tiwari-a05a65256/',
   },
   {
     initials: 'SP',
@@ -22,6 +23,7 @@ export const FOUNDERS: Founder[] = [
     specialty: 'RAG Architectures, Machine Learning Pipelines, Decision-grade outputs, and Interpretable AI.',
     color: 'var(--cyan)',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=256&q=80&fit=crop',
+    linkedin: 'https://www.linkedin.com/in/shardul-pande-/',
   },
   {
     initials: 'RG',

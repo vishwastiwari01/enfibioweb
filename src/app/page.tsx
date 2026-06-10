@@ -187,7 +187,16 @@ export default function Home() {
                   </div>
                 )}
                 
-                <div className="proj-meta">
+                  {proj.code === 'BHARATMAPS' && (
+                    <div className="absolute top-4 right-4 z-20">
+                      <div className="bg-yellow-500/20 backdrop-blur-md border border-yellow-500/50 text-yellow-400 px-3 py-1.5 rounded-full flex items-center gap-2 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+                        <img src="/assets/drdo.jfif" alt="DRDO" className="w-5 h-5 rounded-full object-cover" />
+                        <span className="text-[10px] font-bold tracking-widest uppercase">Dare to Dream Winner</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="proj-meta">
                   <div className="proj-id font-bold">{proj.id}</div>
                   <div className="proj-name font-bold">{proj.title}</div>
                   <div className="proj-desc font-medium">{proj.desc}</div>
