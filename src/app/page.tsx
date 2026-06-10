@@ -155,7 +155,7 @@ export default function Home() {
                   {founder.name}
                 </div>
                 {founder.linkedin && (
-                  <a href={founder.linkedin} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+                  <a href={founder.linkedin} target="_blank" rel="noopener noreferrer" className="opacity-60 hover:opacity-100 transition-opacity">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
                     </svg>
@@ -163,11 +163,11 @@ export default function Home() {
                 )}
               </div>
               
-              <div className="founder-role font-bold mt-1 text-slate-300">{founder.role}</div>
+              <div className="founder-role font-bold mt-1 opacity-80">{founder.role}</div>
               <div className="founder-ethos font-semibold italic opacity-80 mt-4 border-l-2 pl-3" style={{ borderColor: founder.color }}>{founder.ethos}</div>
               
-              <div className="mt-5 text-sm font-medium text-slate-400 leading-relaxed">
-                <span className="text-slate-200">Specialty:</span> {founder.specialty}
+              <div className="mt-5 text-sm font-medium opacity-80 leading-relaxed">
+                <span className="opacity-70 font-bold">Specialty:</span> {founder.specialty}
               </div>
             </div>
           ))}
