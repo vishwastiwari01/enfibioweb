@@ -23,7 +23,7 @@ export const PROJECTS: Project[] = [
     tags: ['Medical AI', 'RAG', 'LLM', 'Clinical', 'Interpretable AI'],
   },
   {
-    id: 'PROJ-006', cat: 'intel', code: 'HONEYPOT', title: 'AI Honeypot',
+    id: 'PROJ-006', cat: 'intel', code: 'SAM', title: 'AI SAM',
     subtitle: 'Deceptive Cyber Threat Intelligence', domain: 'AI INTELLIGENCE',
     desc: 'Intelligent deception system deploying AI-driven honeypots to attract and profile threat actors, extracting adversary TTPs.',
     specs: { Type: 'Adaptive Deception', TTP: 'Extraction', 'AI Engine': 'Behavioral', Layer: 'Intelligence' },

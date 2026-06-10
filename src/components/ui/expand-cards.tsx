@@ -1,52 +1,68 @@
 'use client';
 
 import { useState } from "react";
+import { FOUNDERS } from "@/lib/data/founders";
 
-const images = [
-  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80&w=800",
-];
+export const FoundersExpandCards = () => {
+  const [expandedIndex, setExpandedIndex] = useState(0);
 
-const ExpandOnHover = () => {
-  const [expandedImage, setExpandedImage] = useState(1);
-
-  const getImageWidth = (index: number) =>
-    index === expandedImage ? "24rem" : "5rem";
+  const getWidth = (index: number) =>
+    index === expandedIndex ? "28rem" : "6rem";
 
   return (
-    <div className="w-full flex items-center justify-center py-12 transition-all duration-300 ease-in-out">
-      <div className="w-full h-full overflow-hidden rounded-3xl">
-        <div className="flex h-full w-full items-center justify-center overflow-hidden">
-          <div className="relative w-full max-w-4xl px-5">
-            <div className="flex w-full items-center justify-center gap-2">
-              {images.map((src, idx) => (
-                <div
-                  key={idx}
-                  className="relative cursor-pointer overflow-hidden rounded-2xl transition-all duration-500 ease-in-out border border-white/10"
-                  style={{
-                    width: getImageWidth(idx),
-                    height: "360px",
-                  }}
-                  onMouseEnter={() => setExpandedImage(idx)}
-                >
-                  <img
-                    className="w-full h-full object-cover"
-                    src={src}
-                    alt={`Team Member ${idx + 1}`}
-                  />
-                  {/* Founder overlay Info */}
-                  <div className={`absolute bottom-0 left-0 right-0 p-4 transition-opacity duration-300 bg-gradient-to-t from-black/80 to-transparent ${expandedImage === idx ? 'opacity-100' : 'opacity-0'}`}>
-                    <h3 className="text-white font-bold font-display text-xl">Founder 0{idx + 1}</h3>
-                  </div>
+    <div className="w-full flex items-center justify-center py-6 transition-all duration-300 ease-in-out">
+      <div className="flex w-full items-center justify-center gap-4">
+        {FOUNDERS.map((founder, idx) => (
+          <div
+            key={idx}
+            className={`relative cursor-pointer overflow-hidden rounded-2xl transition-all duration-500 ease-in-out border`}
+            style={{
+              width: getWidth(idx),
+              height: "420px",
+              borderColor: expandedIndex === idx ? founder.color : 'rgba(255,255,255,0.1)',
+            }}
+            onMouseEnter={() => setExpandedIndex(idx)}
+            onClick={() => setExpandedIndex(idx)}
+          >
+            <div className="absolute inset-0">
+              <img
+                className="w-full h-full object-cover opacity-80"
+                src={founder.avatar}
+                alt={founder.name}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent"></div>
+            </div>
+            
+            <div className="absolute inset-0 flex flex-col justify-end p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="font-bold text-sm tracking-widest uppercase px-2 py-1 rounded-sm" style={{ backgroundColor: `${founder.color}20`, color: founder.color, border: `1px solid ${founder.color}40` }}>
+                  {founder.layer}
+                </span>
+              </div>
+              <h3 className="text-white font-bold font-display text-2xl mb-1 truncate whitespace-nowrap">
+                {founder.name}
+              </h3>
+              
+              <div className={`transition-all duration-500 overflow-hidden ${expandedIndex === idx ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <p className="text-white/80 font-semibold mb-3 text-sm">{founder.role}</p>
+                <div className="text-white/60 font-medium italic mb-3 text-sm border-l-2 pl-3" style={{ borderColor: founder.color }}>
+                  {founder.ethos}
                 </div>
-              ))}
+                <div className="text-white/50 text-xs font-semibold leading-relaxed">
+                  <span className="text-white/70">Specialty:</span> {founder.specialty}
+                </div>
+              </div>
+            </div>
+            
+            {/* When collapsed, show vertical text */}
+            <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${expandedIndex === idx ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+               <h3 className="text-white font-bold tracking-widest text-lg whitespace-nowrap transform -rotate-90">
+                 {founder.name.split(' ')[0]}
+               </h3>
             </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );
 };
-
-export default ExpandOnHover;

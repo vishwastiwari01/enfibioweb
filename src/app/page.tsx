@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import { PROJECTS } from '@/lib/data/projects';
 import { LinkPreview } from '@/components/ui/link-preview';
 import { WordsPullUp } from '@/components/ui/words-pull-up';
+import { FoundersExpandCards } from '@/components/ui/expand-cards';
 import Head from 'next/head';
 
 export default function Home() {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [previewMedia, setPreviewMedia] = useState<{type: 'video'|'image', src: string} | null>(null);
 
   // Animation observer for reveal effect
   useEffect(() => {
@@ -26,18 +28,19 @@ export default function Home() {
     : PROJECTS.filter(p => p.cat === activeFilter || p.domain.toLowerCase().includes(activeFilter));
 
   const getProjectUrl = (code: string) => {
-    if (code === 'HONEYPOT') return 'https://cyber-rakshak-frontend.vercel.app';
+    if (code === 'SAM') return 'https://cyber-rakshak-frontend.vercel.app';
     if (code === 'MEDGPT') return 'https://medgpt-website.vercel.app';
     if (code === 'MINAR') return 'https://minar-theta.vercel.app';
     if (code === 'AWAAS') return 'https://awaasdirect.vercel.app';
     if (code === 'SMART-SEWAGE') return 'https://smart-sewage-system-rytr.vercel.app/login';
     if (code === 'LEARNMATE') return 'https://learnmate-nextjs.vercel.app';
-    if (code === 'BHARATMAPS') return 'https://idex-aditi-4-0.vercel.app';
+    if (code === 'TWINSPACE') return 'https://idex-aditi-4-0.vercel.app';
+    if (code === 'FUNDRADAR') return 'https://fundradar-swart.vercel.app';
     return null;
   };
 
   const getProjectImage = (code: string) => {
-    if (code === 'HONEYPOT') return '/assets/SAM.jpeg';
+    if (code === 'SAM') return '/assets/SAM.jpeg';
     if (code === 'MEDGPT') return '/assets/medgpt.png';
     if (code === 'SIGINT') return '/assets/signit.png';
     if (code === 'MINAR') return '/assets/minar.png';
@@ -62,7 +65,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Enfibio — Autonomous Intelligence Systems</title>
+        <title>Enfibio Technologies — Autonomous Intelligence Systems</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 
@@ -76,7 +79,7 @@ export default function Home() {
               <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">EMITTER-02</strong>: Weak contact · CEP 18m · Refining</span>
               <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">MEDGPT-SRV</strong>: Clinical DB sync · 99.7% uptime</span>
               <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">OPENCLAW-A1</strong>: Task complete · Memory persisted</span>
-              <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">HONEYPOT-03</strong>: Probe detected · Profiling initiated</span>
+              <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">SAM-03</strong>: Probe detected · Profiling initiated</span>
               <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">CHIP-DEV</strong>: Power draw 4.2W · Within envelope</span>
               <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">AIROS-01</strong>: Sensor fusion nominal · 6DOF locked</span>
               <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">C2-NODE-07</strong>: Link degraded · Rerouting via mesh</span>
@@ -92,7 +95,7 @@ export default function Home() {
 
       {/* HEADER */}
       <header>
-        <a href="#" className="logo font-bold">Enfibio<span className="logo-dot">.</span></a>
+        <a href="#" className="logo font-bold">Enfibio Technologies<span className="logo-dot">.</span></a>
         <nav>
           <a href="#mission" className="navlink font-semibold">Mission</a>
           <a href="#founders" className="navlink font-semibold">The Founders</a>
@@ -134,46 +137,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOUNDERS */}
       <section className="section" id="founders">
         <div className="sec-eyebrow font-bold">The Architecture Team</div>
         <h2 className="font-bold">Founders</h2>
         <p className="sec-desc font-medium">Three builders, three layers. Together they cover every dimension of autonomous intelligence — from silicon to swarm to insight.</p>
-        <div className="founders-grid">
-          <div className="founder-card reveal">
-            <div className="founder-badge badge-exec font-bold">Execution Layer</div>
-            <div className="founder-name font-bold">
-              <LinkPreview url="https://portfolio-jade-psi-53.vercel.app" isStatic={true} imageSrc="/assets/vishwas.png" className="hover:text-accent transition-colors">
-                Vishwas Tiwari
-              </LinkPreview>
-            </div>
-            <div className="founder-role font-bold">Co-Founder · AI Systems Architect</div>
-            <div className="founder-ethos font-semibold">"AI that DOES, not just AI that responds."</div>
-            <ul className="founder-specs font-medium">
-              <li>Autonomous AI Agents</li><li>Edge AI Deployment</li>
-              <li>Defense Simulation</li><li>Real-World AI Autonomy</li>
-            </ul>
-          </div>
-          <div className="founder-card reveal">
-            <div className="founder-badge badge-intel font-bold">Intelligence Layer</div>
-            <div className="founder-name font-bold">Shardul Pande</div>
-            <div className="founder-role font-bold">Co-Founder · AI &amp; Data Systems Engineer</div>
-            <div className="founder-ethos font-semibold">"Answering not just what, but why."</div>
-            <ul className="founder-specs font-medium">
-              <li>RAG Architectures</li><li>Machine Learning Pipelines</li>
-              <li>Decision-Grade Outputs</li><li>Interpretable AI</li>
-            </ul>
-          </div>
-          <div className="founder-card reveal">
-            <div className="founder-badge badge-embed font-bold">Embedded Layer</div>
-            <div className="founder-name font-bold">Raj Goel</div>
-            <div className="founder-role font-bold">Co-Founder · Embedded Systems &amp; Robotics</div>
-            <div className="founder-ethos font-semibold">"Bringing intelligence into physical systems."</div>
-            <ul className="founder-specs font-medium">
-              <li>ROS2 &amp; Real-Time Sensor Interfacing</li><li>Edge Computing</li>
-              <li>Robotics Middleware</li><li>Hardware-in-the-Loop Systems</li>
-            </ul>
-          </div>
+        <div className="mt-8">
+          <FoundersExpandCards />
         </div>
       </section>
 
@@ -270,7 +239,18 @@ export default function Home() {
               );
             }
 
-            return cardContent;
+            return (
+              <div key={proj.id} className="cursor-pointer" onClick={() => {
+                const vid = getProjectVideo(proj.code);
+                if (vid) setPreviewMedia({ type: 'video', src: vid });
+                else {
+                  const img = getProjectImage(proj.code);
+                  if (img) setPreviewMedia({ type: 'image', src: img });
+                }
+              }}>
+                {cardContent}
+              </div>
+            );
           })}
         </div>
       </section>
@@ -304,7 +284,7 @@ export default function Home() {
       <footer>
         <div className="foot-top">
           <div>
-            <div className="foot-brand font-bold">Enfibio<span>.</span></div>
+            <div className="foot-brand font-bold">Enfibio Technologies<span>.</span></div>
             <p className="foot-tagline font-medium">Architecting decentralized autonomy for contested domains.</p>
             <a href="mailto:enfibiotechnologiespvtltd@gmail.com" className="foot-email font-bold">enfibiotechnologiespvtltd@gmail.com</a>
           </div>
@@ -378,6 +358,49 @@ export default function Home() {
           <div className="foot-status font-bold"><div className="sdot"></div> SYSTEM NOMINAL</div>
         </div>
       </footer>
+
+      {/* PHONE PREVIEW MODAL */}
+      {previewMedia && (
+        <div 
+          className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm transition-all"
+          onClick={() => setPreviewMedia(null)}
+        >
+          <div 
+            className="relative bg-black rounded-[40px] border-[8px] border-slate-800 shadow-2xl overflow-hidden shadow-[0_0_50px_rgba(0,150,255,0.2)]"
+            style={{ width: '320px', height: '650px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Phone Notch */}
+            <div className="absolute top-0 inset-x-0 h-6 bg-slate-800 rounded-b-3xl mx-auto w-32 z-10"></div>
+            
+            <div className="w-full h-full bg-slate-950 flex flex-col pt-8">
+              <div className="px-4 py-2 flex items-center justify-between text-xs text-slate-400 font-semibold border-b border-slate-800/50">
+                <span>9:41</span>
+                <div className="flex gap-1.5 items-center">
+                  <div className="w-3 h-3 rounded-full border border-slate-500"></div>
+                  <div className="w-3 h-3 bg-slate-500 rounded-sm"></div>
+                </div>
+              </div>
+              
+              <div className="flex-1 w-full flex items-center justify-center bg-slate-950 relative overflow-hidden">
+                {previewMedia.type === 'video' ? (
+                  <video src={previewMedia.src} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+                ) : (
+                  <img src={previewMedia.src} alt="Preview" className="w-full h-full object-cover" />
+                )}
+                
+                {/* Close Button on Screen */}
+                <button 
+                  className="absolute bottom-6 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-2 rounded-full font-semibold backdrop-blur-md transition-colors"
+                  onClick={() => setPreviewMedia(null)}
+                >
+                  Close Preview
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
