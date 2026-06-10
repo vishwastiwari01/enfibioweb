@@ -23,11 +23,18 @@ export const PROJECTS: Project[] = [
     tags: ['Medical AI', 'RAG', 'LLM', 'Clinical', 'Interpretable AI'],
   },
   {
-    id: 'PROJ-006', cat: 'intel', code: 'SAM', title: 'AI SAM',
+    id: 'PROJ-006', cat: 'intel', code: 'HONEYPOT', title: 'AI Honeypot',
     subtitle: 'Deceptive Cyber Threat Intelligence', domain: 'AI INTELLIGENCE',
     desc: 'Intelligent deception system deploying AI-driven honeypots to attract and profile threat actors, extracting adversary TTPs.',
     specs: { Type: 'Adaptive Deception', TTP: 'Extraction', 'AI Engine': 'Behavioral', Layer: 'Intelligence' },
     tags: ['Cybersecurity', 'Deception', 'TTP', 'Threat Intel', 'AI'],
+  },
+  {
+    id: 'PROJ-022', cat: 'intel', code: 'SAM', title: 'SAM AI Assistant',
+    subtitle: 'Decentralized Edge Inference Ecosystem', domain: 'AI INTELLIGENCE',
+    desc: 'A bespoke 40MB edge inference ecosystem. Fully decentralized with zero baseline cloud dependency. Synergized SLM throughput with SSH-tunneled infrastructure for autonomous code reviews, dynamically pivoting to cloud-augmented decisioning for heavy-compute workflows.',
+    specs: { Model: '40MB SLM', Setup: 'Decentralized Edge', Fallback: 'Cloud-augmented', Layer: 'Intelligence' },
+    tags: ['AI Assistant', 'Edge AI', 'SLM', 'Autonomy'],
   },
   {
     id: 'PROJ-008', cat: 'hardware', code: 'FREEZER', title: 'Smart Portable Freezer',

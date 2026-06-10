@@ -28,7 +28,7 @@ export default function Home() {
     : PROJECTS.filter(p => p.cat === activeFilter || p.domain.toLowerCase().includes(activeFilter));
 
   const getProjectUrl = (code: string) => {
-    if (code === 'SAM') return 'https://cyber-rakshak-frontend.vercel.app';
+    if (code === 'HONEYPOT') return 'https://cyber-rakshak-frontend.vercel.app';
     if (code === 'MEDGPT') return 'https://medgpt-website.vercel.app';
     if (code === 'MINAR') return 'https://minar-theta.vercel.app';
     if (code === 'AWAAS') return 'https://awaasdirect.vercel.app';
@@ -79,7 +79,8 @@ export default function Home() {
               <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">EMITTER-02</strong>: Weak contact · CEP 18m · Refining</span>
               <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">MEDGPT-SRV</strong>: Clinical DB sync · 99.7% uptime</span>
               <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">OPENCLAW-A1</strong>: Task complete · Memory persisted</span>
-              <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">SAM-03</strong>: Probe detected · Profiling initiated</span>
+              <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">HONEYPOT-03</strong>: Probe detected · Profiling initiated</span>
+              <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">SAM-CORE</strong>: Autonomous code review completed · Vibe coding active</span>
               <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">CHIP-DEV</strong>: Power draw 4.2W · Within envelope</span>
               <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">AIROS-01</strong>: Sensor fusion nominal · 6DOF locked</span>
               <span className="ticker-item"><span className="ticker-dot">◆</span> <strong className="font-bold">C2-NODE-07</strong>: Link degraded · Rerouting via mesh</span>

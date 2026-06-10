@@ -10,7 +10,7 @@ export const FOUNDERS: Founder[] = [
     ethos: '"AI that DOES, not just AI that responds."',
     specialty: 'Autonomous AI Agents, Edge AI deployment, Defense Simulation, and Real-world AI Autonomy.',
     color: 'var(--amber)',
-    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=256&q=80&fit=crop',
+    avatar: '/assets/vishwas.png',
   },
   {
     initials: 'SP',
