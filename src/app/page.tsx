@@ -5,6 +5,7 @@ import { PROJECTS } from '@/lib/data/projects';
 import { LinkPreview } from '@/components/ui/link-preview';
 import { WordsPullUp } from '@/components/ui/words-pull-up';
 import { FoundersExpandCards } from '@/components/ui/expand-cards';
+import { FOUNDERS } from '@/lib/data/founders';
 import Head from 'next/head';
 
 export default function Home() {
@@ -142,8 +143,34 @@ export default function Home() {
         <div className="sec-eyebrow font-bold">The Architecture Team</div>
         <h2 className="font-bold">Founders</h2>
         <p className="sec-desc font-medium">Three builders, three layers. Together they cover every dimension of autonomous intelligence — from silicon to swarm to insight.</p>
-        <div className="mt-8">
-          <FoundersExpandCards />
+        <div className="mt-8 founders-grid">
+          {FOUNDERS.map((founder, idx) => (
+            <div key={idx} className="founder-card reveal" style={{ borderTop: `4px solid ${founder.color}` }}>
+              <div className="founder-badge font-bold" style={{ color: founder.color, backgroundColor: `${founder.color}15`, border: `1px solid ${founder.color}30` }}>
+                {founder.layer}
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className="founder-name font-bold" style={{ fontSize: '1.5rem', marginBottom: 0 }}>
+                  {founder.name}
+                </div>
+                {founder.linkedin && (
+                  <a href={founder.linkedin} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                  </a>
+                )}
+              </div>
+              
+              <div className="founder-role font-bold mt-1 text-slate-300">{founder.role}</div>
+              <div className="founder-ethos font-semibold italic opacity-80 mt-4 border-l-2 pl-3" style={{ borderColor: founder.color }}>{founder.ethos}</div>
+              
+              <div className="mt-5 text-sm font-medium text-slate-400 leading-relaxed">
+                <span className="text-slate-200">Specialty:</span> {founder.specialty}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -394,9 +421,9 @@ export default function Home() {
               
               <div className="flex-1 w-full flex items-center justify-center bg-slate-950 relative overflow-hidden">
                 {previewMedia.type === 'video' ? (
-                  <video src={previewMedia.src} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+                  <video src={previewMedia.src} autoPlay loop muted playsInline className="w-full h-full object-contain" />
                 ) : (
-                  <img src={previewMedia.src} alt="Preview" className="w-full h-full object-cover" />
+                  <img src={previewMedia.src} alt="Preview" className="w-full h-full object-contain" />
                 )}
                 
                 {/* Close Button on Screen */}
