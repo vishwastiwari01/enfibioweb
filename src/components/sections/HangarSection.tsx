@@ -87,10 +87,14 @@ export default function HangarSection() {
                   <input type="email" required placeholder="Work Email" className="border border-line rounded-lg px-3 py-2.5 text-[0.85rem] outline-none focus:border-teal-500" />
                   <input type="text" placeholder="Organization (Optional)" className="border border-line rounded-lg px-3 py-2.5 text-[0.85rem] outline-none focus:border-teal-500" />
                 </div>
-                <button type="submit" disabled={waitlistStatus === 'submitting'} className="btn btn-primary w-full justify-center">
-                  {waitlistStatus === 'submitting' ? 'Joining...' : 'Express Interest →'}
+                <button type="submit" disabled className="btn btn-primary w-full justify-center opacity-50 cursor-not-allowed">
+                  Express Interest →
                 </button>
-                <p className="text-[0.65rem] text-muted text-center mt-1">Backend integration pending. Currently UI demo.</p>
+                <div className="mt-1 p-2.5 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-[0.65rem] text-amber-800 m-0 leading-relaxed font-medium text-center">
+                    Backend config required (.env.local) to enable waitlist.
+                  </p>
+                </div>
               </form>
             )}
           </div>

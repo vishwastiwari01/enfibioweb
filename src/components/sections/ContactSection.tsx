@@ -1,13 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-
 export default function ContactSection() {
-  const [status, setStatus] = useState<string>('');
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus("Demo form only: connect this form to your backend before publishing.");
+    alert("Backend configuration required. Please configure your .env.local with Supabase or Email provider credentials.");
   };
 
   return (
@@ -83,15 +79,16 @@ export default function ContactSection() {
 
           </div>
 
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" disabled className="btn btn-primary opacity-50 cursor-not-allowed">
             Send Inquiry →
           </button>
 
-          {status && (
-            <p className="mt-4 text-[0.85rem] text-teal-800" role="status">
-              {status}
+          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-[0.75rem] text-amber-800 m-0 leading-relaxed font-medium">
+              Backend Configuration Required:<br/>
+              Please configure <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900">NEXT_PUBLIC_SUPABASE_URL</code> and <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> in your <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900">.env.local</code> to enable contact submissions.
             </p>
-          )}
+          </div>
         </form>
 
       </div>
