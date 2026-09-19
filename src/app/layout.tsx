@@ -1,40 +1,27 @@
 import type { Metadata } from "next";
-import { Orbitron, Barlow, Barlow_Condensed, Share_Tech_Mono } from "next/font/google";
-import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
-const orbitron = Orbitron({
-  variable: "--font-orbitron",
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "900"],
-});
-
-const barlow = Barlow({
-  variable: "--font-barlow",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-});
-
-const barlowCondensed = Barlow_Condensed({
-  variable: "--font-barlow-condensed",
-  subsets: ["latin"],
-  weight: ["300", "400", "600", "700"],
-});
-
-const shareTechMono = Share_Tech_Mono({
-  variable: "--font-share-tech-mono",
-  subsets: ["latin"],
-  weight: ["400"],
-});
-
 export const metadata: Metadata = {
-  title: "Enfibio Technologies — Mission Control",
-  description: "Defense Intelligence · AI Swarm Systems · Frontier Hardware. Building the Intelligence Layer of the Real World.",
-  keywords: ["Enfibio", "Defense Tech", "AI", "Swarm Systems", "Drone", "Intelligence", "Hardware"],
+  title: "Enfibio Technologies | Intelligent Hardware & Emerging Technology",
+  description:
+    "Enfibio Technologies develops intelligent hardware, AI systems, and emerging technologies to address real-world challenges across agriculture, infrastructure, and beyond.",
+  keywords: [
+    "Enfibio",
+    "THAND.AI",
+    "Smart Portable Freezer",
+    "AgriTech",
+    "Intelligent Hardware",
+    "AI Systems",
+    "Nanobiotechnology",
+    "Deep Tech",
+    "India",
+  ],
   openGraph: {
-    title: "Enfibio Technologies — Mission Control",
-    description: "Defense Intelligence · AI Swarm Systems · Frontier Hardware",
+    title: "Enfibio Technologies | Intelligent Hardware & Emerging Technology",
+    description:
+      "Developing intelligent hardware, AI systems, and emerging technologies for real-world impact.",
     type: "website",
+    url: "https://www.enfibio.me",
   },
 };
 
@@ -44,15 +31,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${orbitron.variable} ${barlow.variable} ${barlowCondensed.variable} ${shareTechMono.variable}`}
-    >
-      <body className="min-h-full antialiased">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          {children}
-        </ThemeProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-full antialiased bg-[#FAFCFB] text-[#102F3D]">
+        {children}
       </body>
     </html>
   );

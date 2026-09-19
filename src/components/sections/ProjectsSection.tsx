@@ -2,45 +2,61 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
 import { PROJECTS } from '@/lib/data/projects';
 import type { Project, Category } from '@/types';
 import ProjectModal from '@/components/modals/ProjectModal';
 
 const CATEGORIES = [
-  { key: 'all',      label: 'All Nodes' },
-  { key: 'defense',  label: 'Defense'   },
+  { key: 'all',      label: 'All Projects' },
+  { key: 'defense',  label: 'Defense'      },
   { key: 'intel',    label: 'Intelligence' },
-  { key: 'hardware', label: 'Hardware'  },
-  { key: 'systems',  label: 'Systems'   },
+  { key: 'hardware', label: 'Hardware'     },
+  { key: 'systems',  label: 'Systems'      },
 ] as const;
 
 const CAT_COLOR: Record<string, string> = {
-  defense:  'var(--amber)',
-  intel:    'var(--cyan)',
-  hardware: 'var(--green)',
-  systems:  'var(--purple)',
+  defense:  '#D97706',
+  intel:    '#0D7A75',
+  hardware: '#3C806C',
+  systems:  '#7C3AED',
+};
+
+const CAT_BG: Record<string, string> = {
+  defense:  'rgba(217,119,6,0.08)',
+  intel:    'rgba(13,122,117,0.08)',
+  hardware: 'rgba(60,128,108,0.08)',
+  systems:  'rgba(124,58,237,0.08)',
 };
 
 const STATUS_MAP: Record<string, string> = {
-  'PROJ-001': 'ACTIVE',
-  'PROJ-002': 'IN DEV',
-  'PROJ-003': 'ACTIVE',
-  'PROJ-004': 'IN DEV',
-  'PROJ-005': 'ACTIVE',
-  'PROJ-006': 'IN DEV',
-  'PROJ-007': 'IN DEV',
-  'PROJ-008': 'IN DEV',
-  'PROJ-009': 'IN DEV',
-  'PROJ-010': 'ACTIVE',
-  'PROJ-011': 'IN DEV',
-  'PROJ-012': 'ACTIVE',
-  'PROJ-013': 'PROTOTYPE',
-  'PROJ-014': 'IN DEV',
+  'PROJ-001': 'Active',
+  'PROJ-002': 'In Dev',
+  'PROJ-003': 'Active',
+  'PROJ-004': 'In Dev',
+  'PROJ-005': 'Active',
+  'PROJ-006': 'In Dev',
+  'PROJ-007': 'In Dev',
+  'PROJ-008': 'Prototype',
+  'PROJ-009': 'In Dev',
+  'PROJ-010': 'Active',
+  'PROJ-011': 'In Dev',
+  'PROJ-012': 'Active',
+  'PROJ-013': 'Prototype',
+  'PROJ-014': 'In Dev',
+};
+
+const STATUS_STYLE: Record<string, { color: string; bg: string; border: string }> = {
+  'Active':    { color: '#075E5A', bg: '#E1F2EB', border: '#C5D8D3' },
+  'Prototype': { color: '#3C806C', bg: '#F0F6F4', border: '#DDE8E5' },
+  'In Dev':    { color: '#D97706', bg: '#FEF3C7', border: '#FDE68A' },
 };
 
 function ProjectCard({ project, onOpen }: { project: Project; onOpen: (p: Project) => void }) {
   const color = CAT_COLOR[project.cat];
+  const bg = CAT_BG[project.cat];
+  const status = STATUS_MAP[project.id] ?? 'Active';
+  const statusStyle = STATUS_STYLE[status] ?? STATUS_STYLE['Active'];
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -54,72 +70,125 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: (p: Projec
     <div
       onMouseMove={handleMouseMove}
       onClick={() => onOpen(project)}
-      className="group relative flex flex-col cursor-pointer rounded-sm overflow-hidden"
+      className="group relative flex flex-col cursor-pointer rounded-xl overflow-hidden transition-all duration-200"
       style={{
-        background: 'var(--bg-secondary)',
-        border: '1px solid var(--border)',
+        background: '#ffffff',
+        border: '1px solid #DDE8E5',
+        boxShadow: '0 1px 4px rgba(16,47,61,0.05)',
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.borderColor = color;
+        (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 24px ${bg}`;
+        (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.borderColor = '#DDE8E5';
+        (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 4px rgba(16,47,61,0.05)';
+        (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
       }}
     >
+      {/* Subtle radial hover glow */}
       <motion.div
-        className="pointer-events-none absolute -inset-px rounded-sm opacity-0 transition duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300 group-hover:opacity-100"
         style={{
           background: useMotionTemplate`
             radial-gradient(
-              400px circle at ${mouseX}px ${mouseY}px,
-              ${color}15,
+              300px circle at ${mouseX}px ${mouseY}px,
+              ${color}08,
               transparent 80%
             )
           `,
-          border: `1px solid ${color}40`,
-          zIndex: 10
+          zIndex: 0,
         }}
       />
-      {/* Category accent bar */}
-      <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: color }} />
 
-      <div className="pl-4 pr-4 pt-4 pb-4 flex flex-col gap-3 flex-1">
+      {/* Category accent top strip */}
+      <div className="h-[3px] w-full shrink-0" style={{ background: color }} />
+
+      <div className="relative z-10 px-5 py-4 flex flex-col gap-3 flex-1">
         {/* Top row */}
         <div className="flex items-center justify-between">
-          <span className="text-xs" style={{ fontFamily: 'Share Tech Mono', color: 'var(--text-dim)', fontSize: '9px' }}>
-            {project.id}
-          </span>
           <span
-            className="text-xs px-2 py-0.5 rounded-sm"
             style={{
-              fontFamily: 'Share Tech Mono',
-              fontSize: '8px',
-              color,
-              background: `${color}15`,
-              border: `1px solid ${color}30`,
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '10px',
+              fontWeight: 600,
+              color: color,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
             }}
           >
-            {STATUS_MAP[project.id] ?? 'ACTIVE'}
+            {project.domain}
+          </span>
+          <span
+            className="px-2 py-0.5 rounded-full"
+            style={{
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '10px',
+              fontWeight: 600,
+              color: statusStyle.color,
+              background: statusStyle.bg,
+              border: `1px solid ${statusStyle.border}`,
+            }}
+          >
+            {status}
           </span>
         </div>
 
-        {/* Code */}
-          <div>
-          <div className="text-xs mb-0.5 opacity-40" style={{ fontFamily: 'JetBrains Mono, monospace', color, fontSize: '9px' }}>
-            {project.domain}
-          </div>
-          <div className="text-base font-bold leading-tight" style={{ fontFamily: 'Syne, sans-serif', color: 'var(--text)' }}>
+        {/* Title block */}
+        <div>
+          <div
+            style={{
+              fontFamily: 'Syne, sans-serif',
+              fontWeight: 700,
+              fontSize: '15px',
+              color: '#102F3D',
+              marginBottom: '2px',
+              lineHeight: 1.25,
+            }}
+          >
             {project.title}
           </div>
-          <div className="text-xs opacity-50 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+          <div
+            style={{
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '12px',
+              color: '#9AAFBA',
+              fontWeight: 400,
+            }}
+          >
             {project.subtitle}
           </div>
         </div>
 
         {/* Description */}
-        <p className="text-xs opacity-60 leading-relaxed flex-1" style={{ fontFamily: 'Barlow', fontSize: '12px' }}>
+        <p
+          style={{
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '13px',
+            color: '#647781',
+            lineHeight: 1.6,
+            flex: 1,
+          }}
+        >
           {project.desc.slice(0, 110)}...
         </p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1.5 pt-1">
           {project.tags.slice(0, 4).map(tag => (
-            <span key={tag} className="text-xs px-1.5 py-0.5 rounded"
-              style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'var(--text-muted)', background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+            <span
+              key={tag}
+              className="px-2 py-0.5 rounded-full"
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '10px',
+                fontWeight: 500,
+                color: '#647781',
+                background: '#F0F6F4',
+                border: '1px solid #DDE8E5',
+              }}
+            >
               {tag}
             </span>
           ))}
@@ -152,37 +221,69 @@ export default function ProjectsSection() {
   }, []);
 
   return (
-    <section id="projects" ref={sectionRef} className="relative z-10 py-16 px-6">
-      <div className="max-w-6xl mx-auto">
+    <section
+      id="projects"
+      ref={sectionRef}
+      style={{ background: '#FAFCFB', padding: '80px 0' }}
+    >
+      <div className="max-w-6xl mx-auto px-6 lg:px-10">
         {/* Header */}
-        <div className="fade-in mb-10">
-          <div className="section-label">Mission Database</div>
-          <h2 className="section-title" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.6rem)' }}>Projects</h2>
-          <p style={{ marginTop: '10px', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>
-            14 active projects across Defense, Intelligence, Hardware, and Systems layers
-          </p>
-        </div>
-
-        {/* Category tabs */}
-        <div className="fade-in fade-in-delay-1 flex flex-wrap gap-2 mb-8">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.key}
-              onClick={() => setActiveCategory(cat.key)}
-              className="px-4 py-1.5 text-xs tracking-wide transition-all duration-200 rounded-full cursor-pointer"
+        <div className="fade-in mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <div className="section-label">Other Projects</div>
+            <h2
+              className="section-title"
+              style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', marginTop: '6px' }}
+            >
+              Building a Broader Impact
+            </h2>
+            <p
+              className="mt-3"
               style={{
                 fontFamily: 'Inter, sans-serif',
-                fontWeight: 500,
-                fontSize: '12px',
-                color: activeCategory === cat.key ? 'var(--primary-foreground)' : 'var(--text-muted)',
-                background: activeCategory === cat.key ? 'var(--accent)' : 'var(--surface-2)',
-                border: activeCategory === cat.key ? '1px solid var(--accent)' : '1px solid var(--border)',
+                fontSize: '15px',
+                color: '#647781',
+                lineHeight: 1.7,
               }}
             >
-              {cat.label}
-            </button>
-          ))}
-          <span className="ml-auto text-xs self-center" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'var(--text-dim)' }}>
+              {filtered.length} active projects across Defense, Intelligence, Hardware, and Systems
+            </p>
+          </div>
+        </div>
+
+        {/* Category filter tabs */}
+        <div className="fade-in fade-in-delay-1 flex flex-wrap gap-2 mb-8">
+          {CATEGORIES.map(cat => {
+            const isActive = activeCategory === cat.key;
+            const color = cat.key === 'all' ? '#075E5A' : CAT_COLOR[cat.key];
+            return (
+              <button
+                key={cat.key}
+                onClick={() => setActiveCategory(cat.key)}
+                className="px-4 py-2 rounded-full text-sm transition-all duration-200 cursor-pointer"
+                style={{
+                  fontFamily: 'Inter, sans-serif',
+                  fontWeight: isActive ? 600 : 500,
+                  fontSize: '13px',
+                  color: isActive ? '#fff' : '#647781',
+                  background: isActive ? color : '#ffffff',
+                  border: isActive ? `1px solid ${color}` : '1px solid #DDE8E5',
+                  boxShadow: isActive ? `0 2px 8px ${color}30` : 'none',
+                }}
+              >
+                {cat.label}
+              </button>
+            );
+          })}
+          <span
+            className="ml-auto self-center"
+            style={{
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '13px',
+              color: '#9AAFBA',
+              fontWeight: 500,
+            }}
+          >
             {filtered.length} total
           </span>
         </div>
