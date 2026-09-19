@@ -12,7 +12,7 @@ export default function CapabilitiesSection() {
         <div 
           className="reveal visible flex flex-col justify-end p-8 lg:p-11 min-h-[390px] lg:min-h-[440px] rounded-[28px] text-white shadow-[0_20px_60px_rgba(8,54,57,.10)]"
           style={{
-            background: 'linear-gradient(140deg, rgba(7,63,67,.86), rgba(7,63,67,.46)), url("/banner.jpeg") center/cover'
+            background: 'linear-gradient(135deg, #073f43 0%, #052629 100%)'
           }}
         >
           <div className="eyebrow mb-4 !text-[#b9e2d8] before:bg-[#b9e2d8]">Our purpose</div>

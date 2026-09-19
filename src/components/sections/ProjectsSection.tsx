@@ -85,35 +85,58 @@ export default function ProjectsSection() {
             className={`grid transition-all duration-500 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100 mt-10' : 'grid-rows-[0fr] opacity-0 mt-0 pointer-events-none'}`}
           >
             <div className="overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {otherProjects.map(project => (
-                  <article key={project.id} className="border border-line rounded-[16px] p-6 bg-[#fbfdfd] flex flex-col group hover:border-teal-700/20 transition-colors">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="text-teal-700 text-[0.65rem] tracking-[0.1em] font-bold uppercase">
-                        {project.domain}
-                      </div>
-                      <span className="text-[0.65rem] font-mono text-muted bg-white border border-line px-2 py-0.5 rounded-md">
-                        {project.code}
-                      </span>
-                    </div>
-                    
-                    <h3 className="text-[1.15rem] font-bold tracking-tight mb-1">{project.title}</h3>
-                    <p className="text-[0.8rem] text-teal-900 font-medium mb-3">{project.subtitle}</p>
-                    
-                    <p className="text-[0.85rem] text-muted leading-relaxed mb-5">
-                      {project.desc}
-                    </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {otherProjects.map(project => {
+                  
+                  // Map project code to available asset
+                  const imageMap: Record<string, string> = {
+                    'MINAR': '/assets/minar.png',
+                    'AWAAS': '/assets/awasdirect.png',
+                    'SMART-SEWAGE': '/assets/Smartflow.png',
+                    'LEARNMATE': '/assets/learnmate.png',
+                    'FUNDRADAR': '/assets/fundradar.png',
+                    'SAM': '/assets/SAM.jpeg',
+                    'SIGINT': '/assets/signit.png',
+                    'MEDGPT': '/assets/medgpt.png',
+                  };
+                  const imageUrl = imageMap[project.code];
 
-                    <div className="mt-auto pt-4 border-t border-line/60 grid grid-cols-2 gap-y-2 gap-x-4">
-                      {Object.entries(project.specs).slice(0,2).map(([k, v]) => (
-                        <div key={k}>
-                          <span className="block text-[0.65rem] text-muted uppercase font-bold tracking-wide">{k}</span>
-                          <span className="block text-[0.75rem] font-medium text-ink">{v as string}</span>
+                  return (
+                    <article key={project.id} className="border border-line rounded-[16px] overflow-hidden bg-[#fbfdfd] flex flex-col group hover:border-teal-700/30 transition-colors shadow-sm">
+                      {imageUrl && (
+                        <div className="w-full h-[180px] relative bg-[#e8f1ef] border-b border-line overflow-hidden">
+                          <img src={imageUrl} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         </div>
-                      ))}
-                    </div>
-                  </article>
-                ))}
+                      )}
+                      <div className="p-6 flex flex-col flex-1">
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="text-teal-700 text-[0.65rem] tracking-[0.1em] font-bold uppercase">
+                            {project.domain}
+                          </div>
+                          <span className="text-[0.65rem] font-mono text-muted bg-white border border-line px-2 py-0.5 rounded-md">
+                            {project.code}
+                          </span>
+                        </div>
+                        
+                        <h3 className="text-[1.15rem] font-bold tracking-tight mb-1">{project.title}</h3>
+                        <p className="text-[0.8rem] text-teal-900 font-medium mb-3">{project.subtitle}</p>
+                        
+                        <p className="text-[0.85rem] text-muted leading-relaxed mb-5 flex-1">
+                          {project.desc}
+                        </p>
+
+                        <div className="mt-auto pt-4 border-t border-line/60 grid grid-cols-2 gap-y-2 gap-x-4">
+                          {Object.entries(project.specs).slice(0,2).map(([k, v]) => (
+                            <div key={k}>
+                              <span className="block text-[0.65rem] text-muted uppercase font-bold tracking-wide">{k}</span>
+                              <span className="block text-[0.75rem] font-medium text-ink truncate" title={v as string}>{v as string}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             </div>
           </div>

@@ -44,15 +44,15 @@ export default function NavBar() {
         {/* Brand */}
         <button 
           onClick={() => scrollTo('hero')} 
-          className="inline-flex items-center gap-2.5 font-black tracking-tight text-teal-950"
+          className="inline-flex items-center gap-3 font-black tracking-tight text-teal-950"
         >
-          <span className="w-[35px] h-[35px] border-2 border-teal-900 rounded-[12px_12px_12px_3px] grid place-items-center text-[1.1rem] -rotate-12">
-            E
-          </span>
-          <span className="leading-none text-left">
-            <strong className="block text-[1.05rem]">enfibio</strong>
-            <small className="block text-[0.43rem] tracking-[0.24em] mt-1 text-muted">TECHNOLOGIES</small>
-          </span>
+          <div className="relative w-[120px] h-[36px]">
+            <img 
+              src="/logo.jpeg" 
+              alt="Enfibio Technologies Logo" 
+              className="w-full h-full object-contain object-left"
+            />
+          </div>
         </button>
 
         {/* Desktop Nav */}

@@ -1,12 +1,14 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
-import { CheckCircle2, Factory, Stethoscope, Fish } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Factory, Stethoscope } from 'lucide-react';
 
 export default function HangarSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  
+  const [waitlistStatus, setWaitlistStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
   useEffect(() => {
     const video = videoRef.current;
@@ -27,8 +29,11 @@ export default function HangarSection() {
     return () => observer.disconnect();
   }, []);
 
-  const scrollTo = (id: string) =>
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const handleWaitlistSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setWaitlistStatus('submitting');
+    setTimeout(() => setWaitlistStatus('success'), 1200);
+  };
 
   return (
     <section id="products" ref={sectionRef} className="py-16 md:py-24 bg-surface relative overflow-hidden">
@@ -45,30 +50,15 @@ export default function HangarSection() {
             temperature-sensitive applications.
           </p>
 
-          <div className="grid gap-3 my-7">
-            <div className="flex gap-3 items-start py-3.5 border-b border-line">
-              <span className="text-teal-700 font-black">01</span>
-              <p className="m-0 text-[0.88rem] text-ink">Insulated outer shell and aluminium inner chamber.</p>
-            </div>
-            <div className="flex gap-3 items-start py-3.5 border-b border-line">
-              <span className="text-teal-700 font-black">02</span>
-              <p className="m-0 text-[0.88rem] text-ink">Peltier-based thermal management approach.</p>
-            </div>
-            <div className="flex gap-3 items-start py-3.5 border-b border-line">
-              <span className="text-teal-700 font-black">03</span>
-              <p className="m-0 text-[0.88rem] text-ink">Temperature monitoring and control electronics.</p>
-            </div>
-          </div>
-
           {/* Validation & Traction Cards */}
           <div className="mb-8">
-            <h4 className="text-[0.85rem] font-bold text-teal-950 uppercase tracking-wider mb-4">Traction & Validation</h4>
+            <h4 className="text-[0.75rem] font-bold text-teal-950 uppercase tracking-wider mb-4 border-b border-line pb-2">Early Validation</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="bg-white border border-line rounded-xl p-4 flex gap-3 items-start">
                 <Factory size={18} className="text-teal-700 shrink-0 mt-0.5" />
                 <div>
                   <strong className="block text-[0.85rem] leading-tight mb-1">Dairy & Agriculture</strong>
-                  <p className="text-[0.75rem] text-muted leading-snug m-0">Pilot dairy farms ready in Hyderabad; active contact with local FPOs.</p>
+                  <p className="text-[0.75rem] text-muted leading-snug m-0">Pilot dairy farms ready in Hyderabad; active engagement with FPOs.</p>
                 </div>
               </div>
               <div className="bg-white border border-line rounded-xl p-4 flex gap-3 items-start">
@@ -81,13 +71,28 @@ export default function HangarSection() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <button onClick={() => scrollTo('contact')} className="btn btn-primary">
-              Discuss Collaboration →
-            </button>
-            <span className="inline-flex items-center gap-2 text-[0.8rem] font-bold text-teal-800 bg-[#e1f2eb] px-3 py-1.5 rounded-lg border border-teal-700/20">
-              <CheckCircle2 size={14} /> Waitlist Coming Soon
-            </span>
+          {/* Waitlist Form */}
+          <div className="bg-white border border-line rounded-[18px] p-5 shadow-sm">
+            <h4 className="font-bold text-[0.95rem] mb-1">Join the THAND.AI Waitlist</h4>
+            <p className="text-[0.8rem] text-muted mb-4">Prototype-stage early access for research and pilots.</p>
+            
+            {waitlistStatus === 'success' ? (
+              <div className="bg-[#e1f2eb] border border-teal-700/20 rounded-xl p-4 text-center">
+                <strong className="block text-teal-800 text-[0.9rem] mb-1">You're on the list!</strong>
+                <p className="text-[0.8rem] text-teal-900 m-0">We will notify you when early access units become available.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleWaitlistSubmit} className="grid gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input type="email" required placeholder="Work Email" className="border border-line rounded-lg px-3 py-2.5 text-[0.85rem] outline-none focus:border-teal-500" />
+                  <input type="text" placeholder="Organization (Optional)" className="border border-line rounded-lg px-3 py-2.5 text-[0.85rem] outline-none focus:border-teal-500" />
+                </div>
+                <button type="submit" disabled={waitlistStatus === 'submitting'} className="btn btn-primary w-full justify-center">
+                  {waitlistStatus === 'submitting' ? 'Joining...' : 'Express Interest →'}
+                </button>
+                <p className="text-[0.65rem] text-muted text-center mt-1">Backend integration pending. Currently UI demo.</p>
+              </form>
+            )}
           </div>
         </div>
 
