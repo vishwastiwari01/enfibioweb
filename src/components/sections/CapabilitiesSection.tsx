@@ -5,7 +5,7 @@ export default function CapabilitiesSection() {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <section id="about" className="py-[105px] relative overflow-hidden">
+    <section id="about" className="py-16 md:py-24 relative overflow-hidden">
       <div className="container mx-auto w-[min(1180px,calc(100%-40px))] grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-[65px] items-center">
         
         {/* Left: Purpose Panel */}

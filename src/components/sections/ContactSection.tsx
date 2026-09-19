@@ -11,7 +11,7 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" className="py-[105px] bg-surface relative overflow-hidden">
+    <section id="contact" className="py-16 md:py-24 bg-surface relative overflow-hidden">
       <div className="container mx-auto w-[min(1180px,calc(100%-40px))] grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-[55px] items-start">
         
         <div className="reveal visible">

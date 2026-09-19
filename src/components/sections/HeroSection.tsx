@@ -8,7 +8,7 @@ export default function HeroSection() {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <section id="hero" className="hero min-h-[760px] grid items-center py-20 relative isolate overflow-hidden">
+    <section id="hero" className="hero min-h-[85vh] md:min-h-0 grid items-center py-24 md:py-32 relative isolate overflow-hidden">
       {/* Background Engineering Grid */}
       <div 
         className="absolute inset-0 -z-20 pointer-events-none"

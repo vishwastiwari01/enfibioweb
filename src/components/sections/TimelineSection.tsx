@@ -2,7 +2,7 @@
 
 export default function TimelineSection() {
   return (
-    <section id="milestones" className="py-[105px] bg-surface relative overflow-hidden">
+    <section id="milestones" className="py-16 md:py-24 bg-surface relative overflow-hidden">
       <div className="container mx-auto w-[min(1180px,calc(100%-40px))]">
         
         <div className="reveal visible mb-[55px]">

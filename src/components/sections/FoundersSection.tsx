@@ -37,7 +37,7 @@ export default function FoundersSection() {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <section id="team" className="py-[105px] bg-white relative overflow-hidden">
+    <section id="team" className="py-16 md:py-24 bg-white relative overflow-hidden">
       <div className="container mx-auto w-[min(1180px,calc(100%-40px))]">
         
         <div className="reveal visible mb-[55px]">
