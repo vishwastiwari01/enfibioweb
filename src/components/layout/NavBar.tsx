@@ -1,36 +1,29 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { Menu, X } from 'lucide-react';
 
 const NAV_ITEMS = [
   { id: 'hero',       label: 'Home'       },
   { id: 'about',      label: 'About'      },
-  { id: 'product',    label: 'Products'   },
-  { id: 'technology', label: 'Research'   },
+  { id: 'products',   label: 'Products'   },
+  { id: 'research',   label: 'Research'   },
   { id: 'milestones', label: 'Milestones' },
-  { id: 'careers',    label: 'Careers'    },
   { id: 'contact',    label: 'Contact'    },
 ];
 
 export default function NavBar() {
-  const [scrolled, setScrolled]   = useState(false);
-  const [activeId, setActiveId]   = useState('hero');
+  const [activeId, setActiveId] = useState('hero');
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   useEffect(() => {
     const ids = NAV_ITEMS.map(n => n.id);
     const observer = new IntersectionObserver(
-      entries =>
-        entries.forEach(e => { if (e.isIntersecting) setActiveId(e.target.id); }),
-      { threshold: 0.3 }
+      entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) setActiveId(e.target.id);
+        });
+      },
+      { threshold: 0.1 }
     );
     ids.forEach(id => {
       const el = document.getElementById(id);
@@ -39,153 +32,79 @@ export default function NavBar() {
     return () => observer.disconnect();
   }, []);
 
-  // Close mobile menu on resize
-  useEffect(() => {
-    const onResize = () => { if (window.innerWidth >= 768) setMobileOpen(false); };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setMobileOpen(false);
   };
 
   return (
-    <>
-      <nav
-        className="fixed top-0 left-0 right-0 z-[500] flex items-center justify-between px-6 lg:px-10"
-        style={{
-          height: '64px',
-          background: scrolled ? 'rgba(250,252,251,0.97)' : 'rgba(250,252,251,0.92)',
-          backdropFilter: 'blur(16px)',
-          borderBottom: `1px solid ${scrolled ? '#DDE8E5' : 'transparent'}`,
-          transition: 'background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
-          boxShadow: scrolled ? '0 1px 12px rgba(16,47,61,0.06)' : 'none',
-        }}
-      >
-        {/* Logo */}
-        <button
-          onClick={() => scrollTo('hero')}
-          className="flex items-center gap-2 cursor-pointer shrink-0"
-          style={{ background: 'none', border: 'none', padding: 0 }}
-          aria-label="Enfibio Technologies — go to top"
+    <header className="sticky top-0 z-[100] bg-white/92 backdrop-blur-[18px] border-b border-[#dfe9e8]/85">
+      <div className="container mx-auto w-[min(1180px,calc(100%-40px))] min-h-[76px] flex items-center justify-between gap-[25px]">
+        
+        {/* Brand */}
+        <button 
+          onClick={() => scrollTo('hero')} 
+          className="inline-flex items-center gap-2.5 font-black tracking-tight text-teal-950"
         >
-          <Image
-            src="/logo.jpeg"
-            alt="Enfibio Technologies"
-            width={120}
-            height={36}
-            className="object-contain"
-            style={{ height: '36px', width: 'auto' }}
-            priority
-          />
+          <span className="w-[35px] h-[35px] border-2 border-teal-900 rounded-[12px_12px_12px_3px] grid place-items-center text-[1.1rem] -rotate-12">
+            E
+          </span>
+          <span className="leading-none text-left">
+            <strong className="block text-[1.05rem]">enfibio</strong>
+            <small className="block text-[0.43rem] tracking-[0.24em] mt-1 text-muted">TECHNOLOGIES</small>
+          </span>
         </button>
 
-        {/* Desktop nav items */}
-        <div className="hidden md:flex items-center gap-0.5">
-          {NAV_ITEMS.map(item => {
-            const isActive = activeId === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => scrollTo(item.id)}
-                className="relative px-3.5 py-2 text-sm cursor-pointer rounded-md transition-colors duration-200"
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontWeight: isActive ? 600 : 500,
-                  fontSize: '14px',
-                  color: isActive ? '#075E5A' : '#647781',
-                  background: 'none',
-                  border: 'none',
-                  letterSpacing: '0.01em',
-                }}
-              >
-                {item.label}
-                {isActive && (
-                  <span
-                    className="absolute bottom-0.5 left-3.5 right-3.5 h-[2px] rounded-full"
-                    style={{ background: '#075E5A' }}
-                  />
-                )}
-              </button>
-            );
-          })}
-        </div>
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-[26px]" aria-label="Primary navigation">
+          {NAV_ITEMS.map(item => (
+            <button
+              key={item.id}
+              onClick={() => scrollTo(item.id)}
+              className={`text-[0.83rem] font-bold relative transition-colors ${
+                activeId === item.id ? 'text-[#456166]' : 'text-[#456166]'
+              } after:content-[''] after:absolute after:left-0 after:right-0 after:-bottom-2 after:h-0.5 after:bg-teal-700 after:origin-left after:transition-transform after:duration-250 ${
+                activeId === item.id ? 'after:scale-x-100' : 'after:scale-x-0 hover:after:scale-x-100'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
 
-        {/* Desktop CTA */}
-        <div className="hidden md:flex items-center">
-          <button
+        {/* CTA & Mobile Toggle */}
+        <div className="flex items-center gap-4">
+          <button 
             onClick={() => scrollTo('contact')}
-            className="btn-primary text-sm"
-            style={{ padding: '9px 20px', fontSize: '13px', borderRadius: '8px' }}
+            className="hidden md:inline-flex btn btn-primary btn-small min-h-[40px] px-[15px] text-[0.8rem]"
           >
-            Partner With Us
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-              <path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            Partner With Us →
+          </button>
+          
+          <button 
+            className="md:hidden w-[42px] h-[42px] border border-line bg-white rounded-xl text-lg flex items-center justify-center cursor-pointer"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'}
+          >
+            {mobileOpen ? '✕' : '☰'}
           </button>
         </div>
+      </div>
 
-        {/* Mobile menu toggle */}
-        <button
-          className="md:hidden p-2 rounded-lg cursor-pointer"
-          style={{ background: 'none', border: 'none', color: '#102F3D' }}
-          onClick={() => setMobileOpen(o => !o)}
-          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-        >
-          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </nav>
-
-      {/* Mobile drawer */}
+      {/* Mobile Nav Dropdown */}
       {mobileOpen && (
-        <div
-          className="fixed inset-0 z-[499]"
-          style={{ top: '64px' }}
-          onClick={() => setMobileOpen(false)}
-        >
-          <div
-            className="absolute left-0 right-0 top-0 flex flex-col"
-            style={{
-              background: 'rgba(250,252,251,0.98)',
-              backdropFilter: 'blur(20px)',
-              borderBottom: '1px solid #DDE8E5',
-              boxShadow: '0 8px 32px rgba(16,47,61,0.10)',
-              padding: '8px 16px 20px',
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            {NAV_ITEMS.map(item => (
-              <button
-                key={item.id}
-                onClick={() => scrollTo(item.id)}
-                className="text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors"
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '15px',
-                  color: activeId === item.id ? '#075E5A' : '#102F3D',
-                  background: activeId === item.id ? 'rgba(7,94,90,0.06)' : 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontWeight: activeId === item.id ? 600 : 400,
-                }}
-              >
-                {item.label}
-              </button>
-            ))}
-            <div style={{ margin: '8px 16px 0' }}>
-              <button
-                onClick={() => scrollTo('contact')}
-                className="btn-primary w-full justify-center"
-                style={{ fontSize: '14px' }}
-              >
-                Partner With Us →
-              </button>
-            </div>
-          </div>
-        </div>
+        <nav className="md:hidden absolute left-3 right-3 top-[70px] p-[22px] bg-white border border-line rounded-[18px] shadow-[0_20px_60px_rgba(8,54,57,.10)] flex flex-col items-stretch">
+          {NAV_ITEMS.map(item => (
+            <button
+              key={item.id}
+              onClick={() => scrollTo(item.id)}
+              className="text-left py-2 text-[0.83rem] font-bold text-[#456166]"
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
       )}
-    </>
+    </header>
   );
 }

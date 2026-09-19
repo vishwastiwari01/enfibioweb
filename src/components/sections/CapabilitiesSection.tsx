@@ -1,157 +1,70 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { Sprout, Cpu, Network, FlaskConical } from 'lucide-react';
-
-const DOMAINS = [
-  {
-    icon: Sprout,
-    title: 'AgriTech & Climate',
-    desc: 'Cold-chain solutions, agricultural productivity, and resource-conscious engineering for a more sustainable food system.',
-  },
-  {
-    icon: Cpu,
-    title: 'Intelligent Hardware',
-    desc: 'Embedded systems, thermal engineering, sensors, and real-world product development from prototype to production.',
-  },
-  {
-    icon: Network,
-    title: 'AI & Autonomous Systems',
-    desc: 'AI-driven tools, intelligent automation, and autonomous technology research for next-generation applications.',
-  },
-  {
-    icon: FlaskConical,
-    title: 'Nanobiotechnology',
-    desc: 'Emerging research at the intersection of biology, materials, and intelligent systems — exploring tomorrow\'s frontiers.',
-  },
-];
-
 export default function CapabilitiesSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
-      { threshold: 0.08 }
-    );
-    el.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <section
-      id="technology"
-      ref={sectionRef}
-      style={{ background: '#F0F6F4', padding: '80px 0' }}
-    >
-      <div className="max-w-6xl mx-auto px-6 lg:px-10">
-        {/* Header row */}
-        <div className="fade-in flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
-          <div>
-            <div className="section-label">Our Technology Domains</div>
-            <h2
-              className="section-title"
-              style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', marginTop: '6px' }}
-            >
-              One Company. Multiple Frontiers.
-            </h2>
-            <p
-              className="mt-3"
-              style={{
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '15px',
-                color: '#647781',
-                maxWidth: '480px',
-                lineHeight: 1.7,
-              }}
-            >
-              We explore and develop technologies across interconnected domains,
-              combining engineering, intelligent systems, and applied research.
-            </p>
-          </div>
-          <button
-            onClick={() => scrollTo('projects')}
-            className="shrink-0 inline-flex items-center gap-1.5 text-sm font-semibold"
-            style={{
-              fontFamily: 'Inter, sans-serif',
-              color: '#075E5A',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '0',
-              textDecoration: 'none',
-            }}
+    <section id="about" className="py-[105px] relative overflow-hidden">
+      <div className="container mx-auto w-[min(1180px,calc(100%-40px))] grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-[65px] items-center">
+        
+        {/* Left: Purpose Panel */}
+        <div 
+          className="reveal visible flex flex-col justify-end p-8 lg:p-11 min-h-[390px] lg:min-h-[440px] rounded-[28px] text-white shadow-[0_20px_60px_rgba(8,54,57,.10)]"
+          style={{
+            background: 'linear-gradient(140deg, rgba(7,63,67,.86), rgba(7,63,67,.46)), url("/banner.jpeg") center/cover'
+          }}
+        >
+          <div className="eyebrow mb-4 !text-[#b9e2d8] before:bg-[#b9e2d8]">Our purpose</div>
+          <h2 className="text-3xl lg:text-4xl font-bold tracking-tight mb-4 text-white">Technology for a more resilient planet.</h2>
+          <p className="text-[#d2e6e3] mb-8 leading-relaxed">
+            We work across disciplines to translate scientific thinking, engineering, and experimentation into practical solutions.
+          </p>
+          <button 
+            onClick={() => scrollTo('contact')} 
+            className="btn btn-secondary w-max bg-white/10 border-white/30 text-white hover:bg-white/20 hover:border-white"
           >
-            Explore Our Research
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-              <path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            Work With Us →
           </button>
         </div>
 
-        {/* Cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 fade-in fade-in-delay-1">
-          {DOMAINS.map(({ icon: Icon, title, desc }) => (
-            <div
-              key={title}
-              className="group flex flex-col gap-4 p-6 rounded-xl transition-all duration-200"
-              style={{
-                background: '#ffffff',
-                border: '1px solid #DDE8E5',
-                boxShadow: '0 1px 4px rgba(16,47,61,0.05)',
-                cursor: 'default',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = '#075E5A';
-                (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(7,94,90,0.10)';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = '#DDE8E5';
-                (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 4px rgba(16,47,61,0.05)';
-              }}
-            >
-              <div
-                className="flex items-center justify-center rounded-xl"
-                style={{
-                  width: 44,
-                  height: 44,
-                  background: '#F0F6F4',
-                  border: '1px solid #DDE8E5',
-                }}
-              >
-                <Icon size={20} color="#075E5A" />
-              </div>
-              <div>
-                <div
-                  style={{
-                    fontFamily: 'Syne, sans-serif',
-                    fontWeight: 700,
-                    fontSize: '15px',
-                    color: '#102F3D',
-                    marginBottom: '8px',
-                  }}
-                >
-                  {title}
-                </div>
-                <p
-                  style={{
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '13px',
-                    color: '#647781',
-                    lineHeight: 1.65,
-                  }}
-                >
-                  {desc}
-                </p>
-              </div>
-            </div>
-          ))}
+        {/* Right: Domains */}
+        <div className="reveal visible">
+          <div className="eyebrow mb-4">Who we are</div>
+          <h2 className="text-3xl lg:text-4xl font-bold tracking-tight mb-4">Ideas become useful when they meet reality.</h2>
+          <p className="lead mb-8">
+            Enfibio is an emerging technology venture exploring products
+            across AgriTech, intelligent hardware, AI systems, robotics,
+            and nanobiotechnology.
+          </p>
+
+          <div id="research" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <article className="border border-line rounded-[18px] p-6 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:border-teal-700/40 hover:shadow-[0_16px_35px_rgba(7,63,67,.08)]">
+              <div className="w-11 h-11 grid place-items-center rounded-xl bg-[#edf7f3] text-teal-800 text-xl mb-6">⌁</div>
+              <h3 className="text-[1.3rem] font-bold tracking-tight mb-2">AgriTech & Climate</h3>
+              <p className="text-[0.86rem] text-muted leading-relaxed m-0">Exploring cold-chain solutions, agricultural productivity, and sustainable systems.</p>
+            </article>
+
+            <article className="border border-line rounded-[18px] p-6 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:border-teal-700/40 hover:shadow-[0_16px_35px_rgba(7,63,67,.08)]">
+              <div className="w-11 h-11 grid place-items-center rounded-xl bg-[#edf7f3] text-teal-800 text-xl mb-6">▦</div>
+              <h3 className="text-[1.3rem] font-bold tracking-tight mb-2">Intelligent Hardware</h3>
+              <p className="text-[0.86rem] text-muted leading-relaxed m-0">Engineering systems, thermal management, sensing, and real-world devices.</p>
+            </article>
+
+            <article className="border border-line rounded-[18px] p-6 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:border-teal-700/40 hover:shadow-[0_16px_35px_rgba(7,63,67,.08)]">
+              <div className="w-11 h-11 grid place-items-center rounded-xl bg-[#edf7f3] text-teal-800 text-xl mb-6">⌘</div>
+              <h3 className="text-[1.3rem] font-bold tracking-tight mb-2">AI Systems</h3>
+              <p className="text-[0.86rem] text-muted leading-relaxed m-0">Building practical AI-enabled tools, automation, and intelligent workflows.</p>
+            </article>
+
+            <article className="border border-line rounded-[18px] p-6 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:border-teal-700/40 hover:shadow-[0_16px_35px_rgba(7,63,67,.08)]">
+              <div className="w-11 h-11 grid place-items-center rounded-xl bg-[#edf7f3] text-teal-800 text-xl mb-6">✧</div>
+              <h3 className="text-[1.3rem] font-bold tracking-tight mb-2">Nanobiotechnology</h3>
+              <p className="text-[0.86rem] text-muted leading-relaxed m-0">Exploring the intersection of biology, materials, and emerging technologies.</p>
+            </article>
+          </div>
         </div>
+
       </div>
     </section>
   );

@@ -1,300 +1,125 @@
 'use client';
 
 import Image from 'next/image';
-import { Lightbulb, Wrench, Handshake, Globe, Play, ArrowRight, Check } from 'lucide-react';
-
-const PILLARS = [
-  {
-    icon: Lightbulb,
-    title: 'Innovate',
-    desc: 'AT THE INTERSECTION OF SCIENCE & SOCIETY',
-  },
-  {
-    icon: Wrench,
-    title: 'Build',
-    desc: 'TANGIBLE, REAL-WORLD PRODUCTS',
-  },
-  {
-    icon: Handshake,
-    title: 'Collaborate',
-    desc: 'WITH INDUSTRY, ACADEMIA & GOVERNMENT',
-  },
-  {
-    icon: Globe,
-    title: 'Create Impact',
-    desc: 'FOR BHARAT AND BEYOND',
-  },
-];
-
-const QUICK_FEATURES = [
-  'Efficient Cooling',
-  'Portable Design',
-  'Thermal Insulation',
-  'Low Power Operation',
-  'Multiple Applications',
-];
+import { Play } from 'lucide-react';
 
 export default function HeroSection() {
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <section
-      id="hero"
-      className="relative overflow-hidden"
-      style={{
-        paddingTop: '64px',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      {/* Background: banner image with soft natural light gradient */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/banner.jpeg"
-          alt="Enfibio background"
-          fill
-          className="object-cover"
-          style={{ objectPosition: 'center' }}
-          priority
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(135deg, rgba(250,252,251,0.94) 0%, rgba(240,246,244,0.88) 45%, rgba(250,252,251,0.65) 100%)',
-          }}
-        />
-      </div>
+    <section id="hero" className="hero min-h-[760px] grid items-center py-20 relative isolate overflow-hidden">
+      {/* Background Engineering Grid */}
+      <div 
+        className="absolute inset-0 -z-20 pointer-events-none"
+        style={{
+          background: `
+            linear-gradient(rgba(7,63,67,.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(7,63,67,.045) 1px, transparent 1px)
+          `,
+          backgroundSize: '54px 54px',
+          WebkitMaskImage: 'linear-gradient(to right, black, transparent 82%)',
+          maskImage: 'linear-gradient(to right, black, transparent 82%)',
+        }}
+      />
+      {/* Green glow radial gradient */}
+      <div 
+        className="absolute -z-10 rounded-full pointer-events-none"
+        style={{
+          width: '620px',
+          height: '620px',
+          right: '-280px',
+          top: '40px',
+          background: 'radial-gradient(circle, rgba(112,197,107,.20), transparent 67%)',
+        }}
+      />
 
-      {/* Main hero content */}
-      <div className="relative z-10 flex-1 flex items-center">
-        <div className="max-w-6xl mx-auto w-full px-6 lg:px-10 py-12 lg:py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      <div className="container grid grid-cols-1 lg:grid-cols-[1.02fr_0.98fr] items-center gap-14 mx-auto w-[min(1180px,calc(100%-40px))]">
+        {/* Left Column Copy */}
+        <div className="reveal visible max-w-[720px]">
+          <div className="eyebrow mb-6">Engineering a resilient tomorrow</div>
+          
+          <h1 className="text-[clamp(2.8rem,7vw,6.2rem)] font-bold tracking-tight text-ink mb-6">
+            Real Problems.<br />
+            <span className="text-teal-700">Practical Solutions.</span>
+          </h1>
+          
+          <p className="lead">
+            Enfibio Technologies develops intelligent hardware, AI systems,
+            and emerging technologies to build practical solutions for a
+            more resilient future.
+          </p>
 
-            {/* Left column: 7 Cols */}
-            <div className="lg:col-span-7 flex flex-col">
-              {/* Eyebrow label */}
-              <div
-                className="inline-flex items-center gap-2 mb-5 self-start px-3.5 py-1.5 rounded-full"
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  letterSpacing: '0.12em',
-                  color: '#075E5A',
-                  background: 'rgba(7,94,90,0.08)',
-                  border: '1px solid rgba(7,94,90,0.18)',
-                  textTransform: 'uppercase',
-                }}
-              >
-                <span
-                  className="w-1.5 h-1.5 rounded-full pulse-dot"
-                  style={{ background: '#075E5A' }}
-                />
-                Engineering a Resilient Tomorrow
-              </div>
+          <div className="flex flex-wrap gap-3 mt-8">
+            <button onClick={() => scrollTo('products')} className="btn btn-primary">
+              Explore Our Products →
+            </button>
+            <button onClick={() => scrollTo('about')} className="btn btn-secondary">
+              <Play size={14} className="fill-current" /> Watch Our Story
+            </button>
+          </div>
 
-              {/* Main Headline */}
-              <h1
-                className="mb-5 leading-[1.06]"
-                style={{
-                  fontFamily: 'Syne, sans-serif',
-                  fontWeight: 800,
-                  fontSize: 'clamp(2.6rem, 5.2vw, 4.4rem)',
-                  color: '#102F3D',
-                  letterSpacing: '-0.03em',
-                }}
-              >
-                Real Problems.
-                <br />
-                Practical <span style={{ color: '#075E5A' }}>Solutions.</span>
-              </h1>
-
-              {/* Description */}
-              <p
-                className="mb-8 leading-relaxed"
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '16px',
-                  color: '#647781',
-                  maxWidth: '520px',
-                  lineHeight: 1.7,
-                }}
-              >
-                Enfibio Technologies develops intelligent hardware, AI systems and
-                emerging technologies to build a more resilient, self-reliant and sustainable future.
-              </p>
-
-              {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-3 mb-10">
-                <button
-                  onClick={() => scrollTo('product')}
-                  className="btn-primary"
-                  style={{ padding: '12px 24px', fontSize: '14px' }}
-                >
-                  Explore Our Products
-                  <ArrowRight size={15} />
-                </button>
-                <button
-                  onClick={() => scrollTo('about')}
-                  className="btn-ghost"
-                  style={{ padding: '12px 22px', fontSize: '14px' }}
-                >
-                  <Play size={14} className="fill-current text-[#075E5A]" />
-                  Watch Our Story
-                </button>
-              </div>
-
-              {/* 4 Pillars Under CTA */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-[#DDE8E5]">
-                {PILLARS.map(({ icon: Icon, title, desc }) => (
-                  <div key={title} className="flex flex-col gap-1.5">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="flex items-center justify-center rounded-lg"
-                        style={{ width: 28, height: 28, background: '#F0F6F4', color: '#075E5A' }}
-                      >
-                        <Icon size={15} />
-                      </div>
-                      <span
-                        style={{
-                          fontFamily: 'Syne, sans-serif',
-                          fontWeight: 700,
-                          fontSize: '13px',
-                          color: '#102F3D',
-                        }}
-                      >
-                        {title}
-                      </span>
-                    </div>
-                    <p
-                      style={{
-                        fontFamily: 'Inter, sans-serif',
-                        fontSize: '9.5px',
-                        fontWeight: 600,
-                        color: '#9AAFBA',
-                        lineHeight: 1.35,
-                        letterSpacing: '0.04em',
-                      }}
-                    >
-                      {desc}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right column: 5 Cols — Prototype with Floating Feature Card */}
-            <div className="lg:col-span-5 relative flex justify-center lg:justify-end">
-              {/* Product Photograph Container */}
-              <div
-                className="relative rounded-2xl overflow-hidden w-full max-w-[460px]"
-                style={{
-                  aspectRatio: '4/3',
-                  boxShadow: '0 24px 60px rgba(16,47,61,0.14), 0 4px 16px rgba(16,47,61,0.06)',
-                  border: '1px solid rgba(7,94,90,0.15)',
-                  background: '#ffffff',
-                }}
-              >
-                <Image
-                  src="/thandai.png"
-                  alt="THAND.AI Smart Portable Freezer Prototype"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-
-                {/* Italic handwriting caption */}
-                <div
-                  className="absolute top-3 left-4 pointer-events-none"
-                  style={{
-                    fontFamily: 'Syne, sans-serif',
-                    fontStyle: 'italic',
-                    fontSize: '13px',
-                    color: '#ffffff',
-                    textShadow: '0 1px 4px rgba(0,0,0,0.5)',
-                    fontWeight: 600,
-                  }}
-                >
-                  Cooler Harvests.
-                  <br />
-                  Brighter Futures.
-                </div>
-              </div>
-
-              {/* Floating THAND.AI Card overlaying top right */}
-              <div
-                className="hidden sm:flex flex-col p-4 rounded-xl z-20 absolute -top-4 -right-2 md:right-2"
-                style={{
-                  width: '210px',
-                  background: 'rgba(255,255,255,0.96)',
-                  backdropFilter: 'blur(16px)',
-                  border: '1px solid #DDE8E5',
-                  boxShadow: '0 12px 32px rgba(16,47,61,0.12)',
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: 'Syne, sans-serif',
-                    fontWeight: 800,
-                    fontSize: '15px',
-                    color: '#075E5A',
-                    lineHeight: 1.1,
-                  }}
-                >
-                  THAND.AI
-                </div>
-                <div
-                  style={{
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '11px',
-                    color: '#647781',
-                    marginBottom: '8px',
-                  }}
-                >
-                  Smart Portable Freezer
-                </div>
-
-                <div
-                  className="inline-flex items-center gap-1.5 self-start px-2 py-0.5 rounded-full mb-3"
-                  style={{
-                    background: '#E1F2EB',
-                    fontSize: '9.5px',
-                    fontWeight: 600,
-                    color: '#075E5A',
-                  }}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#075E5A]" />
-                  Prototype Stage
-                </div>
-
-                <div className="flex flex-col gap-1.5 mb-3">
-                  {QUICK_FEATURES.map(f => (
-                    <div key={f} className="flex items-center gap-1.5 text-[10.5px] text-[#102F3D]">
-                      <Check size={11} color="#075E5A" className="shrink-0" />
-                      <span>{f}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => scrollTo('product')}
-                  className="w-full py-1.5 rounded-lg text-center font-semibold text-xs transition-all duration-200"
-                  style={{
-                    background: '#075E5A',
-                    color: '#ffffff',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Learn More →
-                </button>
-              </div>
-            </div>
-
+          <div className="flex items-center gap-2 mt-6 text-[0.78rem] text-muted">
+            <span 
+              className="w-2 h-2 rounded-full bg-green" 
+              style={{ boxShadow: '0 0 0 5px rgba(112,197,107,.13)' }}
+            />
+            Building, testing, and learning through real prototypes.
           </div>
         </div>
+
+        {/* Right Column Product Stage */}
+        <div className="product-stage relative min-h-[380px] lg:min-h-[500px] grid place-items-center max-w-[650px] w-full mx-auto reveal visible">
+          {/* Orbit Animation */}
+          <div 
+            className="absolute w-[310px] h-[310px] lg:w-[440px] lg:h-[440px] border border-dashed border-teal-700/25 rounded-full animate-[orbit_35s_linear_infinite]"
+            aria-hidden="true"
+          >
+            <div className="absolute top-[30px] left-[50px] lg:top-[40px] lg:left-[80px] w-2 h-2 rounded-full bg-teal-700" />
+            <div className="absolute bottom-[45px] right-[30px] lg:bottom-[65px] lg:right-[45px] w-2 h-2 rounded-full bg-green" />
+          </div>
+
+          {/* Main Product Frame */}
+          <div 
+            className="relative w-full max-w-[560px] min-h-[300px] lg:min-h-[370px] grid place-items-center border border-line rounded-[34px] overflow-hidden"
+            style={{
+              background: 'linear-gradient(145deg, #fff, #f0f7f5)',
+              boxShadow: 'var(--shadow)'
+            }}
+          >
+            <div className="absolute top-5 left-6 text-[0.65rem] tracking-[0.15em] text-teal-700 font-black">
+              THAND.AI / PROTOTYPE
+            </div>
+            
+            <div className="relative z-10 w-[92%] transition-transform duration-500 ease-out hover:-translate-y-2 hover:scale-[1.025]">
+              <Image
+                src="/thandai.png"
+                alt="THAND.AI portable freezer prototype with exposed internal chamber and cooling assembly"
+                width={600}
+                height={500}
+                className="w-full max-h-[430px] object-contain drop-shadow-[0_25px_24px_rgba(7,63,67,.13)]"
+                priority
+              />
+            </div>
+          </div>
+
+          {/* Floating Cards */}
+          <div 
+            className="absolute z-20 right-0 top-10 lg:-right-3 lg:top-[70px] bg-white/95 backdrop-blur-[14px] border border-line rounded-2xl px-4 py-3 shadow-[0_18px_40px_rgba(7,63,67,.12)] animate-[float_6s_ease-in-out_infinite]"
+          >
+            <strong className="block text-xl text-teal-900 leading-tight">Prototype</strong>
+            <small className="text-[0.7rem] text-muted">Current development stage</small>
+          </div>
+
+          <div 
+            className="absolute z-20 left-0 bottom-6 lg:-left-3 lg:bottom-[60px] bg-white/95 backdrop-blur-[14px] border border-line rounded-2xl px-4 py-3 shadow-[0_18px_40px_rgba(7,63,67,.12)] animate-[float_6s_ease-in-out_infinite]"
+            style={{ animationDelay: '-2s' }}
+          >
+            <strong className="block text-xl text-teal-900 leading-tight">THAND.AI</strong>
+            <small className="text-[0.7rem] text-muted">Smart portable freezer</small>
+          </div>
+        </div>
+
       </div>
     </section>
   );

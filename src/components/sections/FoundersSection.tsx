@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import { Mail } from 'lucide-react';
 
 const LinkedInIcon = () => (
@@ -15,287 +14,71 @@ const FOUNDERS = [
     name: 'Vishwas Tiwari',
     role: 'Co-Founder',
     focus: 'AI Systems & Product Development',
-    specialty: 'Autonomous AI agents, edge AI deployment, product strategy, and real-world AI systems.',
     linkedin: 'https://linkedin.com/in/vishwastiwari',
-    email: 'vishwas@enfibio.me',
   },
   {
     initials: 'SP',
     name: 'Shardul Pande',
     role: 'Co-Founder',
     focus: 'AI & Data Systems',
-    specialty: 'Machine learning pipelines, RAG architectures, data engineering, and interpretable AI.',
     linkedin: 'https://linkedin.com/in/shardulpande',
-    email: 'shardul@enfibio.me',
   },
   {
     initials: 'RG',
     name: 'Raj Goel',
     role: 'Co-Founder',
     focus: 'Embedded Systems & Robotics',
-    specialty: 'ROS2, real-time sensor interfacing, embedded hardware, and robotics middleware.',
     linkedin: 'https://linkedin.com/in/rajgoel',
-    email: 'raj@enfibio.me',
   },
 ];
 
 export default function FoundersSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
-      { threshold: 0.08 }
-    );
-    el.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <section
-      id="founders"
-      ref={sectionRef}
-      style={{ background: '#F0F6F4', padding: '80px 0' }}
-    >
-      <div className="max-w-6xl mx-auto px-6 lg:px-10">
-        {/* Header */}
-        <div className="fade-in mb-12">
-          <div className="section-label">Our Team</div>
-          <h2
-            className="section-title"
-            style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', marginTop: '6px' }}
-          >
-            Built by a Passionate Team
-          </h2>
-          <p
-            className="mt-3"
-            style={{
-              fontFamily: 'Inter, sans-serif',
-              fontSize: '15px',
-              color: '#647781',
-              maxWidth: '480px',
-              lineHeight: 1.7,
-            }}
-          >
-            Three engineers. Three disciplines. One mission — engineering technology for real-world impact.
-          </p>
+    <section id="team" className="py-[105px] bg-white relative overflow-hidden">
+      <div className="container mx-auto w-[min(1180px,calc(100%-40px))]">
+        
+        <div className="reveal visible mb-[55px]">
+          <div className="eyebrow mb-4">Our Team</div>
+          <h2 className="text-3xl lg:text-4xl font-bold tracking-tight mb-2 text-ink">Engineers. Builders. Problem Solvers.</h2>
         </div>
 
-        {/* Main grid: 3 founder cards + 1 CTA panel */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 fade-in fade-in-delay-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7 reveal visible items-center">
+          
           {FOUNDERS.map(founder => (
-            <div
-              key={founder.name}
-              className="flex flex-col p-6 rounded-xl transition-all duration-200"
-              style={{
-                background: '#ffffff',
-                border: '1px solid #DDE8E5',
-                boxShadow: '0 1px 4px rgba(16,47,61,0.05)',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(7,94,90,0.10)';
-                (e.currentTarget as HTMLElement).style.borderColor = '#075E5A';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 4px rgba(16,47,61,0.05)';
-                (e.currentTarget as HTMLElement).style.borderColor = '#DDE8E5';
-              }}
-            >
-              {/* Avatar with initials */}
-              <div
-                className="flex items-center justify-center rounded-full mb-5 shrink-0"
-                style={{
-                  width: 64,
-                  height: 64,
-                  background: 'linear-gradient(135deg, #075E5A 0%, #3C806C 100%)',
-                  fontFamily: 'Syne, sans-serif',
-                  fontWeight: 800,
-                  fontSize: '20px',
-                  color: '#ffffff',
-                  letterSpacing: '-0.02em',
-                }}
-              >
+            <div key={founder.name} className="flex items-center gap-4 group">
+              <div className="w-[64px] h-[64px] shrink-0 rounded-full bg-teal-900 text-white grid place-items-center font-bold text-xl">
                 {founder.initials}
               </div>
-
-              {/* Name & role */}
-              <div
-                style={{
-                  fontFamily: 'Syne, sans-serif',
-                  fontWeight: 700,
-                  fontSize: '16px',
-                  color: '#102F3D',
-                  marginBottom: '2px',
-                }}
-              >
-                {founder.name}
-              </div>
-              <div
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontWeight: 600,
-                  fontSize: '12px',
-                  color: '#075E5A',
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
-                  marginBottom: '2px',
-                }}
-              >
-                {founder.role}
-              </div>
-              <div
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '13px',
-                  color: '#3C806C',
-                  fontWeight: 500,
-                  marginBottom: '12px',
-                }}
-              >
-                {founder.focus}
-              </div>
-
-              {/* Specialty */}
-              <p
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '13px',
-                  color: '#647781',
-                  lineHeight: 1.65,
-                  flex: 1,
-                  marginBottom: '16px',
-                }}
-              >
-                {founder.specialty}
-              </p>
-
-              {/* Actions */}
-              <div
-                className="flex items-center gap-2 pt-4"
-                style={{ borderTop: '1px solid #DDE8E5' }}
-              >
-                <a
-                  href={founder.linkedin}
-                  target="_blank"
+              <div className="flex flex-col">
+                <strong className="text-[1.05rem] font-bold text-ink leading-tight">{founder.name}</strong>
+                <span className="text-[0.78rem] text-muted leading-tight mb-1">{founder.role}</span>
+                <span className="text-[0.72rem] text-teal-700 leading-tight mb-2">{founder.focus}</span>
+                <a 
+                  href={founder.linkedin} 
+                  target="_blank" 
                   rel="noopener noreferrer"
-                  aria-label={`${founder.name} on LinkedIn`}
-                  className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all duration-200"
-                  style={{
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    color: '#075E5A',
-                    background: '#F0F6F4',
-                    border: '1px solid #DDE8E5',
-                    textDecoration: 'none',
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.background = '#075E5A';
-                    (e.currentTarget as HTMLElement).style.color = '#ffffff';
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.background = '#F0F6F4';
-                    (e.currentTarget as HTMLElement).style.color = '#075E5A';
-                  }}
+                  className="w-7 h-7 rounded-md bg-surface text-teal-800 grid place-items-center transition-colors group-hover:bg-teal-900 group-hover:text-white"
                 >
                   <LinkedInIcon />
-                  LinkedIn
-                </a>
-                <a
-                  href={`mailto:${founder.email}`}
-                  aria-label={`Email ${founder.name}`}
-                  className="flex items-center justify-center rounded-lg transition-all duration-200"
-                  style={{
-                    width: 32,
-                    height: 32,
-                    background: '#F0F6F4',
-                    border: '1px solid #DDE8E5',
-                    color: '#647781',
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.background = '#075E5A';
-                    (e.currentTarget as HTMLElement).style.color = '#ffffff';
-                    (e.currentTarget as HTMLElement).style.borderColor = '#075E5A';
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.background = '#F0F6F4';
-                    (e.currentTarget as HTMLElement).style.color = '#647781';
-                    (e.currentTarget as HTMLElement).style.borderColor = '#DDE8E5';
-                  }}
-                >
-                  <Mail size={13} />
                 </a>
               </div>
             </div>
           ))}
 
           {/* CTA panel */}
-          <div
-            className="flex flex-col justify-between p-6 rounded-xl"
-            style={{
-              background: 'linear-gradient(135deg, #075E5A 0%, #064B48 100%)',
-              border: '1px solid #064B48',
-              boxShadow: '0 4px 20px rgba(7,94,90,0.20)',
-            }}
-          >
-            <div>
-              <div
-                style={{
-                  fontFamily: 'Syne, sans-serif',
-                  fontWeight: 800,
-                  fontSize: '22px',
-                  color: '#ffffff',
-                  lineHeight: 1.2,
-                  marginBottom: '12px',
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                Let&apos;s Build What&apos;s Next
-              </div>
-              <p
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '13px',
-                  color: 'rgba(255,255,255,0.72)',
-                  lineHeight: 1.65,
-                  marginBottom: '24px',
-                }}
-              >
-                We are open to incubation opportunities, research collaboration, industry partnerships,
-                and conversations around technology development.
-              </p>
-            </div>
-            <button
-              onClick={() => scrollTo('contact')}
-              className="inline-flex items-center justify-center gap-2 rounded-lg transition-all duration-200"
-              style={{
-                fontFamily: 'Inter, sans-serif',
-                fontWeight: 600,
-                fontSize: '14px',
-                padding: '10px 20px',
-                background: '#ffffff',
-                color: '#075E5A',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.background = '#E1F2EB';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.background = '#ffffff';
-              }}
-            >
-              Get in Touch
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-                <path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+          <div className="flex flex-col p-6 rounded-[18px] bg-teal-950 text-white lg:ml-auto w-full lg:max-w-sm">
+            <h3 className="text-lg font-bold mb-2">Let's Build What's Next</h3>
+            <p className="text-[#b4d0ce] text-[0.8rem] mb-5">
+              We're open to incubation, research collaboration, industry partnerships and funding opportunities.
+            </p>
+            <button onClick={() => scrollTo('contact')} className="btn btn-primary self-start min-h-[40px] px-5 py-2 text-[0.8rem]">
+              Get in Touch →
             </button>
           </div>
+
         </div>
       </div>
     </section>
