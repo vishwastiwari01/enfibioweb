@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fig 1 · ENFIBIO V2X AI — Technical Hardware Anatomy</title>
+  <script>
+    try { if (localStorage.getItem('enfibio-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+  </script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- Three.js & OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    :root {
+      --paper-bg: #f6f5f0;
+      --frame-border: #d0cec7;
+      --ink-dark: #222220;
+      --ink-muted: #78766f;
+      --card-bg: rgba(251, 250, 246, 0.90);
+      --accent-orange: #e0532c;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--paper-bg);
+      color: var(--ink-dark);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    .font-mono-tech {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .font-display {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* Outer Fig 1 Technical Drawing Frame (wheresryan22/anatomy style) */
+    .anatomy-frame {
+      position: fixed;
+      inset: 14px;
+      border: 1px solid var(--frame-border);
+      pointer-events: none;
+      z-index: 30;
+    }
+
+    /* Left Scrollable Hardware Stream (Independent scroll so 3D canvas is 100% interactive) */
+    #chapter-scroll-pane {
+      position: fixed;
+      top: 64px;
+      right: 26px;
+      bottom: 68px;
+      width: 440px;
+      max-width: calc(100vw - 52px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 25;
+      padding-right: 10px;
+      padding-bottom: 35vh;
+      scroll-behavior: smooth;
+    }
+
+    #chapter-scroll-pane::-webkit-scrollbar {
+      width: 4px;
+    }
+    #chapter-scroll-pane::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #chapter-scroll-pane::-webkit-scrollbar-thumb {
+      background: rgba(34, 34, 32, 0.22);
+      border-radius: 999px;
+    }
+
+    /* Selective Focus / Blur-the-Rest Chapter Cards */
+    .chapter-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid #d5d3cc;
+      transition: filter 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.35s ease,
+                  border-color 0.35s ease;
+      filter: blur(5.5px) grayscale(60%);
+      opacity: 0.30;
+      transform: scale(0.95) translateX(8px);
+      cursor: pointer;
+    }
+
+    .chapter-card.active-card {
+      filter: blur(0px) grayscale(0%);
+      opacity: 1;
+      transform: scale(1) translateX(0px);
+      border-color: #2b2b29;
+      box-shadow: 0 18px 40px -12px rgba(25, 25, 22, 0.12);
+    }
+
+    /* Floating 3D Technical Callout Pins */
+    .pin-badge {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      padding: 4px 9px;
+      border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      pointer-events: auto;
+      background: rgba(252, 251, 248, 0.96);
+      color: #1c1c1a;
+      border: 1px solid #383835;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: filter 0.35s ease, opacity 0.35s ease, transform 0.25s ease;
+      z-index: 20;
+    }
+
+    .pin-badge:hover {
+      transform: translate(-50%, -50%) scale(1.08);
+      background: #1c1c1a;
+      color: #f6f5f0;
+    }
+
+    .pin-badge.pin-focused {
+      filter: blur(0px);
+      opacity: 1;
+      z-index: 30;
+    }
+
+    .pin-badge.pin-blurred {
+      filter: blur(3px);
+      opacity: 0.14;
+      z-index: 10;
+    }
+
+    /* Bottom-left Raptor-style Pill Button */
+    .raptor-pill {
+      background: #fbfaf7;
+      border: 1px solid #dcdad3;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s ease;
+    }
+    .raptor-pill:hover {
+      border-color: #222220;
+      background: #ffffff;
+    }
+
+    /* Range Slider Styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: #dcdad3;
+      height: 4px;
+      border-radius: 99px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #222220;
+      cursor: pointer;
+      border: 2px solid #f6f5f0;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* DARK MODE                                                           */
+    /* ------------------------------------------------------------------ */
+    html.dark {
+      --paper-bg: #101114;
+      --frame-border: #3a3b40;
+      --ink-dark: #f0efea;
+      --ink-muted: #9b9a93;
+      --card-bg: rgba(24, 25, 29, 0.90);
+      color-scheme: dark;
+    }
+    html.dark .chapter-card { border-color: #3a3b40; }
+    html.dark .chapter-card.active-card {
+      border-color: #ecebe6;
+      box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.65);
+    }
+    html.dark .pin-badge {
+      background: rgba(24, 25, 29, 0.96);
+      color: #ecebe6;
+      border-color: #8a8a86;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+    }
+    html.dark .pin-badge:hover { background: #ecebe6; color: #101114; }
+    html.dark .raptor-pill {
+      background: #1c1d21;
+      border-color: #3a3b40;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+    html.dark .raptor-pill:hover { border-color: #ecebe6; background: #26272c; }
+    html.dark input[type=range] { background: #3a3b40; }
+    html.dark input[type=range]::-webkit-slider-thumb { background: #ecebe6; border-color: #101114; }
+    html.dark #chapter-scroll-pane::-webkit-scrollbar-thumb { background: rgba(236, 235, 230, 0.28); }
+    html.dark #active-connector-path { stroke: #ecebe6; }
+
+    /* Re-map the hard-coded light-theme utility colours used in the markup */
+    html.dark .text-\[\#181816\], html.dark .text-\[\#1c1c1a\],
+    html.dark .text-\[\#222220\], html.dark .text-\[\#2b2b28\] { color: #f2f1ec; }
+    html.dark .text-\[\#4a4944\], html.dark .text-\[\#52514c\],
+    html.dark .text-\[\#5a5852\] { color: #b9b7ae; }
+    html.dark .text-\[\#6e6c65\], html.dark .text-\[\#78766f\],
+    html.dark .text-\[\#8a8880\] { color: #96948b; }
+    html.dark .text-\[\#f6f5f0\] { color: #101114; }
+    html.dark .text-stone-800 { color: #e7e5e4; }
+    html.dark .text-stone-300 { color: #55565b; }
+    html.dark .bg-\[\#222220\] { background-color: #ecebe6; }
+    html.dark .bg-\[\#c5c3bc\] { background-color: #4a4b50; }
+    html.dark .bg-\[\#efede6\], html.dark .bg-\[\#f1efe9\] { background-color: #202126; }
+    html.dark .bg-\[\#f2f0ea\] { background-color: #23242a; }
+    html.dark .bg-white\/90 { background-color: #2a2b31; }
+    html.dark .bg-stone-100 { background-color: #2f3036; }
+    html.dark .hover\:bg-stone-200:hover { background-color: #34353b; }
+    html.dark .border-\[\#222220\] { border-color: #ecebe6; }
+    html.dark .border-\[\#c8c6be\], html.dark .border-\[\#d5d3cc\],
+    html.dark .border-\[\#dcdad3\], html.dark .border-\[\#dfddd6\] { border-color: #3d3e44; }
+    html.dark .border-stone-300 { border-color: #4a4b51; }
+    /* Accent-coloured tags: lighten so they stay readable on dark cards */
+    html.dark .tint { color: color-mix(in srgb, var(--tag) 45%, white) !important; }
+  </style>
+</head>
+<body>
+
+  <!-- ===================================================================== -->
+  <!-- 1. INTERACTIVE 3D WEBGL CANVAS (FULL SCREEN, DRAG & WHEEL ZOOM READY) -->
+  <!-- ===================================================================== -->
+  <div id="webgl-stage" class="fixed inset-0 w-screen h-screen z-0">
+    <div id="canvas-container" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+
+    <!-- SVG Technical Callout Leader Lines -->
+    <svg id="callout-svg" class="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
+      <path id="active-connector-path" d="" fill="none" stroke="#222220" stroke-width="1.35" stroke-dasharray="4,4" />
+      <circle id="active-connector-dot" r="4" fill="#e0532c" cx="-100" cy="-100" />
+      <circle id="active-connector-ring" r="9" fill="none" stroke="#e0532c" stroke-width="1.2" cx="-100" cy="-100" />
+    </svg>
+
+    <!-- Floating 3D Component Callout Tags -->
+    <div id="callout-container" class="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-hidden"></div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 2. "wheresryan22/anatomy" FIG 1 TECHNICAL DRAWING BORDER & CORNERS    -->
+  <!-- ===================================================================== -->
+  <div class="anatomy-frame">
+    <!-- Top-Left Corner: Fig 1 & Mode Controls -->
+    <div class="absolute top-3.5 left-4 right-4 flex flex-wrap items-center justify-between gap-2 pointer-events-auto">
+      <div class="flex items-center gap-4">
+        <span class="font-mono-tech text-xs tracking-wider text-[#5a5852]">Fig 1</span>
+        <span class="text-stone-300">|</span>
+        <span id="hovered-part-readout" class="font-mono-tech text-xs font-semibold text-[#222220]">
+          ENFIBIO V2X AI · HYBRID C-V2X (PC5) + BLE UNIT
+        </span>
+      </div>
+
+      <!-- Top-Right Corner: Finish Toggle, Focus Blur Toggle & Title -->
+      <div class="flex items-center gap-2.5">
+        <!-- Toggle between Fig 1 Technical Clay and Dark Anodized PCB Finish -->
+        <button onclick="toggleMaterialStyle()" id="btn-style-mode"
+                class="raptor-pill px-3 py-1 rounded-full font-mono-tech text-[11px] font-medium text-[#222220] flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-[#222220]" id="style-dot"></span>
+          <span id="style-mode-label">Style: Fig 1 Technical Clay</span>
+        </button>
+
+        <!-- Toggle Blur-the-Rest Focus Mode -->
+        <button onclick="toggleFocusBlur()" id="btn-blur-mode"
+                class="raptor-pill px-3 py-1 rounded-full font-mono-tech text-[11px] font-medium text-[#222220] flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-600" id="blur-dot"></span>
+          <span id="blur-mode-label">Focus Blur: ON</span>
+        </button>
+
+        <!-- Toggle floating 3D callout labels -->
+        <button onclick="toggleLabels()" id="btn-labels"
+                class="raptor-pill px-3 py-1 rounded-full font-mono-tech text-[11px] font-medium text-[#222220] flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-600" id="labels-dot"></span>
+          <span id="labels-mode-label">Labels: ON</span>
+        </button>
+
+        <!-- Light / Dark theme -->
+        <button onclick="toggleTheme()" id="btn-theme"
+                class="raptor-pill px-3 py-1 rounded-full font-mono-tech text-[11px] font-medium text-[#222220] flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-stone-400" id="theme-dot"></span>
+          <span id="theme-mode-label">Dark Mode: OFF</span>
+        </button>
+
+        <!-- Toggle Right Panel Collapse for Fullscreen CAD Inspection -->
+        <button onclick="toggleLeftPanel()" id="btn-panel-toggle"
+                class="raptor-pill px-3 py-1 rounded-full font-mono-tech text-[11px] font-medium text-[#222220]">
+          Hide Specs
+        </button>
+
+        <span class="hidden xl:inline-block font-mono-tech text-xs tracking-[0.14em] text-[#78766f] ml-2">
+          ENFIBIO V2X AI · TEST STAND
+        </span>
+      </div>
+    </div>
+
+    <!-- Bottom-Left Corner: Raptor-Style "SHUT DOWN / RF PLUME" Pill + Disassembly Hint -->
+    <div class="absolute bottom-3.5 left-4 flex flex-wrap items-center gap-3.5 pointer-events-auto">
+      <button onclick="toggleRfPlume()" id="btn-rf-plume"
+              class="raptor-pill px-4 py-1.5 rounded-full font-mono-tech text-xs font-semibold tracking-wider text-[#222220] flex items-center gap-2">
+        <span id="plume-indicator" class="w-2.5 h-2.5 rounded-full bg-[#e0532c] animate-pulse"></span>
+        <span id="plume-btn-text">SHUT DOWN</span>
+      </button>
+
+      <span class="font-mono-tech text-[11px] tracking-[0.12em] text-[#78766f] uppercase">
+        DRAG TO ROTATE 360° · SCROLL WHEEL TO ZOOM · HOVER OR SCROLL SPECS TO TAKE IT APART
+      </span>
+    </div>
+
+    <!-- Bottom-Right Corner: Manual Explode Slider, Camera Reset & Telemetry Readout -->
+    <div class="absolute bottom-3.5 right-4 flex items-center gap-4 pointer-events-auto">
+      <div class="raptor-pill px-3 py-1 rounded-full flex items-center gap-2.5">
+        <span class="font-mono-tech text-[10px] uppercase tracking-wider text-[#78766f]">Explode</span>
+        <input id="explode-slider" type="range" min="0" max="100" value="0" class="w-24"
+               oninput="onManualExplodeSlider(this.value)" />
+        <span id="explode-pct" class="font-mono-tech text-[10px] font-bold w-8 text-right">0%</span>
+      </div>
+
+      <button onclick="resetCameraView()" class="raptor-pill px-3 py-1 rounded-full font-mono-tech text-[11px] font-medium text-[#222220]">
+        Reset Camera
+      </button>
+
+      <div class="hidden sm:block font-mono-tech text-xs tracking-wider text-[#4a4944]">
+        f<sub>0</sub> 5.905 GHz &middot; 42 TOPS &middot; 5x LED ACTIVE
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 3. SCROLLABLE LEFT HARDWARE ANATOMY CHAPTER STREAM                    -->
+  <!-- ===================================================================== -->
+  <aside id="chapter-scroll-pane">
+    <div id="chapters-container" class="space-y-6">
+      <!-- Dynamically populated with Chapters 00 to 07 (All 4 Antennas unified in Chapter 02!) -->
+    </div>
+  </aside>
+
+  <!-- ===================================================================== -->
+  <!-- 4. LEFT-SIDE VERTICAL CHAPTER DOTS                                    -->
+  <!-- ===================================================================== -->
+  <nav id="chapter-dots" class="fixed left-7 top-1/2 -translate-y-1/2 z-30 hidden md:flex flex-col items-start gap-2.5 pointer-events-auto">
+  </nav>
+
+  <!-- ===================================================================== -->
+  <!-- 5. THREE.JS TECHNICAL ILLUSTRATION & HARDWARE ANATOMY ENGINE          -->
+  <!-- ===================================================================== -->
+  <script>
+    /*************************************************************************
+     * 1. HARDWARE CHAPTERS (ALL 4 ANTENNAS PRESENTED AT ONCE IN CHAPTER 02)
+     *************************************************************************/
+    const SCROLL_CHAPTERS = [
+      {
+        index: 0,
+        id: 'complete_unit',
+        shortLabel: '00 · Complete Unit',
+        figCode: 'FIG 1.0 · SYSTEM OVERVIEW',
+        accent: '#e0532c',
+        title: 'Enfibio V2X AI — C-V2X (PC5) + BLE Hybrid Unit',
+        subtitle: 'Precision Test-Stand Assembly & Live Blinking Diagnostics',
+        explodeTarget: 0.0,
+        camPos: [14.5, 11.2, 16.5],
+        camTarget: [1.4, 0.4, 0],
+        focusParts: ['ALL'],
+        useCase: 'Roof-mounted or RSU-mounted automotive cooperative safety unit enabling real-time Vehicle-to-Vehicle (V2V), Vehicle-to-Infrastructure (V2I), Vehicle-to-Pedestrian (V2P), and Vehicle-to-Network (V2N) intelligence.',
+        architecture: 'Housed in a CNC-machined 6061-T6 finned aluminum enclosure mounted on a precision calibration stand with 4 rear SMA antennas, 5 front I/O ports with live blinking status LEDs, and 9 custom in-house PCB modules.',
+        specs: [
+          ['Direct Safety Radio', 'C-V2X PC5 (5.875 – 5.905 GHz ITS Band)'],
+          ['Hybrid VRU & Cloud', 'BLE 5.3 (2.4 GHz) + 4G/5G NR Cellular'],
+          ['GNSS Synchronization', 'Multi-Constellation GPS / GLONASS / Galileo'],
+          ['Status Diagnostics', '5x Live Blinking Front LEDs + Internal SMD LEDs']
+        ]
+      },
+      {
+        index: 1,
+        id: 'enclosure_chassis',
+        shortLabel: '01 · Rugged Enclosure',
+        figCode: 'FIG 1.1 · THERMAL CHASSIS',
+        accent: '#475569',
+        title: 'Rugged Aluminium Enclosure & Heat Dissipation Lid',
+        subtitle: 'Weatherproof IP67 Roof-Mount & Passive Finned Heatsink Cover',
+        explodeTarget: 0.36,
+        camPos: [13.0, 12.5, 14.0],
+        camTarget: [1.2, 1.3, 0],
+        focusParts: ['enclosure_lid', 'chassis_base'],
+        useCase: 'Shields internal surface-mount V2X electronics from rain, dust, solar thermal load, and high-G road vibration while conducting heat away from the internal Edge AI processor.',
+        architecture: 'Features longitudinal cooling fins milled directly into the top cover, perimeter socket-head cap screws, a recessed engraved identification plate, and 4-bolt vehicle roof mounting flanges.',
+        specs: [
+          ['Enclosure Alloy', 'CNC 6061-T6 Billet Aluminum (Mil-Spec)'],
+          ['Environmental Rating', 'IP67 Weatherproof / Vibration Resistant'],
+          ['Thermal Architecture', '8 Longitudinal Roof Fins + Internal Standoffs'],
+          ['Operating Range', '-40°C to +85°C Continuous Automotive Duty']
+        ]
+      },
+      {
+        index: 2,
+        id: 'all_antennas_array',
+        shortLabel: '02 · All 4 Antennas (Unified)',
+        figCode: 'FIG 1.2 · QUAD-BAND ANTENNA ARRAY (ALL AT ONCE)',
+        accent: '#e0532c',
+        title: 'Quad-Band External Antenna Array (All 4 Antennas)',
+        subtitle: 'C-V2X (PC5) · GNSS Mushroom · 4G/5G Cellular · BLE 2.4 GHz',
+        explodeTarget: 0.48,
+        camPos: [-11.5, 9.8, -14.2],
+        camTarget: [0.8, 1.5, -2.8],
+        focusParts: ['ant_cv2x', 'ant_gnss', 'ant_4g5g', 'ant_ble'],
+        useCase: 'Provides simultaneous 360° roof-top RF coverage across all four automotive wireless domains at once—handling direct 5.9 GHz safety sidelink, centimeter-grade satellite timing, 5G cloud backhaul, and 2.4 GHz pedestrian beacon detection.',
+        architecture: 'All four ruggedized outdoor antennas mount along the rear bulkhead via gold-plated 50Ω SMA connectors with internal low-loss coaxial feeds directly into the RF front-end modules:',
+        antennaMatrix: [
+          {
+            name: '1. C-V2X (PC5) Antenna',
+            freq: '5.875 – 5.905 GHz',
+            role: 'Direct V2V & V2I safety broadcast (<3.5 ms latency, no cellular tower required)',
+            tagColor: '#2563eb'
+          },
+          {
+            name: '2. GNSS Active Antenna',
+            freq: 'GPS / GLONASS / Galileo',
+            role: 'High-gain RHCP mushroom radome for lane-level RTK position & <15ns 1PPS clock sync',
+            tagColor: '#059669'
+          },
+          {
+            name: '3. 4G/5G Cellular Antenna',
+            freq: 'Sub-6 GHz Wideband',
+            role: 'Connects to Smart City Cloud (V2N) and Roadside Units (RSU) for long-range alerts',
+            tagColor: '#d97706'
+          },
+          {
+            name: '4. BLE Stubby Antenna',
+            freq: '2.400 – 2.4835 GHz',
+            role: 'Detects Vulnerable Road Users (V2P pedestrians/cyclists) & cabin peripherals',
+            tagColor: '#7c3aed'
+          }
+        ],
+        specs: [
+          ['Connector Interface', '4x Gold-Plated 50Ω SMA Bulkhead Jacks'],
+          ['Radiation Pattern', '360° Omnidirectional Horizontal Roof Plane'],
+          ['RF Isolation', '> 28 dB Inter-Antenna Port-to-Port Isolation'],
+          ['Surge Protection', 'Integrated Gas-Discharge ESD Arrestors']
+        ]
+      },
+      {
+        index: 3,
+        id: 'rf_wireless_modules',
+        shortLabel: '03 · Custom RF Modules (4x)',
+        figCode: 'FIG 1.3 · IN-HOUSE RF TRANSCEIVERS',
+        accent: '#2563eb',
+        title: 'In-House Custom RF & Positioning Modules',
+        subtitle: 'C-V2X (PC5) · GNSS Ceramic Patch · 4G/5G Modem · BLE 2.4 GHz',
+        explodeTarget: 0.68,
+        camPos: [0.5, 14.2, -10.5],
+        camTarget: [0.8, 0.8, -1.2],
+        focusParts: ['mod_cv2x', 'mod_gnss', 'mod_4g5g', 'mod_ble'],
+        useCase: 'Processes the raw RF signals from all four rear antennas on dedicated castellated daughterboards designed in-house by Enfibio Technologies.',
+        architecture: 'Features EMI-shielded metallic cans for the C-V2X (PC5) and 4G/5G modems, a precision tan dielectric ceramic patch on the GNSS carrier, and an ultra-compact BLE 2.4 GHz module on the right flank.',
+        specs: [
+          ['C-V2X (PC5) Module', '3GPP Rel-15/16 Sidelink • +23 dBm Output'],
+          ['GNSS Module', 'Multi-Band RTK + 6-Axis Dead-Reckoning IMU'],
+          ['4G/5G Modem Module', '3GPP Uu Network / RSU Telemetry Transceiver'],
+          ['BLE 2.4 GHz Module', 'BLE 5.3 Long-Range Coded PHY (-104 dBm)']
+        ]
+      },
+      {
+        index: 4,
+        id: 'main_compute_ai',
+        shortLabel: '04 · Enfibio Main Compute',
+        figCode: 'FIG 1.4 · EDGE AI PROCESSOR',
+        accent: '#dc2626',
+        title: 'Enfibio Main Compute (Edge AI Processor)',
+        subtitle: 'Edge AI System-on-Module · Carrier Board · Finned Heatsink + Active Fan',
+        explodeTarget: 0.74,
+        camPos: [8.5, 13.5, 8.8],
+        camTarget: [0.8, 1.2, 0.2],
+        focusParts: ['mod_compute'],
+        useCase: 'Fuses incoming C-V2X, BLE, GNSS, and CAN bus telemetry in real time to predict trajectories, evaluate collision risks, and trigger instant driver alerts.',
+        architecture: 'Edge AI System-on-Module seated on a black carrier board through an edge connector, with a 40-pin expansion header and a front I/O row (DC jack, DisplayPort, 2x dual USB-A, Gigabit Ethernet, USB-C). A 12-fin aluminium heatsink with an active cooling fan interfaces thermally with the upper enclosure.',
+        specs: [
+          ['AI Compute Engine', '42 TOPS INT8 Neural Processing Unit (NPU)'],
+          ['Safety Island', 'Dual Lockstep ARM Cortex-R52 Real-Time Cores'],
+          ['High-Speed RAM', '8 GB LPDDR5 Automotive ECC Memory'],
+          ['Thermal Package', '12-Fin Heatsink + Active Fan + TIM Pad']
+        ]
+      },
+      {
+        index: 5,
+        id: 'power_security_storage',
+        shortLabel: '05 · Power, Security & Storage',
+        figCode: 'FIG 1.5 · POWER, HSM & FLASH',
+        accent: '#d97706',
+        title: 'Power Management, Security HSM & Storage Modules',
+        subtitle: 'DC-DC Buck Protection · Hardware Crypto · 256GB Flash',
+        explodeTarget: 0.72,
+        camPos: [11.5, 11.8, 11.2],
+        camTarget: [1.5, 0.8, 1.8],
+        focusParts: ['mod_power', 'mod_security', 'mod_storage', 'io_power'],
+        useCase: 'Regulates 12V/24V vehicle battery power, cryptographically signs/verifies every V2X safety packet in hardware, and records black-box incident logs and HD maps.',
+        architecture: 'Combines the custom Power Management module (shielded inductor + dual electrolytic caps), the Hardware Security Module (Secure Boot + ECDSA), and the solid-state Storage Module.',
+        specs: [
+          ['Power Management', '9V–36V DC Input (12V/24V) + Battery Protection'],
+          ['Security Module', 'IEEE 1609.2 Hardware Crypto & Secure Boot'],
+          ['Storage Module', '256 GB Automotive Flash (Logs, Maps, AI Models)'],
+          ['Transient Immunity', 'ISO 7637-2 Automotive Load-Dump Protected']
+        ]
+      },
+      {
+        index: 6,
+        id: 'front_io_blinking_leds',
+        shortLabel: '06 · Front I/O & Blinking LEDs',
+        figCode: 'FIG 1.6 · FRONT I/O & LIVE STATUS LEDS',
+        accent: '#059669',
+        title: 'Vehicle Interface & Blinking Status LED Array',
+        subtitle: 'Power · CAN Bus (OBD-II) · Ethernet · USB-C · 5 Live Blinking LEDs',
+        explodeTarget: 0.45,
+        camPos: [2.2, 6.2, 16.2],
+        camTarget: [1.0, -0.1, 3.2],
+        focusParts: ['mod_vehicle', 'io_power', 'io_can', 'io_eth', 'io_usbc', 'io_leds'],
+        useCase: 'Provides ruggedized front-panel physical connectivity to the vehicle CAN bus, RSU Ethernet network, USB-C debugging, and instant visual confirmation of all 5 subsystem states via blinking LEDs.',
+        architecture: 'Driven by the internal Vehicle Interface Module (dual CAN transceivers + Ethernet magnetics) and features 5 high-brightness blinking status LEDs on the front-right bezel:',
+        specs: [
+          ['CAN Bus & Ethernet', '12-Pin OBD-II CAN Bus + Shielded RJ45 Gigabit'],
+          ['USB-C Interface', 'High-Speed Logging, Debug & Firmware Update'],
+          ['LED 1–3 Cadence', 'PWR (Heartbeat) · GNSS (1Hz PPS) · C-V2X (10Hz Burst)'],
+          ['LED 4–5 Cadence', 'BLE (Double Strobe) · 4G/5G (Network Traffic Blink)']
+        ]
+      },
+      {
+        index: 7,
+        id: 'full_exploded_anatomy',
+        shortLabel: '07 · Full Exploded Anatomy',
+        figCode: 'FIG 1.7 · COMPLETE MECHANICAL DISASSEMBLY',
+        accent: '#222220',
+        title: 'Complete Exploded Hardware Architecture (18 Parts)',
+        subtitle: 'Interactive 360° Inspection of All In-House Modules & Connectors',
+        explodeTarget: 0.96,
+        camPos: [16.5, 13.8, 18.0],
+        camTarget: [1.4, 0.9, 0],
+        focusParts: ['ALL'],
+        useCase: 'Full mechanical disassembly showing how the top heat-dissipating enclosure, 4 rear antennas, 9 custom surface-mount PCB modules, and 5 front I/O interfaces integrate into a single rugged unit.',
+        architecture: 'Drag anywhere with the left mouse button to orbit 360°, scroll the mouse wheel to zoom into individual SMD components, or use the bottom-right Explode slider to inspect assembly tolerances.',
+        specs: [
+          ['Total Custom Modules', '9x In-House Designed Surface-Mount Modules'],
+          ['External RF Ports', '4x Rear SMA Bulkheads (C-V2X, GNSS, 4G/5G, BLE)'],
+          ['Front Panel I/O', '12V/24V DC, CAN Bus, RJ45 Ethernet, USB-C, 5x LEDs'],
+          ['Test Stand Base', 'Calibrated Metric Reference Deck + RF Plume']
+        ]
+      }
+    ];
+
+    /*************************************************************************
+     * 2. FLOATING 3D CALLOUT PINS METADATA
+     *************************************************************************/
+    const PIN_ITEMS = [
+      { id: 'ant_cv2x', code: 'A1', label: 'C-V2X (PC5) Antenna · 5.9 GHz', color: '#2563eb', chapter: 2 },
+      { id: 'ant_gnss', code: 'A2', label: 'GNSS Antenna · GPS/GLONASS/Galileo', color: '#059669', chapter: 2 },
+      { id: 'ant_4g5g', code: 'A3', label: '4G/5G Antenna · Network/RSU', color: '#d97706', chapter: 2 },
+      { id: 'ant_ble',  code: 'A4', label: 'BLE Antenna · 2.4 GHz', color: '#7c3aed', chapter: 2 },
+      { id: 'enclosure_lid', code: 'E1', label: 'Rugged Aluminium Enclosure', color: '#475569', chapter: 1 },
+      { id: 'mod_cv2x', code: 'M1', label: 'C-V2X (PC5) Wireless Module', color: '#2563eb', chapter: 3 },
+      { id: 'mod_gnss', code: 'M2', label: 'GNSS Module (Ceramic Patch)', color: '#059669', chapter: 3 },
+      { id: 'mod_4g5g', code: 'M3', label: '4G/5G Modem Module', color: '#d97706', chapter: 3 },
+      { id: 'mod_ble',  code: 'M4', label: 'BLE 2.4 GHz Module', color: '#7c3aed', chapter: 3 },
+      { id: 'mod_compute', code: 'M5', label: 'Enfibio Main Compute (Edge AI)', color: '#dc2626', chapter: 4 },
+      { id: 'mod_power', code: 'M6', label: 'Power Management (DC-DC)', color: '#ca8a04', chapter: 5 },
+      { id: 'mod_security', code: 'M7', label: 'Security Module (HSM)', color: '#db2777', chapter: 5 },
+      { id: 'mod_storage', code: 'M8', label: 'Storage Module (Logs/Maps)', color: '#4f46e5', chapter: 5 },
+      { id: 'mod_vehicle', code: 'M9', label: 'Vehicle Interface Module', color: '#0891b2', chapter: 6 },
+      { id: 'io_power', code: 'P1', label: 'Power Input (12V/24V DC)', color: '#dc2626', chapter: 6 },
+      { id: 'io_can', code: 'P2', label: 'CAN Bus (OBD-II)', color: '#ca8a04', chapter: 6 },
+      { id: 'io_eth', code: 'P3', label: 'Ethernet (RSU/Debug)', color: '#0891b2', chapter: 6 },
+      { id: 'io_usbc', code: 'P4', label: 'USB-C (Firmware/Logs)', color: '#475569', chapter: 6 },
+      { id: 'io_leds', code: 'P5', label: '5x Blinking Status LEDs', color: '#16a34a', chapter: 6 }
+    ];
+
+    /*************************************************************************
+     * 3. RENDER SCROLLABLE LEFT CHAPTER CARDS (WITH 4-ANTENNA MATRIX)
+     *************************************************************************/
+    const chaptersContainer = document.getElementById('chapters-container');
+    const chapterDotsContainer = document.getElementById('chapter-dots');
+
+    function buildChaptersUI() {
+      chaptersContainer.innerHTML = '';
+      chapterDotsContainer.innerHTML = '';
+
+      SCROLL_CHAPTERS.forEach((ch, idx) => {
+        const card = document.createElement('div');
+        card.id = `card-${idx}`;
+        card.className = 'chapter-card rounded-xl p-5 relative';
+        card.onclick = () => selectChapter(idx, true);
+
+        // Optional Unified 4-Antenna Matrix Block for Chapter 02
+        let antennaMatrixHTML = '';
+        if (ch.antennaMatrix) {
+          antennaMatrixHTML = `
+            <div class="my-3.5 p-3 rounded-lg bg-[#f1efe9] border border-[#d5d3cc] space-y-2">
+              <div class="font-mono-tech text-[10px] font-bold uppercase tracking-wider text-[#222220] flex items-center justify-between">
+                <span>ALL 4 REAR ANTENNAS (SIMULTANEOUS VIEW)</span>
+                <span class="text-[#e0532c]">A1 – A4</span>
+              </div>
+              <div class="grid grid-cols-1 gap-2">
+                ${ch.antennaMatrix.map(ant => `
+                  <div class="p-2 rounded bg-white/90 border border-[#dcdad3] flex flex-col gap-0.5">
+                    <div class="flex items-center justify-between">
+                      <span class="tint font-mono-tech text-[11px] font-bold flex items-center gap-1.5" style="--tag:${ant.tagColor}; color:${ant.tagColor}">
+                        <span class="w-2 h-2 rounded-full" style="background:${ant.tagColor}"></span>
+                        ${ant.name}
+                      </span>
+                      <span class="font-mono-tech text-[10px] font-semibold px-1.5 py-0.5 rounded bg-stone-100 text-stone-800 border border-stone-300">
+                        ${ant.freq}
+                      </span>
+                    </div>
+                    <p class="text-[11px] text-[#52514c] leading-snug pl-3.5">${ant.role}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        const specsHTML = ch.specs.map(([k, v]) => `
+          <div class="flex items-center justify-between py-1.5 px-2.5 rounded bg-[#f2f0ea] border border-[#dfddd6] text-[10.5px] font-mono-tech">
+            <span class="text-[#6e6c65]">${k}</span>
+            <span class="font-semibold text-[#1c1c1a] text-right">${v}</span>
+          </div>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-2 mb-1.5">
+            <span class="tint font-mono-tech text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded"
+                  style="--tag:${ch.accent}; background:${ch.accent}18; color:${ch.accent}; border:1px solid ${ch.accent}40;">
+              ${ch.figCode}
+            </span>
+            <span class="font-mono-tech text-[10px] text-[#78766f] font-semibold">
+              0${idx} / 0${SCROLL_CHAPTERS.length - 1}
+            </span>
+          </div>
+
+          <h2 class="font-display font-bold text-lg sm:text-xl text-[#181816] leading-snug">${ch.title}</h2>
+          <div class="font-mono-tech text-[11px] font-medium text-[#5a5852] mt-0.5 mb-3">${ch.subtitle}</div>
+
+          <div class="p-3 rounded-lg bg-[#efede6] border-l-2 border-[#222220] mb-3">
+            <div class="font-mono-tech text-[9.5px] font-bold uppercase tracking-wider text-[#5a5852] mb-0.5">
+              Hardware Function & Use Case
+            </div>
+            <p class="text-xs text-[#2b2b28] leading-relaxed">${ch.useCase}</p>
+          </div>
+
+          <p class="text-xs text-[#4a4944] leading-relaxed mb-3">${ch.architecture}</p>
+
+          ${antennaMatrixHTML}
+
+          <div class="space-y-1.5 mb-3.5">
+            ${specsHTML}
+          </div>
+
+          <div class="pt-2.5 border-t border-[#dfddd6] flex items-center justify-between font-mono-tech text-[11px]">
+            ${idx > 0
+              ? `<button onclick="event.stopPropagation(); selectChapter(${idx - 1}, true)" class="px-2.5 py-1 rounded border border-[#c8c6be] hover:bg-stone-200 text-[#222220] transition">↑ Prev</button>`
+              : `<span class="text-[#8a8880] text-[10px]">Scroll pane or click cards ↓</span>`
+            }
+            ${idx < SCROLL_CHAPTERS.length - 1
+              ? `<button onclick="event.stopPropagation(); selectChapter(${idx + 1}, true)" class="px-3 py-1 rounded bg-[#222220] text-[#f6f5f0] hover:opacity-90 transition">Next: ${SCROLL_CHAPTERS[idx + 1].shortLabel} ↓</button>`
+              : `<button onclick="event.stopPropagation(); selectChapter(0, true)" class="px-3 py-1 rounded bg-[#e0532c] text-white font-semibold">↑ Reassemble Unit</button>`
+            }
+          </div>
+        `;
+
+        chaptersContainer.appendChild(card);
+
+        // Right-side Navigation Dot
+        const dotBtn = document.createElement('button');
+        dotBtn.className = 'group flex flex-row-reverse items-center gap-2 py-0.5';
+        dotBtn.onclick = () => selectChapter(idx, true);
+        dotBtn.innerHTML = `
+          <span id="dot-label-${idx}" class="font-mono-tech text-[10px] text-[#6e6c65] opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
+            ${ch.shortLabel}
+          </span>
+          <span id="dot-circle-${idx}" class="w-2 h-2 rounded-full bg-[#c5c3bc] transition-all duration-300"></span>
+        `;
+        chapterDotsContainer.appendChild(dotBtn);
+      });
+    }
+
+    buildChaptersUI();
+
+    /*************************************************************************
+     * 4. THREE.JS SCENE, REALISTIC PERSPECTIVE CAMERA & ORBIT CONTROLS
+     *************************************************************************/
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf6f5f0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.06;
+    container.appendChild(renderer.domElement);
+
+    // Narrow 30-degree Perspective Camera for realistic depth & foreshortening (replaces flat isometric look)
+    const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 250);
+    camera.position.set(14.5, 11.2, 16.5);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.065;
+    controls.rotateSpeed = 0.85;
+    controls.zoomSpeed = 1.15;
+    controls.panSpeed = 0.8;
+    controls.minDistance = 6.5;
+    controls.maxDistance = 42;
+    controls.target.set(1.4, 0.4, 0);
+
+    // Stop automatic camera transition immediately when user clicks, drags, or scrolls wheel on the 3D view
+    let cameraTransitioning = false;
+    controls.addEventListener('start', () => {
+      cameraTransitioning = false;
+    });
+
+    // Studio & Technical Illustration Lighting
+    const ambientLight = new THREE.AmbientLight(0xfffcf5, 0.78);
+    scene.add(ambientLight);
+
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xe6e2d8, 0.55);
+    hemiLight.position.set(0, 30, 0);
+    scene.add(hemiLight);
+
+    const keyLight = new THREE.DirectionalLight(0xfffdf8, 1.15);
+    keyLight.position.set(14, 26, 18);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.width = 2048;
+    keyLight.shadow.mapSize.height = 2048;
+    keyLight.shadow.camera.near = 2;
+    keyLight.shadow.camera.far = 65;
+    const d = 14;
+    keyLight.shadow.camera.left = -d;
+    keyLight.shadow.camera.right = d;
+    keyLight.shadow.camera.top = d;
+    keyLight.shadow.camera.bottom = -d;
+    keyLight.shadow.bias = -0.0005;
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0xe2e8f0, 0.45);
+    rimLight.position.set(-16, 12, -14);
+    scene.add(rimLight);
+
+    /*************************************************************************
+     * 5. PROCEDURAL TEXTURES (CLAY TECHNICAL MODE + REALISTIC MODE + GLOWS)
+     *************************************************************************/
+    function createRadialGlowTexture(rgbaCenter, rgbaMid) {
+      const c = document.createElement('canvas');
+      c.width = 256; c.height = 256;
+      const ctx = c.getContext('2d');
+      const grad = ctx.createRadialGradient(128, 128, 6, 128, 128, 124);
+      grad.addColorStop(0, rgbaCenter);
+      grad.addColorStop(0.42, rgbaMid);
+      grad.addColorStop(1, 'rgba(224, 83, 44, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 256, 256);
+      return new THREE.CanvasTexture(c);
+    }
+
+    function normLook(v) {
+      if (v === true) return 'clay';
+      if (v === false) return 'real';
+      return v || 'clay';
+    }
+
+    function createLidTexture(look) {
+      look = normLook(look);
+      const T = {
+        clay: { bg: '#f2f0ea', box: '#2b2b29', name: '#222220', acc: '#e0532c', sub: '#6e6c65' },
+        dark: { bg: '#23252b', box: 'rgba(255,255,255,0.30)', name: '#f2f1ec', acc: '#ff7a4d', sub: '#a5a39b' },
+        real: { bg: '#1b1e24', box: 'rgba(255,255,255,0.22)', name: '#f8fafc', acc: '#38bdf8', sub: '#94a3b8' }
+      }[look];
+      const c = document.createElement('canvas');
+      c.width = 1024; c.height = 768;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = T.bg;
+      ctx.fillRect(0, 0, 1024, 768);
+
+      ctx.strokeStyle = T.box;
+      ctx.lineWidth = 4;
+      ctx.strokeRect(230, 220, 564, 320);
+
+      ctx.fillStyle = T.name;
+      ctx.font = 'bold 90px "Space Grotesk", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Enfibio', 512, 355);
+
+      ctx.fillStyle = T.acc;
+      ctx.font = 'bold 46px "JetBrains Mono", monospace';
+      ctx.fillText('V2X AI', 512, 430);
+
+      ctx.fillStyle = T.sub;
+      ctx.font = '600 20px "JetBrains Mono", monospace';
+      ctx.fillText('CUSTOM C-V2X (PC5) + BLE HYBRID UNIT', 512, 495);
+      return new THREE.CanvasTexture(c);
+    }
+
+    function createPCBTexture(look) {
+      look = normLook(look);
+      const T = {
+        clay: { bg: '#e9e7e0', trace: '#cfcdc4', via: '#b8b5ab' },
+        dark: { bg: '#1d1f23', trace: '#34373d', via: '#4d5058' },
+        real: { bg: '#0b4623', trace: '#15803d', via: '#eab308' }
+      }[look];
+      const c = document.createElement('canvas');
+      c.width = 1024; c.height = 800;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = T.bg;
+      ctx.fillRect(0, 0, 1024, 800);
+
+      ctx.strokeStyle = T.trace;
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 85; i++) {
+        const x = 60 + (i * 97) % 880;
+        const y = 50 + (i * 53) % 690;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + 70, y);
+        ctx.lineTo(x + 95, y + 25);
+        ctx.stroke();
+      }
+      for (let i = 0; i < 180; i++) {
+        ctx.fillStyle = T.via;
+        ctx.beginPath();
+        ctx.arc(48 + (i * 73) % 920, 48 + (i * 41) % 700, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      return new THREE.CanvasTexture(c);
+    }
+
+    function createShieldLabelTexture(title, sub, look) {
+      look = normLook(look);
+      const T = {
+        clay: { bg: '#f7f6f1', line: '#2b2b29', brand: '#e0532c', title: '#222220', sub: '#5a5852', bar: '#222220' },
+        dark: { bg: '#2e3036', line: '#d2d1ca', brand: '#ff7a4d', title: '#f2f1ec', sub: '#a5a39b', bar: '#ff7a4d' },
+        real: { bg: '#d4d8e0', line: '#2b2b29', brand: '#c2410c', title: '#16161a', sub: '#44434a', bar: '#16161a' }
+      }[look];
+      const c = document.createElement('canvas');
+      c.width = 512; c.height = 512;
+      const ctx = c.getContext('2d');
+      ctx.scale(2, 2);                       // draw in a 256x256 space, rendered at 2x for crisp text
+      ctx.fillStyle = T.bg;
+      ctx.fillRect(0, 0, 256, 256);
+      ctx.strokeStyle = T.line;
+      ctx.lineWidth = 6;
+      ctx.strokeRect(8, 8, 240, 240);
+
+      // shrink-to-fit so long names (e.g. POWER MODULE) never get clipped
+      const fit = (text, px, maxW, weight, family) => {
+        ctx.font = `${weight} ${px}px ${family}`;
+        while (ctx.measureText(text).width > maxW && px > 10) {
+          px -= 1;
+          ctx.font = `${weight} ${px}px ${family}`;
+        }
+      };
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+
+      ctx.fillStyle = T.brand;
+      fit('ENFIBIO', 30, 212, 'bold', '"JetBrains Mono", monospace');
+      ctx.fillText('ENFIBIO', 22, 56);
+
+      ctx.fillStyle = T.line;
+      ctx.fillRect(22, 70, 212, 3);
+
+      ctx.fillStyle = T.title;
+      fit(title, 40, 212, 'bold', '"Space Grotesk", sans-serif');
+      ctx.fillText(title, 22, 134);
+
+      ctx.fillStyle = T.sub;
+      fit(sub, 22, 212, '600', '"JetBrains Mono", monospace');
+      ctx.fillText(sub, 22, 176);
+
+      ctx.fillStyle = T.bar;
+      ctx.fillRect(22, 204, 90, 8);
+      return new THREE.CanvasTexture(c);
+    }
+
+    function createRulerBaseTexture(dark) {
+      const T = dark
+        ? { bg: '#1d1f24', grid: 'rgba(255,255,255,0.10)', tick: '#a9a8a1' }
+        : { bg: '#efede7', grid: 'rgba(43, 43, 41, 0.14)', tick: '#383835' };
+      const c = document.createElement('canvas');
+      c.width = 1024; c.height = 1024;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = T.bg;
+      ctx.fillRect(0, 0, 1024, 1024);
+
+      // Subtle technical grid inside the test-stand pad
+      ctx.strokeStyle = T.grid;
+      ctx.lineWidth = 2;
+      for (let i = 128; i <= 896; i += 64) {
+        ctx.beginPath(); ctx.moveTo(i, 128); ctx.lineTo(i, 896); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(128, i); ctx.lineTo(896, i); ctx.stroke();
+      }
+
+      // Ruler ticks along the front-left edge (matching Raptor 2 Test Stand baseplate)
+      ctx.strokeStyle = T.tick;
+      ctx.lineWidth = 2.5;
+      for (let t = 80; t <= 944; t += 16) {
+        const len = (t % 64 === 0) ? 26 : 12;
+        ctx.beginPath();
+        ctx.moveTo(t, 980);
+        ctx.lineTo(t, 980 - len);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(44, t);
+        ctx.lineTo(44 + len, t);
+        ctx.stroke();
+      }
+      return new THREE.CanvasTexture(c);
+    }
+
+    /*************************************************************************
+     * 6. BUILD THE "wheresryan22/anatomy" CALIBRATION TEST-STAND BASEPLATE
+     *    & VOLUMETRIC RF/THERMAL PLUME
+     *************************************************************************/
+    const rootUnit = new THREE.Group();
+    // Model centre; the camera view-offset keeps it clear of the right-hand specs column
+    rootUnit.position.set(1.8, 0, 0);
+    scene.add(rootUnit);
+
+    const inkEdgeColor = 0x282826;
+    const allInkLines = [];
+    let edgeScale = 1;   // global multiplier for outline opacity (lowered in dark mode)
+
+    function addTechnicalInkOutlines(mesh, opacity = 0.72, thresholdAngle = 18) {
+      const edgesGeo = new THREE.EdgesGeometry(mesh.geometry, thresholdAngle);
+      const edgesMat = new THREE.LineBasicMaterial({
+        color: inkEdgeColor,
+        transparent: true,
+        opacity: opacity
+      });
+      const line = new THREE.LineSegments(edgesGeo, edgesMat);
+      line.userData.baseEdgeOpacity = opacity;
+      allInkLines.push(line);
+      mesh.add(line);
+    }
+
+    // Precision Test-Stand Baseplate (Inspired by Raptor 2 Test Stand Platform)
+    const testStandGroup = new THREE.Group();
+    testStandGroup.position.set(0, -2.15, 0);
+    rootUnit.add(testStandGroup);
+
+    const standMat = new THREE.MeshStandardMaterial({
+      map: createRulerBaseTexture(false),
+      roughness: 0.85,
+      metalness: 0.05
+    });
+    const standPlatform = new THREE.Mesh(new THREE.BoxGeometry(15.2, 0.45, 13.2), standMat);
+    standPlatform.receiveShadow = true;
+    addTechnicalInkOutlines(standPlatform, 0.65);
+    testStandGroup.add(standPlatform);
+
+    // Recessed circular calibration ring in center of test stand
+    const ringGeo = new THREE.TorusGeometry(3.4, 0.09, 12, 64);
+    const ringMat = new THREE.MeshStandardMaterial({ color: 0xd8d5cd, roughness: 0.6 });
+    const standRing = new THREE.Mesh(ringGeo, ringMat);
+    standRing.rotation.x = Math.PI / 2;
+    standRing.position.y = 0.24;
+    addTechnicalInkOutlines(standRing, 0.55);
+    testStandGroup.add(standRing);
+
+    // 4 Machined Vertical Support Pillars holding the Enfibio V2X Unit above the calibration pad
+    const pillarMat = new THREE.MeshStandardMaterial({ color: 0xeae8e1, roughness: 0.65, metalness: 0.1 });
+    [
+      [-5.35, -2.6],
+      [5.35, -2.6],
+      [-5.35, 2.6],
+      [5.35, 2.6]
+    ].forEach(([px, pz]) => {
+      const p = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.32, 1.05, 16), pillarMat);
+      p.position.set(px, 0.72, pz);
+      addTechnicalInkOutlines(p, 0.6);
+      testStandGroup.add(p);
+    });
+
+    // Engraved Nameplate on front-right of Test Stand
+    const plateMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(2.6, 0.1, 0.65),
+      new THREE.MeshStandardMaterial({ color: 0xdcd9d0, roughness: 0.5 })
+    );
+    plateMesh.position.set(4.8, 0.26, 5.4);
+    addTechnicalInkOutlines(plateMesh, 0.75);
+    testStandGroup.add(plateMesh);
+
+    // Volumetric Warm Orange/Red Thermal & RF Plume Effect (Matches Raptor 2 Plume)
+    const plumeGroup = new THREE.Group();
+    rootUnit.add(plumeGroup);
+    const plumeTex = createRadialGlowTexture('rgba(224, 83, 44, 0.42)', 'rgba(224, 83, 44, 0.14)');
+    const plumeSprites = [];
+
+    // Ground thermal reflection pad on test stand
+    const groundGlowGeo = new THREE.PlaneGeometry(11.5, 10.0);
+    const groundGlowMat = new THREE.MeshBasicMaterial({
+      map: plumeTex,
+      transparent: true,
+      opacity: 0.85,
+      depthWrite: false
+    });
+    const groundGlowMesh = new THREE.Mesh(groundGlowGeo, groundGlowMat);
+    groundGlowMesh.rotation.x = -Math.PI / 2;
+    groundGlowMesh.position.set(0, -1.9, 0);
+    plumeGroup.add(groundGlowMesh);
+
+    // Volumetric layered sprites under unit and around the 4 antennas
+    const plumeCoords = [
+      { pos: [0, -1.1, 0], scale: 7.5 },
+      { pos: [-3.15, 2.4, -4.4], scale: 3.4 },
+      { pos: [-1.05, 2.1, -4.4], scale: 3.2 },
+      { pos: [1.15, 2.3, -4.4], scale: 3.2 },
+      { pos: [3.15, 1.8, -4.4], scale: 2.8 }
+    ];
+    plumeCoords.forEach((cfg) => {
+      const spMat = new THREE.SpriteMaterial({
+        map: plumeTex,
+        transparent: true,
+        opacity: 0.55,
+        depthWrite: false
+      });
+      const sp = new THREE.Sprite(spMat);
+      sp.position.set(...cfg.pos);
+      sp.scale.set(cfg.scale, cfg.scale, 1);
+      sp.userData.baseScale = cfg.scale;
+      plumeGroup.add(sp);
+      plumeSprites.push(sp);
+    });
+
+    /*************************************************************************
+     * 7. CONSTRUCT 18-PART ENFIBIO V2X AI MODEL (CLAY & REALISTIC DUAL-FINISH)
+     *************************************************************************/
+    const partRegistry = {};
+    const interactiveMeshes = [];
+    let isClayStyle = true;
+
+    // Color Palettes for Clay Mode (`wheresryan22/anatomy` Fig 1) vs Realistic Hardware Mode
+    const PALETTE = {
+      clay: {
+        chassis: 0xf1efe9,
+        rubber: 0xe4e2dc,
+        brass: 0xe6dec8,
+        pcb: 0xe8e6df,
+        shield: 0xf7f6f2,
+        ceramic: 0xeadbc8,
+        ic: 0xd8d6ce,
+        heatsink: 0xe5e3dc,
+        jetPcb: 0x2b2c30,
+        blackAl: 0x3c3d42,
+        fanDark: 0x16171a,
+        alu: 0xd6d4cd,
+        redPort: 0xe0532c
+      },
+      // Dark-mode twin of the clay look: charcoal parts, same orange accent
+      clayDark: {
+        chassis: 0x2c2e34,
+        rubber: 0x202227,
+        brass: 0x6b6150,
+        pcb: 0x25272c,
+        shield: 0x3b3e45,
+        ceramic: 0x5d5346,
+        ic: 0x1b1c20,
+        heatsink: 0x34363c,
+        jetPcb: 0x1a1b1f,
+        blackAl: 0x34363c,
+        fanDark: 0x0e0f11,
+        alu: 0x9a9da5,
+        redPort: 0xe0532c
+      },
+      realistic: {
+        chassis: 0x1c1f26,
+        rubber: 0x15171c,
+        brass: 0xf59e0b,
+        pcb: 0x0f5e32,
+        shield: 0xd4d8e0,
+        ceramic: 0xd9a074,
+        ic: 0x18181b,
+        heatsink: 0x181a20,
+        jetPcb: 0x0e0f12,
+        blackAl: 0x1b1c20,
+        fanDark: 0x08080a,
+        alu: 0xc3c8d0,
+        redPort: 0xdc2626
+      }
+    };
+
+    function registerPart(id, group, explodeVec, anchorOffset = new THREE.Vector3(0, 0.5, 0)) {
+      const meshes = [];
+      const lines = [];
+      group.traverse((child) => {
+        if (child.isMesh) {
+          child.material = child.material.clone();
+          child.castShadow = true;
+          child.receiveShadow = true;
+          child.userData.partId = id;
+          meshes.push(child);
+          interactiveMeshes.push(child);
+        }
+        if (child.isLineSegments) {
+          child.material = child.material.clone();
+          lines.push(child);
+        }
+      });
+      partRegistry[id] = {
+        id,
+        group,
+        basePos: group.position.clone(),
+        explodeVec: explodeVec.clone(),
+        anchorOffset,
+        meshes,
+        lines,
+        focusMix: 1.0
+      };
+    }
+
+    function makeMat(role) {
+      const m = new THREE.MeshStandardMaterial({
+        color: PALETTE.clay[role] || 0xf1efe9,
+        roughness: 0.72,
+        metalness: 0.08
+      });
+      m.userData.role = role;
+      return m;
+    }
+
+    // Labelled ENFIBIO shield-can material (re-skinned automatically by applyMaterialStyle)
+    function makeLabelCanMat(title, sub) {
+      const m = new THREE.MeshStandardMaterial({
+        map: createShieldLabelTexture(title, sub, 'clay'),
+        roughness: 0.55,
+        metalness: 0.18
+      });
+      m.userData.role = 'shield_can';
+      m.userData.title = title;
+      m.userData.sub = sub;
+      return m;
+    }
+
+    // --- 1. Chassis Base & Mainboard ---
+    const chassisGroup = new THREE.Group();
+    rootUnit.add(chassisGroup);
+
+    const basePlate = new THREE.Mesh(new THREE.BoxGeometry(9.6, 0.36, 7.6), makeMat('chassis'));
+    basePlate.position.set(0, -1.05, 0);
+    addTechnicalInkOutlines(basePlate, 0.78);
+    chassisGroup.add(basePlate);
+
+    [-5.35, 5.35].forEach((xPos) => {
+      const flange = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.28, 6.8), makeMat('chassis'));
+      flange.position.set(xPos, -1.08, 0);
+      addTechnicalInkOutlines(flange, 0.78);
+      chassisGroup.add(flange);
+    });
+
+    const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.38, 1.55, 7.6), makeMat('chassis'));
+    leftWall.position.set(-4.61, -0.25, 0);
+    addTechnicalInkOutlines(leftWall, 0.75);
+    chassisGroup.add(leftWall);
+
+    const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.38, 1.55, 7.6), makeMat('chassis'));
+    rightWall.position.set(4.61, -0.25, 0);
+    addTechnicalInkOutlines(rightWall, 0.75);
+    chassisGroup.add(rightWall);
+
+    const rearWall = new THREE.Mesh(new THREE.BoxGeometry(9.6, 1.55, 0.4), makeMat('chassis'));
+    rearWall.position.set(0, -0.25, -3.6);
+    addTechnicalInkOutlines(rearWall, 0.75);
+    chassisGroup.add(rearWall);
+
+    const frontWall = new THREE.Mesh(new THREE.BoxGeometry(9.6, 1.55, 0.38), makeMat('chassis'));
+    frontWall.position.set(0, -0.25, 3.61);
+    addTechnicalInkOutlines(frontWall, 0.75);
+    chassisGroup.add(frontWall);
+
+    const mainPcbMat = new THREE.MeshStandardMaterial({
+      map: createPCBTexture(true),
+      roughness: 0.65,
+      metalness: 0.1
+    });
+    mainPcbMat.userData.role = 'main_pcb';
+    const mainPcb = new THREE.Mesh(new THREE.BoxGeometry(8.55, 0.16, 6.65), mainPcbMat);
+    mainPcb.position.set(0, -0.35, 0);
+    addTechnicalInkOutlines(mainPcb, 0.65);
+    chassisGroup.add(mainPcb);
+
+    registerPart('chassis_base', chassisGroup, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -0.5, 0));
+
+    // --- 2. Rugged Finned Enclosure Top Lid ---
+    const lidGroup = new THREE.Group();
+    rootUnit.add(lidGroup);
+    const lidTopMat = new THREE.MeshStandardMaterial({
+      map: createLidTexture(true),
+      roughness: 0.68,
+      metalness: 0.12
+    });
+    lidTopMat.userData.role = 'lid_top';
+    const lidMain = new THREE.Mesh(new THREE.BoxGeometry(9.6, 0.48, 7.6), lidTopMat);
+    lidMain.position.set(0, 0.78, 0);
+    addTechnicalInkOutlines(lidMain, 0.85);
+    lidGroup.add(lidMain);
+
+    [-3.7, -3.1, -2.5, 2.5, 3.1, 3.7].forEach((xFin) => {
+      const fin = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.24, 6.6), makeMat('chassis'));
+      fin.position.set(xFin, 1.13, 0);
+      addTechnicalInkOutlines(fin, 0.75);
+      lidGroup.add(fin);
+    });
+    registerPart('enclosure_lid', lidGroup, new THREE.Vector3(0, 4.9, 0), new THREE.Vector3(0, 1.25, 0));
+
+    // --- 3. ALL 4 REAR ANTENNAS (With Detailed Knurled SMA Connectors & Coax Pigtails) ---
+    function buildDetailedSMAMount() {
+      const g = new THREE.Group();
+      const hex = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.38, 6), makeMat('brass'));
+      hex.rotation.x = Math.PI / 2;
+      addTechnicalInkOutlines(hex, 0.8);
+      g.add(hex);
+
+      const washer = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.08, 16), makeMat('brass'));
+      washer.rotation.x = Math.PI / 2;
+      washer.position.z = 0.16;
+      g.add(washer);
+
+      const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.21, 0.65, 16), makeMat('brass'));
+      barrel.rotation.x = Math.PI / 2;
+      barrel.position.z = -0.35;
+      addTechnicalInkOutlines(barrel, 0.75);
+      g.add(barrel);
+
+      const knuckle = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.30, 0.55, 16), makeMat('rubber'));
+      knuckle.position.set(0, 0.25, -0.6);
+      addTechnicalInkOutlines(knuckle, 0.75);
+      g.add(knuckle);
+      return g;
+    }
+
+    // A1: C-V2X (PC5) Antenna (5.875 - 5.905 GHz)
+    const antCv2x = new THREE.Group();
+    antCv2x.position.set(-3.15, 0.1, -3.85);
+    rootUnit.add(antCv2x);
+    antCv2x.add(buildDetailedSMAMount());
+    const whip1 = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.33, 3.85, 20), makeMat('rubber'));
+    whip1.position.set(0, 2.25, -0.6);
+    addTechnicalInkOutlines(whip1, 0.85);
+    antCv2x.add(whip1);
+    const ringBand1 = new THREE.Mesh(new THREE.CylinderGeometry(0.345, 0.345, 0.18, 20), makeMat('redPort'));
+    ringBand1.position.set(0, 0.9, -0.6);
+    antCv2x.add(ringBand1);
+    registerPart('ant_cv2x', antCv2x, new THREE.Vector3(-0.65, 1.1, -2.2), new THREE.Vector3(0, 4.1, -0.6));
+
+    // A2: GNSS Active Mushroom Antenna (GPS / GLONASS / Galileo)
+    const antGnss = new THREE.Group();
+    antGnss.position.set(-1.05, 0.1, -3.85);
+    rootUnit.add(antGnss);
+    antGnss.add(buildDetailedSMAMount());
+    const gnssStem = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.38, 0.95, 18), makeMat('rubber'));
+    gnssStem.position.set(0, 0.9, -0.6);
+    addTechnicalInkOutlines(gnssStem, 0.75);
+    antGnss.add(gnssStem);
+    const gnssRadome = new THREE.Mesh(new THREE.CylinderGeometry(0.98, 0.92, 1.45, 24), makeMat('rubber'));
+    gnssRadome.position.set(0, 2.0, -0.6);
+    addTechnicalInkOutlines(gnssRadome, 0.85);
+    antGnss.add(gnssRadome);
+    const gnssCap = new THREE.Mesh(new THREE.SphereGeometry(0.98, 24, 12, 0, Math.PI * 2, 0, Math.PI * 0.38), makeMat('rubber'));
+    gnssCap.position.set(0, 2.42, -0.6);
+    addTechnicalInkOutlines(gnssCap, 0.65);
+    antGnss.add(gnssCap);
+    registerPart('ant_gnss', antGnss, new THREE.Vector3(-0.2, 1.1, -2.2), new THREE.Vector3(0, 3.3, -0.6));
+
+    // A3: 4G/5G Antenna (Network / RSU)
+    const ant4g = new THREE.Group();
+    ant4g.position.set(1.15, 0.1, -3.85);
+    rootUnit.add(ant4g);
+    ant4g.add(buildDetailedSMAMount());
+    const whip3 = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.32, 3.45, 20), makeMat('rubber'));
+    whip3.position.set(0, 2.05, -0.6);
+    addTechnicalInkOutlines(whip3, 0.85);
+    ant4g.add(whip3);
+    registerPart('ant_4g5g', ant4g, new THREE.Vector3(0.2, 1.1, -2.2), new THREE.Vector3(0, 3.7, -0.6));
+
+    // A4: BLE 2.4 GHz Stubby Antenna
+    const antBle = new THREE.Group();
+    antBle.position.set(3.15, 0.1, -3.85);
+    rootUnit.add(antBle);
+    antBle.add(buildDetailedSMAMount());
+    const whip4 = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.25, 2.25, 18), makeMat('rubber'));
+    whip4.position.set(0, 1.45, -0.6);
+    addTechnicalInkOutlines(whip4, 0.85);
+    antBle.add(whip4);
+    registerPart('ant_ble', antBle, new THREE.Vector3(0.65, 1.1, -2.2), new THREE.Vector3(0, 2.65, -0.6));
+
+    // --- 4. Front Panel Connectors + 5 Realistic Blinking Status LEDs ---
+    const ioPower = new THREE.Group();
+    ioPower.position.set(-3.45, -0.25, 3.82);
+    rootUnit.add(ioPower);
+    const pwrCyl = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.42, 20), makeMat('redPort'));
+    pwrCyl.rotation.x = Math.PI / 2;
+    addTechnicalInkOutlines(pwrCyl, 0.85);
+    ioPower.add(pwrCyl);
+    registerPart('io_power', ioPower, new THREE.Vector3(-0.4, 0, 1.75), new THREE.Vector3(0, 0, 0.4));
+
+    const ioCan = new THREE.Group();
+    ioCan.position.set(-1.75, -0.25, 3.82);
+    rootUnit.add(ioCan);
+    const canBox = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.72, 0.40), makeMat('rubber'));
+    addTechnicalInkOutlines(canBox, 0.85);
+    ioCan.add(canBox);
+    registerPart('io_can', ioCan, new THREE.Vector3(-0.15, 0, 1.75), new THREE.Vector3(0, 0, 0.4));
+
+    const ioEth = new THREE.Group();
+    ioEth.position.set(0.05, -0.25, 3.82);
+    rootUnit.add(ioEth);
+    const ethBox = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.86, 0.40), makeMat('shield'));
+    addTechnicalInkOutlines(ethBox, 0.85);
+    ioEth.add(ethBox);
+    registerPart('io_eth', ioEth, new THREE.Vector3(0.1, 0, 1.75), new THREE.Vector3(0, 0, 0.4));
+
+    const ioUsbc = new THREE.Group();
+    ioUsbc.position.set(1.45, -0.25, 3.82);
+    rootUnit.add(ioUsbc);
+    const usbBox = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.28, 0.36), makeMat('shield'));
+    addTechnicalInkOutlines(usbBox, 0.85);
+    ioUsbc.add(usbBox);
+    registerPart('io_usbc', ioUsbc, new THREE.Vector3(0.25, 0, 1.75), new THREE.Vector3(0, 0, 0.4));
+
+    // 5 REALISTIC BLINKING FRONT-PANEL STATUS LEDs (with individual glow halos & point lights)
+    const ioLeds = new THREE.Group();
+    ioLeds.position.set(2.95, -0.25, 3.82);
+    rootUnit.add(ioLeds);
+    const ledBezel = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.48, 0.20), makeMat('chassis'));
+    addTechnicalInkOutlines(ledBezel, 0.8);
+    ioLeds.add(ledBezel);
+
+    const blinkingLeds = [];
+    const LED_CONFIGS = [
+      { name: 'PWR',   color: 0x22c55e, rgba: 'rgba(34,197,94,0.9)',  pattern: 'heartbeat' },
+      { name: 'GNSS',  color: 0x10b981, rgba: 'rgba(16,185,129,0.9)', pattern: 'pps_1hz' },
+      { name: 'C-V2X', color: 0x06b6d4, rgba: 'rgba(6,182,212,0.95)', pattern: 'cv2x_burst' },
+      { name: 'BLE',   color: 0x3b82f6, rgba: 'rgba(59,130,246,0.95)', pattern: 'ble_strobe' },
+      { name: '4G/5G', color: 0xf59e0b, rgba: 'rgba(245,158,11,0.95)', pattern: 'data_flicker' }
+    ];
+
+    LED_CONFIGS.forEach((cfg, i) => {
+      const xOffset = -0.60 + i * 0.30;
+      const ledMat = new THREE.MeshStandardMaterial({
+        color: cfg.color,
+        emissive: cfg.color,
+        emissiveIntensity: 2.2,
+        roughness: 0.15
+      });
+      ledMat.userData.isLed = true;
+
+      const lens = new THREE.Mesh(new THREE.SphereGeometry(0.105, 16, 16), ledMat);
+      lens.position.set(xOffset, 0, 0.12);
+      ioLeds.add(lens);
+
+      // Additive Halo Sprite so the blinking LED pops vividly even in bright Fig 1 paper mode
+      const haloTex = createRadialGlowTexture(cfg.rgba, 'rgba(255,255,255,0.0)');
+      const haloMat = new THREE.SpriteMaterial({
+        map: haloTex,
+        transparent: true,
+        opacity: 0.9,
+        depthWrite: false
+      });
+      const halo = new THREE.Sprite(haloMat);
+      halo.position.set(xOffset, 0, 0.18);
+      halo.scale.set(0.65, 0.65, 1);
+      ioLeds.add(halo);
+
+      blinkingLeds.push({ cfg, ledMat, halo, haloMat });
+    });
+
+    // Dynamic PointLight casting blinking LED glow onto the front test-stand floor
+    const frontLedLight = new THREE.PointLight(0x10b981, 0.8, 5.5);
+    frontLedLight.position.set(0, -0.1, 0.65);
+    ioLeds.add(frontLedLight);
+
+    registerPart('io_leds', ioLeds, new THREE.Vector3(0.5, 0, 1.75), new THREE.Vector3(0, 0.25, 0.4));
+
+    // --- 5. Nine Internal Custom In-House PCB Modules ---
+    function makeShieldedModule(pos, size, title, sub, explodeVec, id) {
+      const g = new THREE.Group();
+      g.position.set(...pos);
+      rootUnit.add(g);
+
+      const pcb = new THREE.Mesh(new THREE.BoxGeometry(size[0], 0.12, size[2]), makeMat('pcb'));
+      addTechnicalInkOutlines(pcb, 0.8);
+      g.add(pcb);
+
+      const shMat = new THREE.MeshStandardMaterial({
+        map: createShieldLabelTexture(title, sub, true),
+        roughness: 0.55,
+        metalness: 0.18
+      });
+      shMat.userData.role = 'shield_can';
+      shMat.userData.title = title;
+      shMat.userData.sub = sub;
+
+      const sh = new THREE.Mesh(new THREE.BoxGeometry(size[0] * 0.78, 0.28, size[2] * 0.78), shMat);
+      sh.position.y = 0.19;
+      addTechnicalInkOutlines(sh, 0.88);
+      g.add(sh);
+
+      // Internal SMD diagnostic blinking LED on each RF module
+      const smdMat = new THREE.MeshStandardMaterial({
+        color: 0xef4444,
+        emissive: 0xef4444,
+        emissiveIntensity: 1.8
+      });
+      smdMat.userData.isLed = true;
+      const smd = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.08, 0.09), smdMat);
+      smd.position.set(size[0] * 0.36, 0.1, size[2] * 0.36);
+      g.add(smd);
+      blinkingLeds.push({
+        cfg: { pattern: 'cv2x_burst' },
+        ledMat: smdMat,
+        halo: null,
+        haloMat: null
+      });
+
+      registerPart(id, g, new THREE.Vector3(...explodeVec), new THREE.Vector3(0, 0.45, 0));
+    }
+
+    makeShieldedModule([-2.35, -0.18, -1.85], [2.15, 0.3, 1.85], 'C-V2X PC5', '5.875-5.905GHz', [-0.4, 1.85, -0.4], 'mod_cv2x');
+    makeShieldedModule([1.55, -0.18, -1.85], [2.15, 0.3, 1.85], '4G/5G MODEM', 'V2N / RSU', [0.4, 1.85, -0.4], 'mod_4g5g');
+    makeShieldedModule([3.15, -0.18, -0.45], [1.38, 0.3, 1.38], 'BLE 5.3', '2.4GHz VRU', [0.6, 1.65, 0], 'mod_ble');
+
+    // GNSS Module with Ceramic Patch
+    const modGnss = new THREE.Group();
+    modGnss.position.set(-2.55, -0.18, 0.18);
+    rootUnit.add(modGnss);
+    const gnssPcb = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.12, 1.55), makeMat('pcb'));
+    addTechnicalInkOutlines(gnssPcb, 0.8);
+    modGnss.add(gnssPcb);
+    const gnssPatch = new THREE.Mesh(new THREE.BoxGeometry(1.22, 0.26, 1.12), makeMat('ceramic'));
+    gnssPatch.position.y = 0.18;
+    addTechnicalInkOutlines(gnssPatch, 0.85);
+    modGnss.add(gnssPatch);
+    registerPart('mod_gnss', modGnss, new THREE.Vector3(-0.5, 1.65, 0.1), new THREE.Vector3(0, 0.42, 0));
+
+    // Enfibio Main Compute — black carrier board on an aluminium base plate, edge-connector SoM,
+    // finned heatsink with active fan, 40-pin expansion header and a full front I/O row
+    const modCompute = new THREE.Group();
+    modCompute.position.set(-0.15, -0.12, 0.35);
+    rootUnit.add(modCompute);
+    const addC = (geo, role, x, y, z, edge = 0.8, parent = modCompute) => {
+      const m = new THREE.Mesh(geo, makeMat(role));
+      m.position.set(x, y, z);
+      addTechnicalInkOutlines(m, edge);
+      parent.add(m);
+      return m;
+    };
+    const B = (w, h, d) => new THREE.BoxGeometry(w, h, d);
+
+    // Base plate + carrier PCB + corner screws
+    addC(B(2.75, 0.08, 2.25), 'blackAl', 0, -0.1, 0);
+    addC(B(2.65, 0.10, 2.15), 'jetPcb', 0, 0, 0);
+    [[-1.2, -0.98], [1.2, -0.98], [-1.2, 0.98], [1.2, 0.98]].forEach(([sx, sz]) => {
+      addC(new THREE.CylinderGeometry(0.05, 0.05, 0.05, 10), 'alu', sx, 0.075, sz, 0.6);
+    });
+
+    // SO-DIMM style edge connector + System-on-Module board
+    addC(B(2.1, 0.10, 0.16), 'fanDark', 0, 0.10, 0.50);
+    addC(B(2.0, 0.04, 1.35), 'jetPcb', 0, 0.17, -0.125);
+
+    // Heatsink: 12 fin plates + top cover
+    for (let i = 0; i < 12; i++) {
+      addC(B(0.07, 0.24, 1.1), 'blackAl', -0.825 + i * 0.15, 0.31, -0.25, 0.7);
+    }
+    addC(B(1.72, 0.06, 1.1), 'blackAl', 0, 0.46, -0.25);
+
+    // Active cooling fan (square shroud, ring, 7 blades, hub) on the left of the heatsink top
+    addC(B(0.92, 0.08, 0.92), 'blackAl', -0.36, 0.53, -0.25);
+    const fanC = new THREE.Group();
+    fanC.position.set(-0.36, 0.575, -0.25);
+    modCompute.add(fanC);
+    addC(new THREE.CylinderGeometry(0.4, 0.4, 0.012, 32), 'fanDark', 0, 0, 0, 0.5, fanC);
+    for (let i = 0; i < 7; i++) {
+      const th = (i / 7) * Math.PI * 2;
+      const blade = addC(B(0.27, 0.012, 0.13), 'blackAl', Math.cos(th) * 0.21, 0.014, Math.sin(th) * 0.21, 0.6, fanC);
+      blade.rotation.y = -th + 0.5;
+    }
+    addC(new THREE.CylinderGeometry(0.15, 0.15, 0.035, 24), 'fanDark', 0, 0.025, 0, 0.7, fanC);
+
+    // ENFIBIO name plate on the heatsink top (right of the fan)
+    const cLabel = new THREE.Mesh(B(0.58, 0.022, 0.62), makeLabelCanMat('MAIN COMPUTE', 'EDGE AI 42 TOPS'));
+    cLabel.position.set(0.5, 0.501, -0.25);
+    addTechnicalInkOutlines(cLabel, 0.85);
+    modCompute.add(cLabel);
+
+    // 40-pin expansion header along the right edge + camera connectors on the left edge
+    addC(B(0.14, 0.12, 1.0), 'fanDark', 1.2, 0.08, -0.4);
+    addC(B(0.07, 0.05, 0.9), 'brass', 1.2, 0.16, -0.4, 0.6);
+    addC(B(0.2, 0.08, 0.42), 'rubber', -1.15, 0.09, -0.25);
+    addC(B(0.2, 0.08, 0.42), 'rubber', -1.15, 0.09, 0.3);
+
+    // Front I/O row: DC jack, DisplayPort, 2x dual USB-A, Ethernet, USB-C
+    const ioZ = 0.88;
+    addC(B(0.24, 0.22, 0.3), 'fanDark', -1.2, 0.16, ioZ + 0.02);                 // DC jack
+    addC(B(0.36, 0.16, 0.3), 'alu', -0.82, 0.13, ioZ + 0.02);                      // DisplayPort
+    [-0.33, 0.17].forEach((ux) => {                                               // 2x dual USB-A
+      addC(B(0.46, 0.30, 0.42), 'alu', ux, 0.20, ioZ);
+      [-0.07, 0.09].forEach((uy) => addC(B(0.38, 0.06, 0.02), 'fanDark', ux, 0.20 + uy, ioZ + 0.21, 0.4));
+    });
+    addC(B(0.44, 0.30, 0.42), 'alu', 0.67, 0.20, ioZ);                              // Ethernet RJ45
+    addC(B(0.30, 0.12, 0.02), 'fanDark', 0.67, 0.20, ioZ + 0.21, 0.4);
+    addC(B(0.24, 0.09, 0.28), 'alu', 1.1, 0.10, ioZ + 0.03);                        // USB-C
+
+    registerPart('mod_compute', modCompute, new THREE.Vector3(0, 2.4, 0.1), new THREE.Vector3(0, 0.62, 0));
+
+    // Power Management Module
+    const modPower = new THREE.Group();
+    modPower.position.set(2.85, -0.18, 1.35);
+    rootUnit.add(modPower);
+    const pwrPcb = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.12, 1.55), makeMat('pcb'));
+    addTechnicalInkOutlines(pwrPcb, 0.8);
+    modPower.add(pwrPcb);
+    // Labelled shield can, same ENFIBIO livery as the RF modules
+    const pwrCanMat = makeLabelCanMat('POWER MODULE', '9-36V DC-DC');
+    const ind = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.34, 0.95), pwrCanMat);
+    ind.position.set(-0.3, 0.22, 0);
+    addTechnicalInkOutlines(ind, 0.85);
+    modPower.add(ind);
+    [-0.32, 0.32].forEach((cz) => {
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.38, 16), makeMat('shield'));
+      cap.position.set(0.45, 0.24, cz);
+      addTechnicalInkOutlines(cap, 0.8);
+      modPower.add(cap);
+    });
+    registerPart('mod_power', modPower, new THREE.Vector3(0.5, 1.55, 0.3), new THREE.Vector3(0, 0.42, 0));
+
+    // Vehicle Interface Module
+    const modVeh = new THREE.Group();
+    modVeh.position.set(-2.45, -0.18, 2.25);
+    rootUnit.add(modVeh);
+    const vehPcb = new THREE.Mesh(new THREE.BoxGeometry(2.35, 0.12, 1.35), makeMat('pcb'));
+    addTechnicalInkOutlines(vehPcb, 0.8);
+    modVeh.add(vehPcb);
+    [-0.55, 0.55].forEach((tx) => {
+      const ch = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.32, 0.68), makeMat('ic'));
+      ch.position.set(tx, 0.21, 0);
+      addTechnicalInkOutlines(ch, 0.85);
+      modVeh.add(ch);
+    });
+    registerPart('mod_vehicle', modVeh, new THREE.Vector3(-0.4, 1.45, 0.5), new THREE.Vector3(0, 0.42, 0));
+
+    // Security Module (HSM)
+    const modSec = new THREE.Group();
+    modSec.position.set(0.05, -0.18, 2.35);
+    rootUnit.add(modSec);
+    const secPcb = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.12, 1.25), makeMat('pcb'));
+    addTechnicalInkOutlines(secPcb, 0.8);
+    modSec.add(secPcb);
+    const hsmIc = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.28, 0.9), makeLabelCanMat('HSM', 'SECURE BOOT'));
+    hsmIc.position.y = 0.2;
+    addTechnicalInkOutlines(hsmIc, 0.85);
+    modSec.add(hsmIc);
+    registerPart('mod_security', modSec, new THREE.Vector3(0, 1.65, 0.6), new THREE.Vector3(0, 0.38, 0));
+
+    // Storage Module
+    const modStor = new THREE.Group();
+    modStor.position.set(1.85, -0.18, 2.35);
+    rootUnit.add(modStor);
+    const storPcb = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.12, 1.25), makeMat('pcb'));
+    addTechnicalInkOutlines(storPcb, 0.8);
+    modStor.add(storPcb);
+    const nandIc = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.28, 0.95), makeLabelCanMat('STORAGE', '256GB FLASH'));
+    nandIc.position.y = 0.2;
+    addTechnicalInkOutlines(nandIc, 0.85);
+    modStor.add(nandIc);
+    registerPart('mod_storage', modStor, new THREE.Vector3(0.35, 1.55, 0.6), new THREE.Vector3(0, 0.38, 0));
+
+    /*************************************************************************
+     * 8. FLOATING 3D CALLOUT PINS & INTERACTIVE RAYCASTING
+     *************************************************************************/
+    const calloutContainer = document.getElementById('callout-container');
+    const pinDOMRegistry = {};
+
+    function init3DPins() {
+      calloutContainer.innerHTML = '';
+      PIN_ITEMS.forEach((item) => {
+        const badge = document.createElement('div');
+        badge.className = 'pin-badge';
+        badge.innerHTML = `
+          <span class="px-1 py-0.2 rounded text-[9px] font-bold text-white" style="background:${item.color}">${item.code}</span>
+          <span>${item.label}</span>
+        `;
+        badge.onclick = (e) => {
+          e.stopPropagation();
+          selectChapter(item.chapter, true);
+        };
+        calloutContainer.appendChild(badge);
+        pinDOMRegistry[item.id] = { item, badge };
+      });
+    }
+    init3DPins();
+
+    // Direct 3D Hover & Click Raycasting on the Model
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let pointerDownPos = { x: 0, y: 0 };
+
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      pointerDownPos = { x: e.clientX, y: e.clientY };
+    });
+
+    renderer.domElement.addEventListener('pointermove', (e) => {
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const hits = raycaster.intersectObjects(interactiveMeshes, false);
+      const readout = document.getElementById('hovered-part-readout');
+      if (hits.length > 0) {
+        const pid = hits[0].object.userData.partId;
+        const pinMeta = PIN_ITEMS.find(p => p.id === pid);
+        if (pinMeta) {
+          readout.textContent = `INSPECTING [${pinMeta.code}] · ${pinMeta.label.toUpperCase()}`;
+        }
+      } else {
+        readout.textContent = 'ENFIBIO V2X AI · HYBRID C-V2X (PC5) + BLE UNIT';
+      }
+    });
+
+    renderer.domElement.addEventListener('pointerup', (e) => {
+      const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+      if (dist > 6) return; // Ignore drag-orbit gestures
+
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const hits = raycaster.intersectObjects(interactiveMeshes, false);
+      if (hits.length > 0) {
+        const pid = hits[0].object.userData.partId;
+        const pinMeta = PIN_ITEMS.find(p => p.id === pid);
+        if (pinMeta) {
+          selectChapter(pinMeta.chapter, true);
+        }
+      }
+    });
+
+    /*************************************************************************
+     * 9. STATE ENGINE: SELECTIVE BLUR, CHAPTER SCROLL, & UI CONTROLS
+     *************************************************************************/
+    let activeChapterIdx = 0;
+    let focusBlurEnabled = true;
+    let rfPlumeActive = true;
+    let currentExplode = 0;
+    let targetExplode = 0;
+    const desiredCamPos = new THREE.Vector3(14.5, 11.2, 16.5);
+    const desiredCamTarget = new THREE.Vector3(1.4, 0.4, 0);
+
+    function selectChapter(idx, scrollPaneToCard = false) {
+      activeChapterIdx = idx;
+      const ch = SCROLL_CHAPTERS[idx];
+      if (!ch) return;
+
+      // Update Card Focus / Blur
+      SCROLL_CHAPTERS.forEach((_, i) => {
+        const c = document.getElementById(`card-${i}`);
+        if (c) {
+          if (i === idx || !focusBlurEnabled) {
+            c.classList.add('active-card');
+          } else {
+            c.classList.remove('active-card');
+          }
+        }
+        const dot = document.getElementById(`dot-circle-${i}`);
+        const lbl = document.getElementById(`dot-label-${i}`);
+        if (dot && lbl) {
+          if (i === idx) {
+            dot.className = 'w-3 h-3 rounded-full bg-[#e0532c] transition-all duration-300';
+            lbl.className = 'font-mono-tech text-[10px] text-[#222220] font-bold opacity-100 transition whitespace-nowrap';
+          } else {
+            dot.className = 'w-2 h-2 rounded-full bg-[#c5c3bc] transition-all duration-300';
+            lbl.className = 'font-mono-tech text-[10px] text-[#6e6c65] opacity-0 group-hover:opacity-100 transition whitespace-nowrap';
+          }
+        }
+      });
+
+      if (scrollPaneToCard) {
+        const cardEl = document.getElementById(`card-${idx}`);
+        if (cardEl) {
+          cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+
+      // Update Explode Target & Smooth Camera Glide
+      targetExplode = ch.explodeTarget;
+      document.getElementById('explode-slider').value = Math.round(targetExplode * 100);
+      document.getElementById('explode-pct').textContent = `${Math.round(targetExplode * 100)}%`;
+
+      desiredCamPos.set(...ch.camPos);
+      desiredCamTarget.set(...ch.camTarget);
+      cameraTransitioning = true;
+
+      // Update 3D Callout Badges (Note: Chapter 02 focuses ALL 4 ANTENNAS at once!)
+      Object.values(pinDOMRegistry).forEach(({ item, badge }) => {
+        const isFocused = ch.focusParts.includes('ALL') || ch.focusParts.includes(item.id);
+        if (!focusBlurEnabled || isFocused) {
+          badge.classList.add('pin-focused');
+          badge.classList.remove('pin-blurred');
+        } else {
+          badge.classList.remove('pin-focused');
+          badge.classList.add('pin-blurred');
+        }
+      });
+    }
+
+    // Scroll Listener on Left Hardware Pane
+    const scrollPane = document.getElementById('chapter-scroll-pane');
+    scrollPane.addEventListener('scroll', () => {
+      const paneRect = scrollPane.getBoundingClientRect();
+      const paneCenter = paneRect.top + paneRect.height * 0.42;
+      let closestIdx = activeChapterIdx;
+      let minDist = Infinity;
+
+      SCROLL_CHAPTERS.forEach((_, idx) => {
+        const card = document.getElementById(`card-${idx}`);
+        if (card) {
+          const r = card.getBoundingClientRect();
+          const cCenter = r.top + r.height / 2;
+          const d = Math.abs(cCenter - paneCenter);
+          if (d < minDist) {
+            minDist = d;
+            closestIdx = idx;
+          }
+        }
+      });
+
+      if (closestIdx !== activeChapterIdx) {
+        selectChapter(closestIdx, false);
+      }
+    }, { passive: true });
+
+    // Which finish is active: 'clay' | 'dark' (clay, dark mode) | 'real' (anodized & PCB)
+    function currentLook() {
+      return isClayStyle ? (isDarkTheme ? 'dark' : 'clay') : 'real';
+    }
+
+    // Re-skin every part for the active finish (called by the Style toggle, the Theme toggle and on load)
+    function applyMaterialStyle() {
+      const look = currentLook();
+      const modePalette = look === 'real' ? PALETTE.realistic : (look === 'dark' ? PALETTE.clayDark : PALETTE.clay);
+      const swapMap = (mat, tex) => { if (mat.map) mat.map.dispose(); mat.map = tex; mat.needsUpdate = true; };
+
+      Object.values(partRegistry).forEach((reg) => {
+        reg.meshes.forEach((m) => {
+          const mat = m.material;
+          if (!mat || mat.userData.isLed) return;
+          const role = mat.userData.role;
+          if (role === 'lid_top') {
+            swapMap(mat, createLidTexture(look));
+          } else if (role === 'main_pcb') {
+            swapMap(mat, createPCBTexture(look));
+          } else if (role === 'shield_can') {
+            swapMap(mat, createShieldLabelTexture(mat.userData.title, mat.userData.sub, look));
+            mat.metalness = look === 'real' ? 0.82 : 0.18;
+            mat.roughness = look === 'real' ? 0.28 : 0.55;
+          } else if (role && modePalette[role] !== undefined) {
+            mat.color.setHex(modePalette[role]);
+            mat.metalness = look === 'real' ? (role === 'brass' ? 0.9 : role === 'alu' ? 0.85 : 0.55) : (look === 'dark' ? (role === 'alu' ? 0.5 : 0.16) : 0.08);
+            mat.roughness = look === 'real' ? 0.35 : (look === 'dark' ? 0.6 : 0.72);
+          }
+        });
+      });
+    }
+
+    // Toggle between Fig 1 Technical Clay and Realistic Anodized Finish
+    function toggleMaterialStyle() {
+      isClayStyle = !isClayStyle;
+      document.getElementById('style-mode-label').textContent = isClayStyle
+        ? 'Style: Fig 1 Technical Clay'
+        : 'Style: Realistic Anodized & PCB';
+      applyMaterialStyle();
+    }
+
+    function toggleFocusBlur() {
+      focusBlurEnabled = !focusBlurEnabled;
+      document.getElementById('blur-mode-label').textContent = focusBlurEnabled ? 'Focus Blur: ON' : 'Focus Blur: OFF';
+      document.getElementById('blur-dot').className = focusBlurEnabled
+        ? 'w-2 h-2 rounded-full bg-emerald-600'
+        : 'w-2 h-2 rounded-full bg-stone-400';
+      selectChapter(activeChapterIdx, false);
+    }
+
+    function toggleRfPlume() {
+      rfPlumeActive = !rfPlumeActive;
+      plumeGroup.visible = rfPlumeActive;
+      document.getElementById('plume-btn-text').textContent = rfPlumeActive ? 'SHUT DOWN' : 'IGNITE RF PLUME';
+      document.getElementById('plume-indicator').className = rfPlumeActive
+        ? 'w-2.5 h-2.5 rounded-full bg-[#e0532c] animate-pulse'
+        : 'w-2.5 h-2.5 rounded-full bg-stone-400';
+    }
+
+    let leftPanelVisible = true;
+    function toggleLeftPanel() {
+      leftPanelVisible = !leftPanelVisible;
+      scrollPane.style.display = leftPanelVisible ? 'block' : 'none';
+      document.getElementById('btn-panel-toggle').textContent = leftPanelVisible ? 'Hide Specs' : 'Show Specs';
+    }
+
+    // ---- Labels (floating 3D callouts) on / off ----
+    let labelsVisible = true;
+    function toggleLabels() {
+      labelsVisible = !labelsVisible;
+      calloutContainer.style.display = labelsVisible ? '' : 'none';
+      document.getElementById('labels-mode-label').textContent = labelsVisible ? 'Labels: ON' : 'Labels: OFF';
+      document.getElementById('labels-dot').className = labelsVisible
+        ? 'w-2 h-2 rounded-full bg-emerald-600'
+        : 'w-2 h-2 rounded-full bg-stone-400';
+    }
+
+    // ---- Light / Dark theme (UI + 3D scene) ----
+    let isDarkTheme = false;
+    function applyTheme(dark, persist) {
+      isDarkTheme = dark;
+      document.documentElement.classList.toggle('dark', dark);
+      scene.background.setHex(dark ? 0x101114 : 0xf6f5f0);
+      ambientLight.intensity = dark ? 0.9 : 0.78;
+      hemiLight.intensity = dark ? 0.6 : 0.55;
+      keyLight.intensity = dark ? 1.3 : 1.15;
+
+      // Test stand
+      if (standMat.map) standMat.map.dispose();
+      standMat.map = createRulerBaseTexture(dark);
+      standMat.needsUpdate = true;
+      ringMat.color.setHex(dark ? 0x4a4c53 : 0xd8d5cd);
+      pillarMat.color.setHex(dark ? 0x3a3c42 : 0xeae8e1);
+      plateMesh.material.color.setHex(dark ? 0x45474e : 0xdcd9d0);
+
+      // Technical ink outlines: light lines (a bit softer) on dark parts, dark lines on light parts
+      edgeScale = dark ? 0.6 : 1;
+      allInkLines.forEach((ln) => {
+        ln.material.color.setHex(dark ? 0xd2d1ca : inkEdgeColor);
+        ln.material.opacity = (ln.userData.baseEdgeOpacity || 0.75) * edgeScale;
+      });
+
+      // The model itself (clay -> dark clay, labels, PCB, lid)
+      applyMaterialStyle();
+      document.getElementById('theme-mode-label').textContent = dark ? 'Dark Mode: ON' : 'Dark Mode: OFF';
+      document.getElementById('theme-dot').className = dark
+        ? 'w-2 h-2 rounded-full bg-emerald-600'
+        : 'w-2 h-2 rounded-full bg-stone-400';
+      if (persist) { try { localStorage.setItem('enfibio-theme', dark ? 'dark' : 'light'); } catch (e) {} }
+    }
+    function toggleTheme() { applyTheme(!isDarkTheme, true); }
+
+    // ---- Keep the 3D model centred in the space NOT covered by the right-hand specs panel ----
+    let viewShift = 0;
+    let appliedShift = null;
+    function applyViewOffset(force) {
+      const W = window.innerWidth, H = window.innerHeight;
+      let target = 0;
+      if (leftPanelVisible && W >= 900) {
+        const r = scrollPane.getBoundingClientRect();
+        target = Math.max(0, (W - r.left) / 2);
+      }
+      viewShift += (target - viewShift) * 0.14;
+      if (Math.abs(target - viewShift) < 0.4) viewShift = target;
+      if (!force && appliedShift !== null && Math.abs(viewShift - appliedShift) < 0.05) return;
+      appliedShift = viewShift;
+      if (viewShift === 0) camera.clearViewOffset();
+      else camera.setViewOffset(W, H, viewShift, 0, W, H);
+    }
+
+    function onManualExplodeSlider(val) {
+      targetExplode = Number(val) / 100;
+      document.getElementById('explode-pct').textContent = `${val}%`;
+    }
+
+    function resetCameraView() {
+      const ch = SCROLL_CHAPTERS[activeChapterIdx];
+      desiredCamPos.set(...ch.camPos);
+      desiredCamTarget.set(...ch.camTarget);
+      cameraTransitioning = true;
+    }
+
+    /*************************************************************************
+     * 10. ANIMATION LOOP (BLINKING LED CADENCES + SELECTIVE 3D GHOSTING)
+     *************************************************************************/
+    const clock = new THREE.Clock();
+
+    function evaluateLedBlinkPattern(pattern, t) {
+      switch (pattern) {
+        case 'heartbeat':
+          // Double-thump heartbeat pulse
+          const hb = (t * 1.4) % 1.0;
+          return (hb < 0.12 || (hb > 0.24 && hb < 0.36)) ? 2.8 : 0.75;
+        case 'pps_1hz':
+          // Crisp 1Hz GNSS PPS timing strobe
+          return ((t % 1.0) < 0.18) ? 3.2 : 0.15;
+        case 'cv2x_burst':
+          // Rapid 10Hz C-V2X PC5 packet transmission blink
+          return (Math.sin(t * 28.0) > 0.1) ? 3.0 : 0.12;
+        case 'ble_strobe':
+          // BLE 2.4 GHz advertisement double-blink
+          const bm = (t * 0.9) % 1.0;
+          return (bm < 0.08 || (bm > 0.16 && bm < 0.24)) ? 2.9 : 0.1;
+        case 'data_flicker':
+          // Pseudo-random cellular network activity blink
+          return (Math.sin(t * 17.0) * Math.cos(t * 11.0) > 0.05) ? 2.7 : 0.18;
+        default:
+          return 1.5;
+      }
+    }
+
+    function update3DPinsAndLeaderLine() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const ch = SCROLL_CHAPTERS[activeChapterIdx];
+
+      Object.values(pinDOMRegistry).forEach(({ item, badge }) => {
+        const reg = partRegistry[item.id];
+        if (!reg) return;
+        const worldPos = reg.group.position.clone().add(reg.anchorOffset);
+        worldPos.applyMatrix4(rootUnit.matrixWorld);
+        const proj = worldPos.project(camera);
+        if (proj.z > 1) {
+          badge.style.display = 'none';
+          return;
+        }
+        badge.style.display = 'flex';
+        const x = (proj.x * 0.5 + 0.5) * w;
+        const y = (-(proj.y * 0.5) + 0.5) * h;
+        badge.style.left = `${x}px`;
+        badge.style.top = `${y - 14}px`;
+      });
+
+      // Draw Technical Leader Line from Active Left Card to Primary Focused 3D Part
+      const pathEl = document.getElementById('active-connector-path');
+      const dotEl = document.getElementById('active-connector-dot');
+      const ringEl = document.getElementById('active-connector-ring');
+
+      if (!leftPanelVisible || !labelsVisible || !ch || ch.focusParts.includes('ALL')) {
+        pathEl.setAttribute('d', '');
+        dotEl.setAttribute('cx', -100);
+        ringEl.setAttribute('cx', -100);
+        return;
+      }
+
+      const primaryPartId = ch.focusParts[0];
+      const reg = partRegistry[primaryPartId];
+      const cardEl = document.getElementById(`card-${activeChapterIdx}`);
+
+      if (reg && cardEl) {
+        const rect = cardEl.getBoundingClientRect();
+        const startX = rect.left;
+        const startY = Math.max(80, Math.min(h - 80, rect.top + rect.height * 0.35));
+
+        const worldTarget = reg.group.position.clone().add(reg.anchorOffset);
+        worldTarget.applyMatrix4(rootUnit.matrixWorld);
+        const proj = worldTarget.project(camera);
+        const endX = (proj.x * 0.5 + 0.5) * w;
+        const endY = (-(proj.y * 0.5) + 0.5) * h;
+
+        const elbowX = startX + (endX - startX) * 0.45;
+        pathEl.setAttribute('d', `M ${startX} ${startY} L ${elbowX} ${startY} L ${endX} ${endY}`);
+        dotEl.setAttribute('cx', endX);
+        dotEl.setAttribute('cy', endY);
+        ringEl.setAttribute('cx', endX);
+        ringEl.setAttribute('cy', endY);
+      }
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const elapsed = clock.getElapsedTime();
+      const ch = SCROLL_CHAPTERS[activeChapterIdx];
+
+      // 1. Smoothly Interpolate Mechanical Disassembly
+      currentExplode += (targetExplode - currentExplode) * 0.085;
+
+      Object.values(partRegistry).forEach((reg) => {
+        if (reg.id === 'enclosure_lid') {
+          const lidFactor = Math.min(1.15, currentExplode * 1.45);
+          reg.group.position.copy(reg.basePos).addScaledVector(reg.explodeVec, lidFactor);
+        } else {
+          reg.group.position.copy(reg.basePos).addScaledVector(reg.explodeVec, currentExplode);
+        }
+
+        // 2. Selective 3D Focus vs Ghosting Non-Active Components
+        const isFocused =
+          !focusBlurEnabled ||
+          !ch ||
+          ch.focusParts.includes('ALL') ||
+          ch.focusParts.includes(reg.id);
+
+        const targetMix = isFocused ? 1.0 : 0.14;
+        reg.focusMix += (targetMix - reg.focusMix) * 0.12;
+
+        reg.meshes.forEach((m) => {
+          const mat = m.material;
+          if (!mat || mat.userData.isLed) return;
+          mat.transparent = reg.focusMix < 0.98;
+          mat.opacity = Math.max(0.14, reg.focusMix);
+        });
+
+        reg.lines.forEach((ln) => {
+          ln.material.opacity = (ln.userData.baseEdgeOpacity || 0.75) * Math.max(0.18, reg.focusMix) * edgeScale;
+        });
+      });
+
+      // 3. Realistic Multi-Cadence Blinking Status LEDs
+      let totalLedEnergy = 0;
+      blinkingLeds.forEach((item) => {
+        const intensity = evaluateLedBlinkPattern(item.cfg.pattern, elapsed);
+        item.ledMat.emissiveIntensity = intensity;
+        if (item.halo && item.haloMat) {
+          const norm = intensity / 3.2;
+          item.haloMat.opacity = norm * 0.95;
+          const s = 0.28 + norm * 0.48;
+          item.halo.scale.set(s, s, 1);
+          totalLedEnergy += norm;
+        }
+      });
+      frontLedLight.intensity = (totalLedEnergy / 5) * 1.1;
+
+      // 4. Subtle Volumetric Plume Breathing (Raptor 2 Test Stand Aesthetic)
+      if (rfPlumeActive) {
+        plumeSprites.forEach((sp, i) => {
+          const pulse = 1 + 0.07 * Math.sin(elapsed * 3.5 + i);
+          const b = sp.userData.baseScale * pulse;
+          sp.scale.set(b, b, 1);
+        });
+      }
+
+      // 5. Smooth Camera Glide (Yields immediately to user mouse drag/wheel zoom)
+      if (cameraTransitioning) {
+        camera.position.lerp(desiredCamPos, 0.07);
+        controls.target.lerp(desiredCamTarget, 0.07);
+        if (camera.position.distanceTo(desiredCamPos) < 0.08) {
+          cameraTransitioning = false;
+        }
+      }
+
+      controls.update();
+      applyViewOffset(false);
+      renderer.render(scene, camera);
+      update3DPinsAndLeaderLine();
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      applyViewOffset(true);
+    });
+
+    window.onload = () => {
+      applyTheme(document.documentElement.classList.contains('dark'), false);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(applyMaterialStyle);
+      viewShift = 0; applyViewOffset(true);
+      selectChapter(0, false);
+      animate();
+    };
+  </script>
+</body>
+</html>

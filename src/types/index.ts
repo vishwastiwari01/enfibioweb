@@ -1,6 +1,6 @@
 // Enfibio Technologies — Type Definitions
 
-export type Category = 'defense' | 'intel' | 'hardware' | 'systems';
+export type Category = 'defense' | 'intel' | 'hardware' | 'systems' | 'agritech' | 'mobility' | 'healthtech';
 export type LogType = 'ok' | 'warn' | 'err';
 export type TimelineStatus = 'completed' | 'in-progress' | 'pending';
 
@@ -10,14 +10,26 @@ export interface ProjectSpec {
 
 export interface Project {
   id: string;
-  cat: Category;
+  slug: string;
+  cat: string;
   code: string;
   title: string;
   subtitle: string;
   domain: string;
+  category: 'AgriTech' | 'Mobility' | 'HealthTech' | 'Cold Chain' | 'AI & IoT' | 'Defense' | 'Systems';
   desc: string;
+  badge?: string;
+  image?: string;
+  video?: string;
+  simulationUrl?: string;
+  liveUrl?: string;
+  overview?: string;
+  problem?: string;
+  solution?: string;
+  features?: string[];
   specs: ProjectSpec;
   tags: string[];
+  gallery?: string[];
 }
 
 export interface Founder {

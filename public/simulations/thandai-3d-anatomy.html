@@ -1,0 +1,4122 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enfibio Technologies — AI Smart Portable Freezer | Interactive System Anatomy</title>
+  <!-- Google Fonts: Inter for engineering prose, JetBrains Mono for technical readouts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root[data-theme="light"] {
+      --bg-color: #f4f3ef;
+      --bg-Hex: 0xf4f3ef;
+      --surface-bg: rgba(251, 250, 247, 0.84);
+      --surface-solid: #f9f8f5;
+      --surface-elevated: rgba(255, 255, 255, 0.92);
+      --text-primary: #18181b;
+      --text-secondary: #52525b;
+      --text-muted: #71717a;
+      --border-color: rgba(24, 24, 27, 0.10);
+      --border-strong: rgba(24, 24, 27, 0.22);
+      --accent-marker: #d97706;
+      --accent-cold: #0284c7;
+      --accent-hot: #ea580c;
+      --accent-uv: #7c3aed;
+      --accent-status: #10b981;
+      --accent-pos: #dc2626;
+      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 14px 36px rgba(0, 0, 0, 0.08);
+      --pin-bg: rgba(255, 255, 255, 0.94);
+    }
+
+    :root[data-theme="dark"] {
+      --bg-color: #111316;
+      --bg-Hex: 0x111316;
+      --surface-bg: rgba(20, 22, 26, 0.82);
+      --surface-solid: #181a1f;
+      --surface-elevated: rgba(30, 33, 40, 0.92);
+      --text-primary: #f4f4f5;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --border-color: rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(255, 255, 255, 0.22);
+      --accent-marker: #f59e0b;
+      --accent-cold: #38bdf8;
+      --accent-hot: #fb923c;
+      --accent-uv: #a855f7;
+      --accent-status: #10b981;
+      --accent-pos: #ef4444;
+      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 16px 42px rgba(0, 0, 0, 0.6);
+      --pin-bg: rgba(22, 24, 29, 0.92);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      transition: background-color 0.35s ease, color 0.35s ease;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Full-Viewport Fixed WebGL Canvas */
+    #webgl-container {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: auto;
+      overflow: hidden;
+    }
+
+    #webgl-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    #webgl-canvas:active {
+      cursor: grabbing;
+    }
+
+    /* 3D Floating HTML Callout Pins */
+    #labels-layer {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .anatomy-pin {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px 4px 6px;
+      background: var(--pin-bg);
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      box-shadow: var(--shadow-sm);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.25s ease, border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      white-space: nowrap;
+    }
+
+    .anatomy-pin:hover,
+    .anatomy-pin.active {
+      border-color: var(--accent-marker);
+      transform: translate(-50%, -50%) scale(1.06);
+      z-index: 10;
+    }
+
+    .anatomy-pin .pin-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-marker);
+      flex-shrink: 0;
+    }
+
+    .anatomy-pin[data-accent="cold"] .pin-dot { background: var(--accent-cold); }
+    .anatomy-pin[data-accent="hot"] .pin-dot { background: var(--accent-hot); }
+    .anatomy-pin[data-accent="uv"] .pin-dot { background: var(--accent-uv); }
+    .anatomy-pin[data-accent="power"] .pin-dot { background: var(--accent-pos); }
+    .anatomy-pin[data-accent="status"] .pin-dot { background: var(--accent-status); }
+
+    .anatomy-pin .pin-code {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .labels-hidden .anatomy-pin {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* Top Header Bar */
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      background: var(--surface-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--border-strong);
+      display: grid;
+      place-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 12px;
+      background: var(--surface-elevated);
+      color: var(--text-primary);
+      flex-shrink: 0;
+    }
+
+    .brand-titles {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .brand-company {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-product {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-product h1 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .telemetry-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 11px;
+      border-radius: 6px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-color);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--accent-status);
+      box-shadow: 0 0 8px var(--accent-status);
+    }
+
+    .temp-readout-val {
+      font-weight: 700;
+      color: var(--accent-cold);
+    }
+
+    .btn-ui {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 11px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--surface-elevated);
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .btn-ui:hover {
+      border-color: var(--border-strong);
+      background: var(--surface-solid);
+    }
+
+    .btn-ui.active {
+      border-color: var(--accent-marker);
+      background: rgba(217, 119, 6, 0.12);
+    }
+
+    .btn-ui.primary-action {
+      border-color: var(--accent-cold);
+      color: var(--accent-cold);
+    }
+
+    .btn-ui.primary-action:hover {
+      background: rgba(2, 132, 199, 0.1);
+    }
+
+    /* Chapter Progress Rail (Top Sub-bar or Left Mini-nav) */
+    .chapter-nav {
+      position: fixed;
+      top: 68px;
+      left: 16px;
+      z-index: 25;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      padding: 4px;
+      background: var(--surface-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 9px;
+      max-width: 315px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chapter-dot-btn {
+      padding: 4px 7px;
+      border-radius: 5px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .chapter-dot-btn:hover {
+      color: var(--text-primary);
+      background: rgba(128, 128, 128, 0.1);
+    }
+
+    .chapter-dot-btn.active {
+      background: var(--text-primary);
+      color: var(--bg-color);
+      font-weight: 600;
+    }
+
+    /* Right Floating Interactive Control Panel — Ultra-sleek & non-overlapping */
+    .controls-dock {
+      position: fixed;
+      top: 68px;
+      right: 16px;
+      z-index: 25;
+      width: 248px;
+      background: var(--surface-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 13px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: calc(100vh - 86px);
+      overflow-y: auto;
+    }
+
+    .dock-section-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .control-label-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      font-weight: 500;
+    }
+
+    .control-val-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--text-secondary);
+    }
+
+    input[type="range"].eng-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: var(--border-strong);
+      border-radius: 999px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"].eng-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--text-primary);
+      border: 2px solid var(--surface-elevated);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+      cursor: pointer;
+    }
+
+    .toggle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+
+    .interlock-banner {
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      line-height: 1.35;
+      border: 1px solid var(--border-color);
+      background: var(--surface-elevated);
+      color: var(--text-secondary);
+    }
+
+    .interlock-banner.tripped {
+      border-color: var(--accent-hot);
+      background: rgba(234, 88, 12, 0.12);
+      color: var(--accent-hot);
+      font-weight: 600;
+    }
+
+    .interlock-banner.uv-active {
+      border-color: var(--accent-uv);
+      background: rgba(124, 58, 237, 0.12);
+      color: var(--accent-uv);
+    }
+
+    /* Selected Component Inspector Badge */
+    .inspector-box {
+      border-top: 1px solid var(--border-color);
+      padding-top: 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .inspector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .inspector-title {
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+
+    .inspector-desc {
+      font-size: 11px;
+      line-height: 1.42;
+      color: var(--text-secondary);
+    }
+
+    /* Scroll Narrative Track (Left Column) — Slimmed so center 3D viewport is completely unobstructed */
+    .narrative-track {
+      position: relative;
+      z-index: 10;
+      width: 315px;
+      max-width: calc(100vw - 32px);
+      margin-left: 16px;
+      padding-top: 126px;
+      padding-bottom: 120px;
+      pointer-events: none;
+    }
+
+    .chapter-step {
+      min-height: 78vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-bottom: 18vh;
+      pointer-events: none;
+    }
+
+    .chapter-card {
+      pointer-events: auto;
+      background: var(--surface-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+      transition: border-color 0.25s ease, transform 0.25s ease, opacity 0.25s ease;
+      opacity: 0.52;
+    }
+
+    .chapter-step.active .chapter-card {
+      opacity: 1;
+      border-color: var(--border-strong);
+    }
+
+    .chapter-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--accent-marker);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .chapter-card h2 {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .chapter-lead {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+
+    .chapter-body {
+      font-size: 11.8px;
+      line-height: 1.55;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .spec-list {
+      border-top: 1px solid var(--border-color);
+      padding-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .spec-item {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      gap: 8px;
+    }
+
+    .chapter-dot-btn {
+      padding: 4px 8px;
+      border-radius: 5px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .chapter-dot-btn:hover {
+      color: var(--text-primary);
+      background: rgba(128, 128, 128, 0.1);
+    }
+
+    .chapter-dot-btn.active {
+      background: var(--text-primary);
+      color: var(--bg-color);
+      font-weight: 600;
+    }
+
+    /* Right Floating Interactive Control Panel */
+    .controls-dock {
+      position: fixed;
+      top: 72px;
+      right: 20px;
+      z-index: 25;
+      width: 290px;
+      background: var(--surface-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: calc(100vh - 92px);
+      overflow-y: auto;
+    }
+
+    .dock-section-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .control-label-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .control-val-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    input[type="range"].eng-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 5px;
+      background: var(--border-strong);
+      border-radius: 999px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"].eng-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--text-primary);
+      border: 2px solid var(--surface-elevated);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+
+    .toggle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+
+    .interlock-banner {
+      padding: 7px 9px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      line-height: 1.35;
+      border: 1px solid var(--border-color);
+      background: var(--surface-elevated);
+      color: var(--text-secondary);
+    }
+
+    .interlock-banner.tripped {
+      border-color: var(--accent-hot);
+      background: rgba(234, 88, 12, 0.12);
+      color: var(--accent-hot);
+      font-weight: 600;
+    }
+
+    .interlock-banner.uv-active {
+      border-color: var(--accent-uv);
+      background: rgba(124, 58, 237, 0.12);
+      color: var(--accent-uv);
+    }
+
+    /* Selected Component Inspector Badge */
+    .inspector-box {
+      border-top: 1px solid var(--border-color);
+      padding-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .inspector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .inspector-title {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .inspector-desc {
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--text-secondary);
+    }
+
+    /* Scroll Narrative Track (Left Column) */
+    .narrative-track {
+      position: relative;
+      z-index: 10;
+      width: 400px;
+      max-width: calc(100vw - 32px);
+      margin-left: 20px;
+      padding-top: 130px;
+      padding-bottom: 120px;
+      pointer-events: none;
+    }
+
+    .chapter-step {
+      min-height: 78vh;
+      display: flex;
+       flex-direction: column;
+      justify-content: center;
+      margin-bottom: 18vh;
+      pointer-events: none;
+    }
+
+    .chapter-card {
+      pointer-events: auto;
+      background: var(--surface-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+      transition: border-color 0.25s ease, transform 0.25s ease, opacity 0.25s ease;
+      opacity: 0.55;
+    }
+
+    .chapter-step.active .chapter-card {
+      opacity: 1;
+      border-color: var(--border-strong);
+    }
+
+    .chapter-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--accent-marker);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .chapter-card h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .chapter-lead {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      line-height: 1.45;
+    }
+
+    .chapter-body {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+
+    .spec-list {
+      border-top: 1px solid var(--border-color);
+      padding-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .spec-item {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      gap: 10px;
+    }
+
+    .spec-item span:first-child {
+      color: var(--text-muted);
+    }
+
+    .spec-item span:last-child {
+      color: var(--text-primary);
+      text-align: right;
+      font-weight: 500;
+    }
+
+    .stack-diagram {
+      margin: 12px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+    }
+
+    .stack-layer {
+      padding: 5px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      background: var(--surface-elevated);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .stack-layer.cold {
+      border-left: 3px solid var(--accent-cold);
+    }
+    .stack-layer.peltier {
+      border-left: 3px solid var(--text-primary);
+    }
+    .stack-layer.hot {
+      border-left: 3px solid var(--accent-hot);
+    }
+
+    /* Final Technical Overview Section */
+    .overview-summary-section {
+      position: relative;
+      z-index: 15;
+      max-width: 1120px;
+      margin: 0 auto 80px auto;
+      padding: 0 20px;
+      pointer-events: auto;
+    }
+
+    .summary-card {
+      background: var(--surface-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .summary-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 18px;
+      margin-bottom: 22px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .summary-subcard {
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--surface-elevated);
+      cursor: pointer;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .summary-subcard:hover {
+      border-color: var(--accent-marker);
+      transform: translateY(-2px);
+    }
+
+    .summary-subcard h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .summary-subcard p {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    /* Bottom Interaction Hint Bar */
+    .interaction-hint {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      background: var(--surface-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Modal Dialog for Shortcuts & Documentation */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(4px);
+      display: none;
+       place-items: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: grid;
+    }
+
+    .modal-panel {
+      width: 100%;
+      max-width: 620px;
+      max-height: 85vh;
+      overflow-y: auto;
+      background: var(--surface-solid);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .shortcut-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      margin-bottom: 16px;
+    }
+
+    .shortcut-table th,
+    .shortcut-table td {
+      text-align: left;
+      padding: 8px 6px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .kbd-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-strong);
+    }
+
+    /* WebGL Fallback Message */
+    #webgl-fallback {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--bg-color);
+      color: var(--text-primary);
+      padding: 40px;
+      text-align: center;
+      place-items: center;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1180px) {
+      .narrative-track {
+        width: 280px;
+      }
+      .controls-dock {
+        width: 228px;
+      }
+      .brand-subtitle {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .site-header {
+        height: auto;
+        padding: 8px 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chapter-nav {
+        top: auto;
+        bottom: 52px;
+        left: 12px;
+        right: 12px;
+        max-width: none;
+        justify-content: center;
+      }
+      .controls-dock {
+        top: auto;
+        bottom: 92px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+        max-height: 36vh;
+      }
+      .narrative-track {
+        width: calc(100vw - 24px);
+        margin-left: 12px;
+        padding-top: 90px;
+        padding-bottom: 320px;
+      }
+      .chapter-step {
+        min-height: 68vh;
+      }
+      .interaction-hint {
+        bottom: 10px;
+        font-size: 10px;
+      }
+    }
+  </style>
+
+  <!-- Three.js import map -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- WebGL Unavailable Fallback -->
+  <div id="webgl-fallback">
+    <div>
+      <h2 style="margin-bottom: 10px;">WebGL 3D Context Unavailable</h2>
+      <p style="max-width: 480px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+        The Enfibio AI Smart Portable Freezer interactive system anatomy requires WebGL hardware acceleration. Please enable hardware acceleration in your browser settings or try a modern desktop/mobile browser.
+      </p>
+    </div>
+  </div>
+
+  <!-- Fixed Full-Viewport 3D WebGL Scene -->
+  <div id="webgl-container" aria-label="Interactive 3D Model of AI Smart Portable Freezer">
+    <canvas id="webgl-canvas"></canvas>
+  </div>
+
+  <!-- 3D Projected Component Callout Pins -->
+  <div id="labels-layer"></div>
+
+  <!-- Compact Engineering Header -->
+  <header class="site-header">
+    <div class="brand-group">
+      <div class="brand-mark" title="Enfibio Technologies Private Limited">EFB</div>
+      <div class="brand-titles">
+        <span class="brand-company">Enfibio Technologies Private Limited</span>
+        <div class="brand-product">
+          <h1>AI Smart Portable Freezer</h1>
+          <span class="brand-subtitle">— Interactive System Anatomy</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="telemetry-pill" title="Simulated Live Chamber Temperature (5.0°C – 10.0°C range)">
+        <span class="status-dot" id="header-status-dot"></span>
+        <span>CHAMBER: <strong class="temp-readout-val" id="ui-temp-current">6.8°C</strong></span>
+        <span style="color: var(--text-muted);">|</span>
+        <span>SET: <strong id="ui-temp-target">6.0°C</strong></span>
+      </div>
+      <button class="btn-ui" id="btn-docs" title="Interaction Guide & Keyboard Shortcuts">Guide / Keys</button>
+      <button class="btn-ui primary-action" id="btn-download-zip" title="Download Complete Runnable Project ZIP (HTML + README + Launch Scripts)">Download ZIP</button>
+      <button class="btn-ui" id="btn-theme-toggle" title="Toggle Light / Dark Engineering Theme">Dark Mode</button>
+    </div>
+  </header>
+
+  <!-- Chapter Quick Navigator -->
+  <nav class="chapter-nav" aria-label="System Anatomy Chapters">
+    <button class="chapter-dot-btn active" data-chapter="0">00 Overview</button>
+    <button class="chapter-dot-btn" data-chapter="1">01 Sense</button>
+    <button class="chapter-dot-btn" data-chapter="2">02 Decide</button>
+    <button class="chapter-dot-btn" data-chapter="3">03 Power</button>
+    <button class="chapter-dot-btn" data-chapter="4">04 Cool</button>
+    <button class="chapter-dot-btn" data-chapter="5">05 Sterilise</button>
+    <button class="chapter-dot-btn" data-chapter="6">06 Integrated</button>
+  </nav>
+
+  <!-- Right Floating Hardware & Camera Controls Dock -->
+  <aside class="controls-dock" aria-label="Interactive Machine Controls">
+    <div>
+      <div class="dock-section-title">
+        <span>Mechanical & Thermal Controls</span>
+        <span id="sim-badge">SIMULATED</span>
+      </div>
+
+      <!-- Lid Hinge Control -->
+      <div class="control-row" style="margin-bottom: 10px;">
+        <div class="control-label-line">
+          <label for="slider-lid">Insulated Lid Hinge</label>
+          <span class="control-val-mono" id="val-lid-angle">0° (Closed)</span>
+        </div>
+        <input type="range" id="slider-lid" class="eng-slider" min="0" max="68" step="1" value="0" />
+      </div>
+
+      <!-- Exploded View Control -->
+      <div class="control-row" style="margin-bottom: 10px;">
+        <div class="control-label-line">
+          <label for="slider-explode">Explode Assemblies</label>
+          <span class="control-val-mono" id="val-explode">0%</span>
+        </div>
+        <input type="range" id="slider-explode" class="eng-slider" min="0" max="100" step="1" value="0" />
+      </div>
+
+      <!-- Target Set-Point Control -->
+      <div class="control-row" style="margin-bottom: 10px;">
+        <div class="control-label-line">
+          <label for="slider-setpoint">Target Set-Point</label>
+          <span class="control-val-mono" id="val-setpoint">6.0°C</span>
+        </div>
+        <input type="range" id="slider-setpoint" class="eng-slider" min="5.0" max="10.0" step="0.5" value="6.0" />
+      </div>
+
+      <!-- Subsystem Toggles -->
+      <div class="toggle-grid">
+        <button class="btn-ui active" id="btn-toggle-cooling">Cooling: ON</button>
+        <button class="btn-ui active" id="btn-toggle-uvc">UV-C: ON</button>
+        <button class="btn-ui active" id="btn-toggle-labels">Labels: ON</button>
+        <button class="btn-ui" id="btn-toggle-cutaway">Front Shell: Ghost</button>
+      </div>
+    </div>
+
+    <!-- UV-C Status Banner -->
+    <div class="interlock-banner uv-active" id="uvc-interlock-banner">
+      GLOBAL 369 UV-C ACTIVE: Continuous violet irradiation enabled (illuminates in both open &amp; closed lid states).
+    </div>
+
+    <!-- Camera Presets -->
+    <div>
+      <div class="dock-section-title">
+        <span>Camera View &amp; Zoom</span>
+        <div style="display: flex; gap: 4px;">
+          <button class="btn-ui" id="btn-zoom-in" style="padding: 2px 7px; font-size: 11px;" title="Zoom In (+)">+</button>
+          <button class="btn-ui" id="btn-zoom-out" style="padding: 2px 7px; font-size: 11px;" title="Zoom Out (-)">−</button>
+          <button class="btn-ui" id="btn-reset-view" style="padding: 2px 7px; font-size: 10px;">Reset</button>
+        </div>
+      </div>
+      <div class="preset-grid">
+        <button class="btn-ui" data-cam="iso">Isometric</button>
+        <button class="btn-ui" data-cam="front">Front</button>
+        <button class="btn-ui" data-cam="top">Top</button>
+        <button class="btn-ui" data-cam="rear">Rear</button>
+        <button class="btn-ui" data-cam="cooling">Peltier</button>
+        <button class="btn-ui" data-cam="vrfb">VRFB</button>
+      </div>
+    </div>
+
+    <!-- Active Selected Assembly Inspector -->
+    <div class="inspector-box">
+      <div class="inspector-header">
+        <span class="dock-section-title" style="margin-bottom: 0;">Focused Subsystem</span>
+        <span class="mono" style="font-size: 10px; color: var(--accent-marker);" id="inspector-code">SYS-ALL</span>
+      </div>
+      <div class="inspector-title" id="inspector-title">Complete Integrated System</div>
+      <div class="inspector-desc" id="inspector-desc">
+        Click any 3D component or callout marker to inspect its physical construction and focus the camera.
+      </div>
+    </div>
+  </aside>
+
+  <!-- Scroll-Driven Narrative Chapters (00 to 06) -->
+  <main class="narrative-track" id="narrative-track">
+    
+    <!-- CHAPTER 00 -->
+    <section class="chapter-step active" data-chapter-index="0" id="chapter-0">
+      <article class="chapter-card">
+        <div class="chapter-meta">
+          <span>Chapter 00 — Overview</span>
+          <span>SYS-00</span>
+        </div>
+        <h2>One portable system. Four coordinated jobs.</h2>
+        <p class="chapter-lead">
+          Conceptual 3D engineering prototype combining insulated cold-chain storage, AI system supervision, electrochemical flow-battery power, solid-state thermoelectric cooling, and UV-C surface treatment.
+        </p>
+        <p class="chapter-body">
+          Designed by Enfibio Technologies Private Limited, this portable unit integrates every electrical harness, fluid hose, thermal exchanger, and mechanical hinge inside a reinforced industrial enclosure. Scroll through the chapters to selectively focus each subsystem while retaining full spatial context.
+        </p>
+        <div class="spec-list">
+          <div class="spec-item"><span>Architecture</span><span>4-Job Coordinated Cold-Chain Unit</span></div>
+          <div class="spec-item"><span>Simulated Range</span><span>5.0°C to 10.0°C (Synchronized)</span></div>
+          <div class="spec-item"><span>Energy Storage</span><span>Vanadium Redox Flow Battery (VRFB)</span></div>
+          <div class="spec-item"><span>Thermal Engine</span><span>Solid-State Peltier Stack</span></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- CHAPTER 01 -->
+    <section class="chapter-step" data-chapter-index="1" id="chapter-1">
+      <article class="chapter-card">
+        <div class="chapter-meta">
+          <span>Chapter 01 — Sense</span>
+          <span>CHM-01</span>
+        </div>
+        <h2>Expanded Rectangular Chamber &amp; Sensing</h2>
+        <p class="chapter-lead">
+          Wide rectangular food-grade brushed metallic liner with a dual-zone cold-chain layout stocked across both the left wire basket and right clinical specimen bay.
+        </p>
+        <p class="chapter-body">
+          Spanning two-thirds of the rectangular enclosure width, the deep stainless-steel and anodized aluminium chamber is surrounded by multi-layer thermal insulation. The left half houses a removable wire basket stocked with vaccine cryo-vials, amber serum bottles, and biologics kits, while the right half accommodates a clinical organizer tray with borosilicate plasma carboys, an mRNA cryo-carrier, a 15-tube vacutainer rack, and phase-change cooling bricks—all actively cooled by circulating blue cold air and monitored by the wall-mounted temperature/humidity probe.
+        </p>
+        <div class="spec-list">
+          <div class="spec-item"><span>Chamber Footprint</span><span>Expanded Rectangular (3.9m × 2.3m Scale)</span></div>
+          <div class="spec-item"><span>Dual-Zone Payload</span><span>Vaccines, Serums, Plasma Carboys &amp; Cryo-Tubes</span></div>
+          <div class="spec-item"><span>Sensor Suite</span><span>Digital Temp + Relative Humidity Probe</span></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- CHAPTER 02 -->
+    <section class="chapter-step" data-chapter-index="2" id="chapter-2">
+      <article class="chapter-card">
+        <div class="chapter-meta">
+          <span>Chapter 02 — Decide and Report</span>
+          <span>ECU-02</span>
+        </div>
+        <h2>AI Control Electronics & Front Display</h2>
+        <p class="chapter-lead">
+          Centralized supervision coordinating cooling modulation, power flow, fault alerts, and predictive maintenance indicators.
+        </p>
+        <p class="chapter-body">
+          The internal electronics bay houses the main controller PCB, DC-DC power converters, battery monitoring circuitry, Peltier PWM driver, fan controllers, and UV-C ballast interface. Continuous routed wire harnesses link the PCB to the front-mounted digital display and physical control buttons.
+        </p>
+        <div class="spec-list">
+          <div class="spec-item"><span>Supervision</span><span>Closed-Loop Thermal & Power Control</span></div>
+          <div class="spec-item"><span>Diagnostics</span><span>Fault Alerts & Predictive Maintenance</span></div>
+          <div class="spec-item"><span>Front Interface</span><span>Live Synchronized Digital Telemetry</span></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- CHAPTER 03 -->
+    <section class="chapter-step" data-chapter-index="3" id="chapter-3">
+      <article class="chapter-card">
+        <div class="chapter-meta">
+          <span>Chapter 03 — Power</span>
+          <span>VRFB-03</span>
+        </div>
+        <h2>Vanadium Redox Flow Battery (VRFB)</h2>
+        <p class="chapter-lead">
+          Paired positive and negative aqueous electrolyte reservoirs with circulation pumps and a central electrochemical cell stack.
+        </p>
+        <p class="chapter-body">
+          Two dedicated tanks store positive (red circuit) and negative (blue circuit) liquid electrolytes. Twin micro-pumps drive electrolyte through continuous curved manifolds into the central flow-cell stack and back via return lines. Because energy is stored in aqueous vanadium electrolytes, VRFB architecture offers long cycle life, non-flammable aqueous chemistry, and strong potential for electrolyte reuse—while recognizing that overall environmental impact depends on material sourcing, manufacturing, operation, and end-of-life management.
+        </p>
+        <div class="spec-list">
+          <div class="spec-item"><span>Positive Loop</span><span>Red-Indexed Reservoir + Pump + Stack Port</span></div>
+          <div class="spec-item"><span>Negative Loop</span><span>Blue-Indexed Reservoir + Pump + Stack Port</span></div>
+          <div class="spec-item"><span>Sustainability Note</span><span>Reusable Aqueous Electrolyte Chemistry</span></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- CHAPTER 04 -->
+    <section class="chapter-step" data-chapter-index="4" id="chapter-4">
+      <article class="chapter-card">
+        <div class="chapter-meta">
+          <span>Chapter 04 — Cool</span>
+          <span>TEC-04</span>
+        </div>
+        <h2>Peltier Thermoelectric Cooling Stack</h2>
+        <p class="chapter-lead">
+          Strict top-to-bottom solid-state heat pumping: cold absorption above, thermoelectric wafer in the middle, heat rejection below.
+        </p>
+        <p class="chapter-body">
+          When DC power is applied to the central Peltier thermoelectric module, heat is absorbed at the upper blue cold-side finned heat exchanger and pumped downward into the hot-side copper spreader and lower hot-side finned heat sink. Dual rotary exhaust fans draw warm waste air strictly from the lower hot-side sink and expel it through the enclosure vents.
+        </p>
+        <div class="stack-diagram" aria-label="Vertical Ordering of Peltier Cooling Stack from Top to Bottom">
+          <div class="stack-layer cold"><span>1. TOP: Cold-Side Heat Exchanger</span><span>BLUE / CYAN</span></div>
+          <div class="stack-layer cold"><span>2. Cold-Side Thermal Spreader</span><span>ALUMINIUM</span></div>
+          <div class="stack-layer peltier"><span>3. MIDDLE: Peltier Module</span><span>THERMOELECTRIC</span></div>
+          <div class="stack-layer hot"><span>4. Hot-Side Copper Spreader</span><span>AMBER / COPPER</span></div>
+          <div class="stack-layer hot"><span>5. Lower Hot-Side Heat Sink</span><span>FINNED ARRAY</span></div>
+          <div class="stack-layer hot"><span>6. BOTTOM: Exhaust Fans</span><span>WARM AIR OUT</span></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- CHAPTER 05 -->
+    <section class="chapter-step" data-chapter-index="5" id="chapter-5">
+      <article class="chapter-card">
+        <div class="chapter-meta">
+          <span>Chapter 05 — Sterilise</span>
+          <span>UVC-05</span>
+        </div>
+        <h2>Global 369 UV-C Sterilisation Module</h2>
+        <p class="chapter-lead">
+          Wide under-lid germicidal UV-C emitter with protective cage, umbilical hinge harness, and continuous open/closed illumination mode.
+        </p>
+        <p class="chapter-body">
+          Mounted beneath the inner liner of the insulated lid and spanning the rectangular storage chamber, the Global 369 UV-C emitter projects ultraviolet light from its luminous violet core, outer halo tube, and volumetric irradiation cone. For full visual inspection, the UV-C module remains actively illuminated when toggled ON even while the lid is open at any angle (0° to 68°). UV-C light damages microbial DNA/RNA to inactivate susceptible surface pathogens depending on dose, exposure time, distance, and line-of-sight.
+        </p>
+        <div class="spec-list">
+          <div class="spec-item"><span>Mounting</span><span>Wide Under-Lid Quartz/Mesh Housing</span></div>
+          <div class="spec-item"><span>Illumination Mode</span><span>Active in Open &amp; Closed Lid Positions</span></div>
+          <div class="spec-item"><span>Scope</span><span>Line-of-Sight Surface Irradiation</span></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- CHAPTER 06 -->
+    <section class="chapter-step" data-chapter-index="6" id="chapter-6">
+      <article class="chapter-card">
+        <div class="chapter-meta">
+          <span>Chapter 06 — Integrated System</span>
+          <span>SYS-06</span>
+        </div>
+        <h2>Cohesive Electromechanical Integration</h2>
+        <p class="chapter-lead">
+          All subsystems, fluid circuits, wire harnesses, and thermal pathways operating as a unified portable machine.
+        </p>
+        <p class="chapter-body">
+          Returned to full clarity, the complete assembly demonstrates how the chamber sensor informs the AI controller, how the Vanadium Redox Flow Battery (VRFB) powers the Peltier stack and fans, and how the hinged lid carries the interlocked Global 369 UV-C module. Use the Explode Assemblies slider or click individual components to inspect internal fasteners, glands, and routing.
+        </p>
+        <div class="spec-list">
+          <div class="spec-item"><span>Electrical Routing</span><span>Continuous Bundled Harnesses &amp; Glands</span></div>
+          <div class="spec-item"><span>Fluid Routing</span><span>Closed-Loop Positive &amp; Negative Hoses</span></div>
+          <div class="spec-item"><span>Status</span><span>All Subsystems Aligned &amp; Operational</span></div>
+        </div>
+      </article>
+    </section>
+
+  </main>
+
+  <!-- Final Technical Overview & Component Summary -->
+  <section class="overview-summary-section" id="technical-summary">
+    <div class="summary-card">
+      <div class="summary-header">
+        <div>
+          <span class="mono" style="font-size: 11px; color: var(--accent-marker); text-transform: uppercase;">Engineering Reference Summary</span>
+          <h3 style="font-size: 22px; margin-top: 4px;">Subsystem Directory &amp; Direct Inspection</h3>
+        </div>
+        <p style="font-size: 12.5px; color: var(--text-secondary); max-width: 460px;">
+          Select any subsystem card below to focus the 3D camera directly on that assembly. Note: This visualization represents a conceptual 3D engineering prototype.
+        </p>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-subcard" data-focus-group="enclosure">
+          <h4><span>A. Outer Enclosure</span> <span class="mono" style="font-size: 11px; color: var(--text-muted);">ENC-01</span></h4>
+          <p>Wide rectangular insulated body (6.2 × 3.0 proportion), reinforced corner bumpers, side handles, rear service panel, and rubber feet.</p>
+        </div>
+        <div class="summary-subcard" data-focus-group="lid">
+          <h4><span>B. Insulated Hinged Lid</span> <span class="mono" style="font-size: 11px; color: var(--text-muted);">LID-02</span></h4>
+          <p>Wide rectangular layered shell, thermal core, inner liner, perimeter sealing gasket, 4 rear hinges, and umbilical power cable.</p>
+        </div>
+        <div class="summary-subcard" data-focus-group="chamber">
+          <h4><span>C. Storage Chamber</span> <span class="mono" style="font-size: 11px; color: var(--text-muted);">CHM-01</span></h4>
+          <p>Expanded rectangular brushed liner fully stocked across both zones: vaccine vials, amber serum bottles, plasma carboys, mRNA cryo-box, and vacutainer racks.</p>
+        </div>
+        <div class="summary-subcard" data-focus-group="uvc">
+          <h4><span>D. Global 369 UV-C</span> <span class="mono" style="font-size: 11px; color: var(--accent-uv);">UVC-05</span></h4>
+          <p>Wide under-lid germicidal emitter, halo tube, downward volumetric cone/rings, staying actively lit even when the lid is open.</p>
+        </div>
+        <div class="summary-subcard" data-focus-group="vrfb">
+          <h4><span>E. VRFB Power Unit</span> <span class="mono" style="font-size: 11px; color: var(--accent-pos);">VRFB-03</span></h4>
+          <p>Vanadium Redox Flow Battery compacted in the right utility bay with paired pos/neg tanks, pumps, flow stack, and continuous hoses.</p>
+        </div>
+        <div class="summary-subcard" data-focus-group="cooling">
+          <h4><span>F/G. Peltier &amp; Airflow</span> <span class="mono" style="font-size: 11px; color: var(--accent-cold);">TEC-04</span></h4>
+          <p>Top blue cold exchanger, cold spreader, Peltier module, copper hot spreader, lower hot heat sink, and dual warm-air exhaust fans.</p>
+        </div>
+        <div class="summary-subcard" data-focus-group="electronics">
+          <h4><span>H. AI Controller &amp; Display</span> <span class="mono" style="font-size: 11px; color: var(--accent-status);">ECU-02</span></h4>
+          <p>Right-bay supervisory PCB, DC-DC converter, BMS interface, Peltier/UV drivers, continuous wire harnesses, and front digital display.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Subtle Bottom Interaction Hint -->
+  <div class="interaction-hint" id="interaction-hint">
+    Drag on 3D machine to rotate • Scroll over machine to zoom • Scroll page for chapters • Click parts to focus
+  </div>
+
+  <!-- Documentation & Keyboard Shortcuts Modal -->
+  <div class="modal-backdrop" id="docs-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h3 id="modal-title" style="font-size: 16px;">Interaction Guide, Architecture &amp; Shortcuts</h3>
+        <button class="btn-ui" id="btn-close-modal">Close [Esc]</button>
+      </div>
+      <table class="shortcut-table">
+        <thead>
+          <tr>
+            <th>Input / Key</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="kbd-tag">Drag on 3D Model</span></td>
+            <td>Orbit camera smoothly around the freezer assembly</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">Wheel over 3D Model</span></td>
+            <td>Zoom camera in and out smoothly (works anywhere over the 3D machine)</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">+</span> / <span class="kbd-tag">-</span></td>
+            <td>Zoom camera in / out incrementally</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">Wheel off Model / Cards</span></td>
+            <td>Scroll page normally through narrative Chapters 00–06 without moving camera</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">Click 3D Part / Pin</span></td>
+            <td>Focus camera on selected subsystem and inspect engineering details</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">L</span></td>
+            <td>Toggle Insulated Lid Open / Closed (0° / 58° while keeping UV-C lit)</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">E</span></td>
+            <td>Toggle Exploded Assembly View (0% / 100%)</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">U</span></td>
+            <td>Toggle Global 369 UV-C Module On / Off</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">C</span></td>
+            <td>Toggle Peltier Cooling &amp; Airflow Simulation On / Off</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">T</span></td>
+            <td>Toggle Light / Dark Engineering Theme</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">R</span> / <span class="kbd-tag">0</span></td>
+            <td>Reset Camera View to Default Isometric Framing</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+        <strong>Local Launch Instructions:</strong> Click <em>"Download ZIP"</em> in the top header to download the self-contained project archive including <code>index.html</code>, <code>README.md</code>, <code>launch.sh</code> (macOS/Linux), and <code>launch.bat</code> (Windows). Run the launch script or serve the folder via any local static HTTP server.
+      </p>
+    </div>
+  </div>
+
+  <!-- Application ES Module -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+    /*************************************************************************
+     * MODULE 1: APPLICATION STATE & CONFIGURATION
+     *************************************************************************/
+    const AppState = {
+      theme: localStorage.getItem('enfibio_theme') || 'light',
+      lidAngleDeg: 0,           // 0 to 72 degrees
+      explodeFactor: 0,         // 0.0 to 1.0
+      coolingActive: true,
+      uvcRequested: true,       // User switch state
+      uvcEffective: true,       // Actual state after lid safety interlock
+      labelsVisible: true,
+      frontCutawayGhost: true,  // Semi-transparent front inspection window
+      activeChapter: 0,
+      focusedSubsystem: null,   // null = whole machine, or subsystem key
+      hoveredSubsystem: null,
+      tempCurrent: 6.8,         // Smoothly bounded [5.0, 10.0]
+      tempTarget: 6.0,
+      simTime: 0,
+      reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    };
+
+    const SUBSYSTEM_META = {
+      enclosure: {
+        code: 'ENC-01',
+        name: 'Wide Rectangular Outer Enclosure',
+        accent: 'marker',
+        desc: 'Wide rectangular insulated housing (6.2 × 3.0 proportion) with bevelled edges, reinforced corner bumpers, side carry handles, rear recessed service plate, cable glands, side louvers, and rubber feet.'
+      },
+      lid: {
+        code: 'LID-02',
+        name: 'Wide Rectangular Hinged Lid',
+        accent: 'marker',
+        desc: 'Multi-layer rectangular structural lid with outer shell, thermal insulation core, inner liner, continuous perimeter sealing gasket, 4 rear hinge brackets, and umbilical wire routing.'
+      },
+      chamber: {
+        code: 'CHM-01',
+        name: 'Expanded Rectangular Storage Chamber',
+        accent: 'cold',
+        desc: 'Expanded rectangular stainless-steel/aluminium chamber spanning two-thirds of the unit width: left half holds the wire basket with vaccine vials and amber serums; right half holds plasma carboys, an mRNA cryo-carrier, a 15-tube vacutainer rack, and phase-change cooling bricks.'
+      },
+      uvc: {
+        code: 'UVC-05',
+        name: 'Global 369 UV-C Module',
+        accent: 'uv',
+        desc: 'Wide under-lid germicidal UV-C emitter with bright violet core, outer halo tube, point light, and downward volumetric irradiation cone/rings. Remains actively illuminated when ON even when the lid is open.'
+      },
+      vrfb: {
+        code: 'VRFB-03',
+        name: 'Vanadium Redox Flow Battery (VRFB)',
+        accent: 'power',
+        desc: 'Compacted right-bay power unit with paired positive (red) and negative (blue) aqueous electrolyte reservoirs, dual circulation pumps, central electrochemical flow-cell stack, and continuous hoses.'
+      },
+      cooling: {
+        code: 'TEC-04',
+        name: 'Peltier Thermoelectric Cooling Stack',
+        accent: 'cold',
+        desc: 'Strictly ordered vertical stack beneath the rectangular chamber: (1) Upper blue cold-side heat exchanger, (2) Cold thermal spreader, (3) Peltier module, (4) Hot copper spreader, (5) Lower hot heat sink, (6) Dual exhaust fans.'
+      },
+      electronics: {
+        code: 'ECU-02',
+        name: 'AI Controller & Front Display',
+        accent: 'status',
+        desc: 'Right-bay main supervisory PCB with DC-DC converter, VRFB BMS interface, Peltier PWM driver, UV-C ballast, continuous cable harnesses, and synchronized front digital telemetry display.'
+      }
+    };
+
+    const CHAPTER_SUBSYSTEM_MAP = {
+      0: null,          // Overview: all clear
+      1: 'chamber',     // Sense
+      2: 'electronics', // Decide & Report
+      3: 'vrfb',        // Power
+      4: 'cooling',     // Cool
+      5: 'uvc',         // Sterilise
+      6: null           // Integrated System: all clear
+    };
+
+    /*************************************************************************
+     * MODULE 2: MATERIALS PALETTE & FRONT DISPLAY CANVAS TEXTURE
+     *************************************************************************/
+    class MaterialsLibrary {
+      constructor() {
+        this.materials = {};
+        this.subsystemMeshes = {
+          enclosure: [],
+          lid: [],
+          chamber: [],
+          uvc: [],
+          vrfb: [],
+          cooling: [],
+          electronics: []
+        };
+        this.dynamicHoses = [];
+        this.initBrushedMetalTexture();
+        this.initDisplayCanvas();
+        this.initMaterials();
+      }
+
+      initBrushedMetalTexture() {
+        // Generate procedural brushed metal & micro-grain bump/roughness texture for realistic industrial sheen
+        const c = document.createElement('canvas');
+        c.width = 256;
+        c.height = 256;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#808080';
+        ctx.fillRect(0, 0, 256, 256);
+
+        for (let y = 0; y < 256; y++) {
+          const v = 115 + Math.floor(Math.random() * 30);
+          ctx.fillStyle = `rgb(${v},${v},${v})`;
+          ctx.fillRect(0, y, 256, 1);
+        }
+        for (let i = 0; i < 600; i++) {
+          const x = Math.random() * 256;
+          const y = Math.random() * 256;
+          const len = 18 + Math.random() * 50;
+          const shade = 95 + Math.floor(Math.random() * 65);
+          ctx.fillStyle = `rgba(${shade},${shade},${shade},0.35)`;
+          ctx.fillRect(x, y, len, 1);
+        }
+
+        this.brushedMap = new THREE.CanvasTexture(c);
+        this.brushedMap.wrapS = THREE.RepeatWrapping;
+        this.brushedMap.wrapT = THREE.RepeatWrapping;
+        this.brushedMap.repeat.set(3, 3);
+      }
+
+      initDisplayCanvas() {
+        this.displayCanvas = document.createElement('canvas');
+        this.displayCanvas.width = 512;
+        this.displayCanvas.height = 256;
+        this.displayCtx = this.displayCanvas.getContext('2d');
+        this.displayTexture = new THREE.CanvasTexture(this.displayCanvas);
+        this.displayTexture.colorSpace = THREE.SRGBColorSpace;
+        this.updateDisplayCanvas(6.8, 6.0, true, true, false);
+      }
+
+      updateDisplayCanvas(currentTemp, targetTemp, coolingOn, uvcActive, lidOpen) {
+        const ctx = this.displayCtx;
+        const w = 512, h = 256;
+
+        // Sleek OLED glass gradient background
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, '#070b12');
+        grad.addColorStop(1, '#0f172a');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+
+        // Subtle subtle inner glass bezel
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(8, 8, w - 16, h - 16);
+
+        // Top status header
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '600 16px "JetBrains Mono", monospace';
+        ctx.fillText('ENFIBIO AI-CTRL // TELEMETRY', 24, 38);
+
+        // Status indicator dot
+        ctx.fillStyle = '#10b981';
+        ctx.beginPath();
+        ctx.arc(w - 34, 32, 7, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Main temperature readout
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '700 80px "JetBrains Mono", monospace';
+        ctx.fillText(`${currentTemp.toFixed(1)}°C`, 24, 134);
+
+        // Target setpoint & humidity
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = '600 20px "JetBrains Mono", monospace';
+        ctx.fillText(`SET: ${targetTemp.toFixed(1)}°C`, 324, 92);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(`RH : 44.2%`, 324, 126);
+
+        // Divider
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(24, 166);
+        ctx.lineTo(w - 24, 166);
+        ctx.stroke();
+
+        // Bottom badges
+        ctx.font = '600 16px "JetBrains Mono", monospace';
+        // TEC badge
+        ctx.fillStyle = coolingOn ? '#0369a1' : '#1e293b';
+        ctx.fillRect(24, 184, 145, 42);
+        ctx.strokeStyle = coolingOn ? '#38bdf8' : '#475569';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(24, 184, 145, 42);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillText(coolingOn ? 'TEC: ACTIVE' : 'TEC: STANDBY', 38, 210);
+
+        // UV-C badge
+        ctx.fillStyle = uvcActive ? '#5b21b6' : '#1e293b';
+        ctx.fillRect(182, 184, 175, 42);
+        ctx.strokeStyle = uvcActive ? '#c084fc' : '#475569';
+        ctx.strokeRect(182, 184, 175, 42);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillText(uvcActive ? (lidOpen ? 'UV-C: ON (OPEN)' : 'UV-C: ACTIVE') : 'UV-C: OFF', 194, 210);
+
+        // VRFB badge
+        ctx.fillStyle = '#065f46';
+        ctx.fillRect(370, 184, 118, 42);
+        ctx.strokeStyle = '#34d399';
+        ctx.strokeRect(370, 184, 118, 42);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillText('VRFB: 94%', 384, 210);
+
+        if (this.displayTexture) {
+          this.displayTexture.needsUpdate = true;
+        }
+      }
+
+      initMaterials() {
+        const m = this.materials;
+        // High-grade satin automotive/medical powder-coat shell with subtle clearcoat reflection
+        m.shellOuter = new THREE.MeshPhysicalMaterial({
+          color: 0xe6e4df,
+          roughness: 0.24,
+          metalness: 0.12,
+          clearcoat: 0.45,
+          clearcoatRoughness: 0.22,
+          envMapIntensity: 1.25
+        });
+        // Optical tempered front observation glass with realistic specular edge highlight
+        m.shellFrontCutaway = new THREE.MeshPhysicalMaterial({
+          color: 0xe0f2fe,
+          roughness: 0.06,
+          metalness: 0.05,
+          transmission: 0.78,
+          ior: 1.5,
+          reflectivity: 0.9,
+          clearcoat: 1.0,
+          clearcoatRoughness: 0.05,
+          transparent: true,
+          opacity: 0.22,
+          depthWrite: false,
+          envMapIntensity: 1.8
+        });
+        // Anodized gunmetal / tactical polymer bumpers
+        m.bumperCharcoal = new THREE.MeshPhysicalMaterial({
+          color: 0x22252a,
+          roughness: 0.36,
+          metalness: 0.48,
+          clearcoat: 0.25,
+          clearcoatRoughness: 0.35,
+          envMapIntensity: 1.3
+        });
+        // Rigid polyurethane vacuum insulation core
+        m.insulationFoam = new THREE.MeshStandardMaterial({
+          color: 0xd4d0c5,
+          roughness: 0.65,
+          metalness: 0.05,
+          bumpMap: this.brushedMap,
+          bumpScale: 0.008
+        });
+        // Food-grade 316L Brushed Stainless Steel Liner with authentic metallic reflection & grain
+        m.stainlessLiner = new THREE.MeshPhysicalMaterial({
+          color: 0xdde3ea,
+          roughness: 0.18,
+          metalness: 0.92,
+          roughnessMap: this.brushedMap,
+          bumpMap: this.brushedMap,
+          bumpScale: 0.004,
+          clearcoat: 0.3,
+          clearcoatRoughness: 0.15,
+          envMapIntensity: 1.65
+        });
+        // CNC-Machined Brushed Anodized Aluminium
+        m.brushedAlum = new THREE.MeshPhysicalMaterial({
+          color: 0xe4e4e7,
+          roughness: 0.20,
+          metalness: 0.88,
+          roughnessMap: this.brushedMap,
+          bumpMap: this.brushedMap,
+          bumpScale: 0.003,
+          clearcoat: 0.25,
+          envMapIntensity: 1.55
+        });
+        // Polished Chrome / High-Grade Stainless Fasteners & Wire Basket
+        m.fastenerSteel = new THREE.MeshPhysicalMaterial({
+          color: 0xf1f5f9,
+          roughness: 0.10,
+          metalness: 0.96,
+          clearcoat: 0.6,
+          clearcoatRoughness: 0.08,
+          envMapIntensity: 1.9
+        });
+        m.gasketRubber = new THREE.MeshStandardMaterial({
+          color: 0x141619,
+          roughness: 0.72,
+          metalness: 0.12
+        });
+        // Cooling stack materials — Anodized Cryo-Blue & Polished Thermal Copper
+        m.coldBlueAnodized = new THREE.MeshPhysicalMaterial({
+          color: 0x0ea5e9,
+          roughness: 0.16,
+          metalness: 0.86,
+          clearcoat: 0.5,
+          clearcoatRoughness: 0.12,
+          emissive: 0x0284c7,
+          emissiveIntensity: 0.18,
+          envMapIntensity: 1.75
+        });
+        m.peltierCeramic = new THREE.MeshPhysicalMaterial({
+          color: 0xffffff,
+          roughness: 0.14,
+          metalness: 0.08,
+          clearcoat: 0.85,
+          clearcoatRoughness: 0.1
+        });
+        m.hotCopper = new THREE.MeshPhysicalMaterial({
+          color: 0xf97316,
+          roughness: 0.15,
+          metalness: 0.94,
+          roughnessMap: this.brushedMap,
+          clearcoat: 0.4,
+          emissive: 0xea580c,
+          emissiveIntensity: 0.18,
+          envMapIntensity: 1.85
+        });
+        m.hotSinkDark = new THREE.MeshPhysicalMaterial({
+          color: 0xd97706,
+          roughness: 0.20,
+          metalness: 0.88,
+          clearcoat: 0.35,
+          emissive: 0xb45309,
+          emissiveIntensity: 0.12,
+          envMapIntensity: 1.65
+        });
+        m.fanDark = new THREE.MeshPhysicalMaterial({
+          color: 0x1e2026,
+          roughness: 0.28,
+          metalness: 0.62,
+          clearcoat: 0.3,
+          envMapIntensity: 1.4
+        });
+        // UV-C materials
+        m.uvTubeEmitter = new THREE.MeshStandardMaterial({
+          color: 0xf5f3ff,
+          emissive: 0x9333ea,
+          emissiveIntensity: 3.4,
+          roughness: 0.06,
+          metalness: 0.1
+        });
+        m.uvHaloOuter = new THREE.MeshBasicMaterial({
+          color: 0xa855f7,
+          transparent: true,
+          opacity: 0.42,
+          depthWrite: false
+        });
+        m.uvConeGlow = new THREE.MeshBasicMaterial({
+          color: 0x8b5cf6,
+          transparent: true,
+          opacity: 0.22,
+          side: THREE.DoubleSide,
+          depthWrite: false
+        });
+        // VRFB Borosilicate Glass Reservoirs & Glossy Electrolytes
+        m.tankShell = new THREE.MeshPhysicalMaterial({
+          color: 0xf8fafc,
+          roughness: 0.05,
+          metalness: 0.05,
+          transmission: 0.82,
+          ior: 1.52,
+          reflectivity: 0.95,
+          clearcoat: 1.0,
+          clearcoatRoughness: 0.04,
+          transparent: true,
+          opacity: 0.62,
+          depthWrite: false,
+          envMapIntensity: 2.0
+        });
+        m.electrolytePos = new THREE.MeshPhysicalMaterial({
+          color: 0xef4444,
+          roughness: 0.12,
+          metalness: 0.15,
+          clearcoat: 0.9,
+          emissive: 0xdc2626,
+          emissiveIntensity: 0.24
+        });
+        m.electrolyteNeg = new THREE.MeshPhysicalMaterial({
+          color: 0x3b82f6,
+          roughness: 0.12,
+          metalness: 0.15,
+          clearcoat: 0.9,
+          emissive: 0x2563eb,
+          emissiveIntensity: 0.24
+        });
+        m.flowStackBody = new THREE.MeshPhysicalMaterial({
+          color: 0x27272a,
+          roughness: 0.22,
+          metalness: 0.78,
+          clearcoat: 0.35,
+          envMapIntensity: 1.5
+        });
+        m.hosePosRed = new THREE.MeshPhysicalMaterial({
+          color: 0xdc2626,
+          roughness: 0.22,
+          metalness: 0.25,
+          clearcoat: 0.65
+        });
+        m.hoseNegBlue = new THREE.MeshPhysicalMaterial({
+          color: 0x0284c7,
+          roughness: 0.22,
+          metalness: 0.25,
+          clearcoat: 0.65
+        });
+        // Electronics & cables
+        m.pcbBoard = new THREE.MeshPhysicalMaterial({
+          color: 0x064e3b,
+          roughness: 0.20,
+          metalness: 0.45,
+          clearcoat: 0.75,
+          clearcoatRoughness: 0.12,
+          envMapIntensity: 1.4
+        });
+        m.icPackage = new THREE.MeshPhysicalMaterial({
+          color: 0x18181b,
+          roughness: 0.28,
+          metalness: 0.45,
+          clearcoat: 0.4
+        });
+        m.wirePower = new THREE.MeshPhysicalMaterial({
+          color: 0x3f3f46,
+          roughness: 0.3,
+          metalness: 0.45,
+          clearcoat: 0.35
+        });
+        m.wireSensor = new THREE.MeshPhysicalMaterial({
+          color: 0xf59e0b,
+          roughness: 0.25,
+          metalness: 0.55,
+          clearcoat: 0.5
+        });
+        m.wireUvc = new THREE.MeshPhysicalMaterial({
+          color: 0x8b5cf6,
+          roughness: 0.25,
+          metalness: 0.45,
+          clearcoat: 0.5
+        });
+        // Cold-chain stored payload materials (amber glass, sterile medical boxes, frosted packs, vaccine caps)
+        m.amberGlass = new THREE.MeshPhysicalMaterial({
+          color: 0xb45309,
+          roughness: 0.08,
+          metalness: 0.05,
+          transmission: 0.65,
+          ior: 1.52,
+          clearcoat: 1.0,
+          clearcoatRoughness: 0.06,
+          transparent: true,
+          opacity: 0.84,
+          envMapIntensity: 1.9
+        });
+        m.medicalBoxWhite = new THREE.MeshPhysicalMaterial({
+          color: 0xf8fafc,
+          roughness: 0.22,
+          metalness: 0.08,
+          clearcoat: 0.65,
+          clearcoatRoughness: 0.15,
+          envMapIntensity: 1.4
+        });
+        m.bioPackTeal = new THREE.MeshPhysicalMaterial({
+          color: 0x06b6d4,
+          roughness: 0.18,
+          metalness: 0.35,
+          clearcoat: 0.8,
+          emissive: 0x0891b2,
+          emissiveIntensity: 0.16,
+          envMapIntensity: 1.6
+        });
+        m.vaccineCapCrimson = new THREE.MeshPhysicalMaterial({
+          color: 0xe11d48,
+          roughness: 0.20,
+          metalness: 0.35,
+          clearcoat: 0.7
+        });
+        m.vaccineCapEmerald = new THREE.MeshPhysicalMaterial({
+          color: 0x10b981,
+          roughness: 0.20,
+          metalness: 0.35,
+          clearcoat: 0.7
+        });
+        m.displayScreen = new THREE.MeshBasicMaterial({
+          map: this.displayTexture
+        });
+      }
+    }
+
+    /*************************************************************************
+     * MODULE 3: PROCEDURAL 3D MACHINE BUILDER (ANATOMY ASSEMBLIES A - H)
+     *************************************************************************/
+    class FreezerAnatomyBuilder {
+      constructor(scene, matLib) {
+        this.scene = scene;
+        this.matLib = matLib;
+        this.m = matLib.materials;
+
+        // Root assembly container
+        this.root = new THREE.Group();
+        this.scene.add(this.root);
+
+        // Subsystem groups for selective focus, raycasting, and exploded view
+        this.groups = {
+          enclosure: new THREE.Group(),
+          lid: new THREE.Group(),
+          chamber: new THREE.Group(),
+          uvc: new THREE.Group(),
+          vrfb: new THREE.Group(),
+          cooling: new THREE.Group(),
+          electronics: new THREE.Group()
+        };
+
+        // Explode direction vectors for each assembly
+        this.explodeVectors = {
+          enclosure: new THREE.Vector3(0, 0, 0),
+          lid: new THREE.Vector3(0, 1.4, 0),
+          chamber: new THREE.Vector3(-0.7, 0.55, 0),
+          uvc: new THREE.Vector3(0, 0.9, 0),
+          vrfb: new THREE.Vector3(1.25, 0.15, -0.35),
+          cooling: new THREE.Vector3(-0.4, -0.95, 0),
+          electronics: new THREE.Vector3(1.15, -0.2, 0.75)
+        };
+
+        Object.entries(this.groups).forEach(([key, grp]) => {
+          grp.name = key;
+          this.root.add(grp);
+        });
+
+        // Specific animated sub-pivots
+        this.lidHingePivot = new THREE.Group();
+        // Hinge axis located at top-rear of wider rectangular enclosure: Y = +1.72, Z = -1.46
+        this.lidHingePivot.position.set(0, 1.72, -1.46);
+        this.groups.lid.add(this.lidHingePivot);
+
+        // Attach UV-C group inside the lid hinge pivot so UV-C always moves with the lid
+        this.uvcSubGroup = new THREE.Group();
+        this.lidHingePivot.add(this.uvcSubGroup);
+
+        this.fanBlades = [];
+        this.selectableMeshes = [];
+        this.pinAnchors = {};
+
+        this.buildAllSubsystems();
+      }
+
+      registerMesh(mesh, subsystemKey) {
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.userData.subsystem = subsystemKey;
+        // Clone material per subsystem if we want independent selective focus opacity/dimming
+        if (mesh.material && !mesh.userData.sharedSpecialMat) {
+          mesh.material = mesh.material.clone();
+          mesh.userData.baseColor = mesh.material.color ? mesh.material.color.clone() : null;
+          mesh.userData.baseOpacity = mesh.material.opacity;
+          mesh.userData.baseTransparent = mesh.material.transparent;
+          mesh.userData.baseEmissiveIntensity = mesh.material.emissiveIntensity || 0;
+        }
+        this.matLib.subsystemMeshes[subsystemKey].push(mesh);
+        this.selectableMeshes.push(mesh);
+      }
+
+      createBevelledBox(w, h, d, bevel = 0.06) {
+        const shape = new THREE.Shape();
+        const hw = w / 2 - bevel;
+        const hh = h / 2 - bevel;
+        shape.moveTo(-hw, -h / 2);
+        shape.lineTo(hw, -h / 2);
+        shape.quadraticCurveTo(w / 2, -h / 2, w / 2, -hh);
+        shape.lineTo(w / 2, hh);
+        shape.quadraticCurveTo(w / 2, h / 2, hw, h / 2);
+        shape.lineTo(-hw, h / 2);
+        shape.quadraticCurveTo(-w / 2, h / 2, -w / 2, hh);
+        shape.lineTo(-w / 2, -hh);
+        shape.quadraticCurveTo(-w / 2, -h / 2, -hw, -h / 2);
+
+        const extrudeSettings = {
+          steps: 1,
+          depth: d - bevel * 2,
+          bevelEnabled: true,
+          bevelThickness: bevel,
+          bevelSize: bevel,
+          bevelSegments: 3
+        };
+        const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        geo.center();
+        return geo;
+      }
+
+      createTubeBetween(points, radius, material, subsystemKey, tubularSegments = 36) {
+        const curve = new THREE.CatmullRomCurve3(points);
+        const geo = new THREE.TubeGeometry(curve, tubularSegments, radius, 10, false);
+        const mesh = new THREE.Mesh(geo, material);
+        this.registerMesh(mesh, subsystemKey);
+        return mesh;
+      }
+
+      createFittingCollar(pos, axis, radius, material, subsystemKey, parent) {
+        const geo = new THREE.CylinderGeometry(radius * 1.45, radius * 1.45, 0.08, 12);
+        const mesh = new THREE.Mesh(geo, material);
+        mesh.position.copy(pos);
+        if (axis === 'x') mesh.rotation.z = Math.PI / 2;
+        if (axis === 'z') mesh.rotation.x = Math.PI / 2;
+        this.registerMesh(mesh, subsystemKey);
+        parent.add(mesh);
+      }
+
+      buildAllSubsystems() {
+        this.buildOuterEnclosure();
+        this.buildStorageChamber();
+        this.buildPeltierCoolingStack();
+        this.buildVRFBPowerSubsystem();
+        this.buildAIControlElectronics();
+        this.buildInsulatedLidAndUVC();
+        this.buildInterSubsystemHarnesses();
+        this.setupPinAnchors();
+      }
+
+      /* A. WIDER RECTANGULAR OUTER ENCLOSURE (W = 6.2, D = 3.0) */
+      buildOuterEnclosure() {
+        const g = this.groups.enclosure;
+
+        // 1. Substantial Rectangular Base Frame (W = 6.2, D = 3.0) + 6 Heavy-Duty Rubber Feet
+        const baseGeo = this.createBevelledBox(6.2, 0.28, 3.0, 0.05);
+        const baseMesh = new THREE.Mesh(baseGeo, this.m.bumperCharcoal);
+        baseMesh.position.set(0, -1.65, 0);
+        this.registerMesh(baseMesh, 'enclosure');
+        g.add(baseMesh);
+
+        const footPositions = [
+          [-2.75, -1.86, -1.22], [0, -1.86, -1.22], [2.75, -1.86, -1.22],
+          [-2.75, -1.86,  1.22], [0, -1.86,  1.22], [2.75, -1.86,  1.22]
+        ];
+        footPositions.forEach(([fx, fy, fz]) => {
+          const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.18, 0.18, 16), this.m.gasketRubber);
+          foot.position.set(fx, fy, fz);
+          this.registerMesh(foot, 'enclosure');
+          g.add(foot);
+        });
+
+        // 2. Wide Rear Structural Wall (complete industrial surface with recessed service panel & fasteners)
+        const rearWall = new THREE.Mesh(this.createBevelledBox(6.1, 3.2, 0.18, 0.04), this.m.shellOuter);
+        rearWall.position.set(0, 0.05, -1.40);
+        this.registerMesh(rearWall, 'enclosure');
+        g.add(rearWall);
+
+        // Rear recessed service plate
+        const servicePlate = new THREE.Mesh(new THREE.BoxGeometry(5.0, 2.2, 0.06), this.m.brushedAlum);
+        servicePlate.position.set(0, -0.05, -1.49);
+        this.registerMesh(servicePlate, 'enclosure');
+        g.add(servicePlate);
+
+        // Rear ventilation grilles aligned with chamber cooling & utility bays
+        for (let i = -4; i <= 4; i++) {
+          const louverL = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.04, 0.04), this.m.bumperCharcoal);
+          louverL.position.set(-1.15, -0.65 + i * 0.1, -1.52);
+          const louverR = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.04, 0.04), this.m.bumperCharcoal);
+          louverR.position.set(1.35, -0.65 + i * 0.1, -1.52);
+          this.registerMesh(louverL, 'enclosure');
+          this.registerMesh(louverR, 'enclosure');
+          g.add(louverL, louverR);
+        }
+
+        // Rear service port glands
+        const gland1 = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.12, 14), this.m.fastenerSteel);
+        gland1.rotation.x = Math.PI / 2;
+        gland1.position.set(2.15, -0.7, -1.52);
+        this.registerMesh(gland1, 'enclosure');
+        g.add(gland1);
+
+        // Visible screws around wide rear service panel
+        const screwCoords = [
+          [-2.35, 0.95], [2.35, 0.95], [-2.35, -1.05], [2.35, -1.05], [0, 0.95], [0, -1.05]
+        ];
+        screwCoords.forEach(([sx, sy]) => {
+          const screw = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.04, 10), this.m.fastenerSteel);
+          screw.rotation.x = Math.PI / 2;
+          screw.position.set(sx, sy, -1.52);
+          this.registerMesh(screw, 'enclosure');
+          g.add(screw);
+        });
+
+        // 3. Left & Right Outer Walls (at X = ±2.96) with Louvered Vents & Side Handles
+        const leftWall = new THREE.Mesh(this.createBevelledBox(0.18, 3.2, 2.9, 0.04), this.m.shellOuter);
+        leftWall.position.set(-2.96, 0.05, 0);
+        this.registerMesh(leftWall, 'enclosure');
+        g.add(leftWall);
+
+        const rightWall = new THREE.Mesh(this.createBevelledBox(0.18, 3.2, 2.9, 0.04), this.m.shellOuter);
+        rightWall.position.set(2.96, 0.05, 0);
+        this.registerMesh(rightWall, 'enclosure');
+        g.add(rightWall);
+
+        // Side ventilation louver panels & Side Heavy-Duty Carry Handles
+        [-3.06, 3.06].forEach((sideX) => {
+          const ventFrame = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.95, 1.55), this.m.bumperCharcoal);
+          ventFrame.position.set(sideX, -0.95, 0);
+          this.registerMesh(ventFrame, 'enclosure');
+          g.add(ventFrame);
+
+          const handleMountL = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.24, 0.18), this.m.bumperCharcoal);
+          handleMountL.position.set(sideX, 0.95, -0.48);
+          const handleMountR = handleMountL.clone();
+          handleMountR.position.set(sideX, 0.95, 0.48);
+          const handleBar = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 1.02, 14), this.m.brushedAlum);
+          handleBar.rotation.x = Math.PI / 2;
+          handleBar.position.set(sideX + (sideX > 0 ? 0.08 : -0.08), 0.95, 0);
+          this.registerMesh(handleMountL, 'enclosure');
+          this.registerMesh(handleMountR, 'enclosure');
+          this.registerMesh(handleBar, 'enclosure');
+          g.add(handleMountL, handleMountR, handleBar);
+        });
+
+        // 4. Reinforced Corner Bumpers (at X = ±2.98, Z = ±1.42)
+        const corners = [
+          [-2.98, -1.42], [2.98, -1.42], [-2.98, 1.42], [2.98, 1.42]
+        ];
+        corners.forEach(([cx, cz]) => {
+          const bumper = new THREE.Mesh(new THREE.BoxGeometry(0.24, 3.32, 0.24), this.m.bumperCharcoal);
+          bumper.position.set(cx, 0.05, cz);
+          this.registerMesh(bumper, 'enclosure');
+          g.add(bumper);
+        });
+
+        // 5. Internal Asymmetric Partition Divider at X = +1.10
+        // Divides the wide Left Rectangular Storage Chamber (X = -2.85 to +1.05) from the Right Utility Bay (X = +1.15 to +2.85)
+        const partition = new THREE.Mesh(new THREE.BoxGeometry(0.1, 3.05, 2.68), this.m.insulationFoam);
+        partition.position.set(1.10, 0.02, 0);
+        this.registerMesh(partition, 'enclosure');
+        g.add(partition);
+
+        // Horizontal Deck separating Upper Rectangular Cold Chamber from Lower Peltier Cooling Bay
+        const midDeck = new THREE.Mesh(new THREE.BoxGeometry(3.96, 0.14, 2.68), this.m.insulationFoam);
+        midDeck.position.set(-0.90, -0.22, 0);
+        this.registerMesh(midDeck, 'enclosure');
+        g.add(midDeck);
+
+        // 6. Front Cutaway Inspection Window & Right-Side Front Bezel (centered over right utility bay X = 2.02)
+        const frontRightPanel = new THREE.Mesh(new THREE.BoxGeometry(1.74, 1.4, 0.12), this.m.shellOuter);
+        frontRightPanel.position.set(2.02, 0.95, 1.42);
+        this.registerMesh(frontRightPanel, 'enclosure');
+        g.add(frontRightPanel);
+
+        // Ghosted Front Cutaway Window spanning the wide rectangular front face
+        this.frontGhostPanel = new THREE.Mesh(new THREE.BoxGeometry(5.8, 3.1, 0.06), this.m.shellFrontCutaway);
+        this.frontGhostPanel.userData.sharedSpecialMat = true;
+        this.frontGhostPanel.userData.subsystem = 'chamber';
+        this.frontGhostPanel.position.set(0, 0.05, 1.44);
+        this.selectableMeshes.push(this.frontGhostPanel);
+        g.add(this.frontGhostPanel);
+
+        // Brushed Aluminium Perimeter Frame around the Front Cutaway Window for high-end CAD realism
+        const frameTop = new THREE.Mesh(new THREE.BoxGeometry(5.96, 0.09, 0.14), this.m.brushedAlum);
+        frameTop.position.set(0, 1.58, 1.43);
+        const frameBot = new THREE.Mesh(new THREE.BoxGeometry(5.96, 0.09, 0.14), this.m.brushedAlum);
+        frameBot.position.set(0, -1.48, 1.43);
+        const frameMidV = new THREE.Mesh(new THREE.BoxGeometry(0.09, 3.06, 0.14), this.m.brushedAlum);
+        frameMidV.position.set(1.10, 0.05, 1.43);
+        const frameMidH = new THREE.Mesh(new THREE.BoxGeometry(3.96, 0.08, 0.14), this.m.brushedAlum);
+        frameMidH.position.set(-0.90, -0.22, 1.43);
+        [frameTop, frameBot, frameMidV, frameMidH].forEach(fm => {
+          this.registerMesh(fm, 'enclosure');
+          g.add(fm);
+        });
+
+        // Front Locking Latches (mounted along wide top front rim)
+        [-2.05, -0.15, 1.65].forEach((lx) => {
+          const latchBase = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.28, 0.12), this.m.bumperCharcoal);
+          latchBase.position.set(lx, 1.54, 1.49);
+          const latchClasp = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.22, 0.08), this.m.fastenerSteel);
+          latchClasp.position.set(lx, 1.62, 1.53);
+          this.registerMesh(latchBase, 'enclosure');
+          this.registerMesh(latchClasp, 'enclosure');
+          g.add(latchBase, latchClasp);
+        });
+      }
+
+      /* C. EXPANDED RECTANGULAR STORAGE CHAMBER (LEFT HALF BASKET, RIGHT HALF EMPTY) */
+      buildStorageChamber() {
+        const g = this.groups.chamber;
+        // Expanded Rectangular Chamber spans X from -2.85 to +1.05 (Width = 3.90, Center X = -0.90, Depth = 2.34)
+        const chCenterX = -0.90;
+        const chWidth = 3.82;
+        const chDepth = 2.34;
+
+        // 1. Multi-layer thermal insulation surround (Back & Left outer insulation)
+        const insulBack = new THREE.Mesh(new THREE.BoxGeometry(3.94, 1.75, 0.16), this.m.insulationFoam);
+        insulBack.position.set(chCenterX, 0.72, -1.22);
+        const insulLeft = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.75, 2.50), this.m.insulationFoam);
+        insulLeft.position.set(-2.82, 0.72, 0);
+        this.registerMesh(insulBack, 'chamber');
+        this.registerMesh(insulLeft, 'chamber');
+        g.add(insulBack, insulLeft);
+
+        // 2. Deep Hollow Rectangular Stainless-Steel / Brushed Aluminium Inner Liner
+        const linerFloor = new THREE.Mesh(new THREE.BoxGeometry(chWidth, 0.08, chDepth), this.m.stainlessLiner);
+        linerFloor.position.set(chCenterX, -0.08, 0);
+        const linerBack = new THREE.Mesh(new THREE.BoxGeometry(chWidth, 1.68, 0.07), this.m.stainlessLiner);
+        linerBack.position.set(chCenterX, 0.76, -1.11);
+        const linerLeft = new THREE.Mesh(new THREE.BoxGeometry(0.07, 1.68, chDepth), this.m.stainlessLiner);
+        linerLeft.position.set(-2.76, 0.76, 0);
+        const linerRight = new THREE.Mesh(new THREE.BoxGeometry(0.07, 1.68, chDepth), this.m.stainlessLiner);
+        linerRight.position.set(0.98, 0.76, 0);
+
+        // Upper Rectangular Chamber Rim Collar (4 hollow perimeter bars)
+        const rimRear = new THREE.Mesh(new THREE.BoxGeometry(3.94, 0.08, 0.16), this.m.brushedAlum);
+        rimRear.position.set(chCenterX, 1.62, -1.16);
+        const rimFront = new THREE.Mesh(new THREE.BoxGeometry(3.94, 0.08, 0.16), this.m.brushedAlum);
+        rimFront.position.set(chCenterX, 1.62, 1.16);
+        const rimL = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.08, 2.46), this.m.brushedAlum);
+        rimL.position.set(-2.80, 1.62, 0);
+        const rimR = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.08, 2.46), this.m.brushedAlum);
+        rimR.position.set(1.00, 1.62, 0);
+
+        // Subtle low-profile floor divider strip at the chamber midpoint (X = -0.90)
+        // Marks the boundary between the Left Basket Zone and Right Empty Open Cargo Zone
+        const zoneThreshold = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.04, chDepth - 0.12), this.m.brushedAlum);
+        zoneThreshold.position.set(chCenterX, -0.03, 0);
+
+        [linerFloor, linerBack, linerLeft, linerRight, rimRear, rimFront, rimL, rimR, zoneThreshold].forEach(m => {
+          this.registerMesh(m, 'chamber');
+          g.add(m);
+        });
+
+        // 3. LEFT HALF OF CHAMBER (X = -2.72 to -0.95, Center X = -1.84):
+        // Houses the Removable Stainless-Steel Wire Specimen Basket & Cold-Chain Sample Vials
+        const basketGroup = new THREE.Group();
+        basketGroup.position.set(-1.84, 0.45, 0);
+        const wireMat = this.m.fastenerSteel;
+
+        const frameW = 1.68, frameD = 1.82;
+        [-0.35, 0.28].forEach(by => {
+          const barF = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, frameW, 8), wireMat);
+          barF.rotation.z = Math.PI / 2;
+          barF.position.set(0, by, frameD / 2);
+          const barB = barF.clone();
+          barB.position.set(0, by, -frameD / 2);
+          const barL = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, frameD, 8), wireMat);
+          barL.rotation.x = Math.PI / 2;
+          barL.position.set(-frameW / 2, by, 0);
+          const barR = barL.clone();
+          barR.position.set(frameW / 2, by, 0);
+          [barF, barB, barL, barR].forEach(b => {
+            this.registerMesh(b, 'chamber');
+            basketGroup.add(b);
+          });
+        });
+
+        // Vertical ribs of wire basket
+        for (let i = -3; i <= 3; i++) {
+          const rib = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.63, 8), wireMat);
+          rib.position.set(i * 0.24, -0.03, -frameD / 2);
+          const ribFront = rib.clone();
+          ribFront.position.set(i * 0.24, -0.03, frameD / 2);
+          this.registerMesh(rib, 'chamber');
+          this.registerMesh(ribFront, 'chamber');
+          basketGroup.add(rib, ribFront);
+        }
+
+        // Side & floor wire mesh bars for the basket so stored items sit on a realistic stainless rack
+        for (let s = -3; s <= 3; s++) {
+          const sideRibL = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.63, 8), wireMat);
+          sideRibL.position.set(-frameW / 2, -0.03, s * 0.26);
+          const sideRibR = sideRibL.clone();
+          sideRibR.position.set(frameW / 2, -0.03, s * 0.26);
+          const floorWire = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, frameD, 8), wireMat);
+          floorWire.rotation.x = Math.PI / 2;
+          floorWire.position.set(s * 0.24, -0.35, 0);
+          this.registerMesh(sideRibL, 'chamber');
+          this.registerMesh(sideRibR, 'chamber');
+          this.registerMesh(floorWire, 'chamber');
+          basketGroup.add(sideRibL, sideRibR, floorWire);
+        }
+
+        /* =====================================================================
+         * ACTIVELY COOLED COLD-CHAIN PAYLOAD INSIDE THE LEFT STORAGE BASKET
+         * ===================================================================== */
+        // A. Front Zone: Anodized Cryo-Rack with 12 Vaccine Vials (4x3 grid), Chilled Fluid, Labels & Colour-Coded Caps
+        const vialRackBase = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.06, 0.66), this.m.brushedAlum);
+        vialRackBase.position.set(-0.30, -0.31, 0.46);
+        const vialRackTopGuide = new THREE.Mesh(new THREE.BoxGeometry(0.90, 0.03, 0.64), this.m.brushedAlum);
+        vialRackTopGuide.position.set(-0.30, -0.12, 0.46);
+        this.registerMesh(vialRackBase, 'chamber');
+        this.registerMesh(vialRackTopGuide, 'chamber');
+        basketGroup.add(vialRackBase, vialRackTopGuide);
+
+        for (let vx = 0; vx < 4; vx++) {
+          for (let vz = 0; vz < 3; vz++) {
+            const px = -0.63 + vx * 0.22;
+            const pz = 0.25 + vz * 0.21;
+            const vial = new THREE.Mesh(new THREE.CylinderGeometry(0.068, 0.068, 0.36, 16), this.m.tankShell);
+            vial.position.set(px, -0.10, pz);
+            const sampleFluid = new THREE.Mesh(new THREE.CylinderGeometry(0.056, 0.056, 0.22, 14), this.m.coldBlueAnodized);
+            sampleFluid.position.set(px, -0.15, pz);
+            const labelBand = new THREE.Mesh(new THREE.CylinderGeometry(0.070, 0.070, 0.11, 16), this.m.medicalBoxWhite);
+            labelBand.position.set(px, -0.08, pz);
+            const capMat = (vz === 0) ? this.m.vaccineCapCrimson : (vz === 1 ? this.m.vaccineCapEmerald : this.m.coldBlueAnodized);
+            const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.073, 0.073, 0.06, 16), capMat);
+            cap.position.set(px, 0.10, pz);
+            this.registerMesh(vial, 'chamber');
+            this.registerMesh(sampleFluid, 'chamber');
+            this.registerMesh(labelBand, 'chamber');
+            this.registerMesh(cap, 'chamber');
+            basketGroup.add(vial, sampleFluid, labelBand, cap);
+          }
+        }
+
+        // B. Rear-Left Zone: 3 Tall Amber Borosilicate Photoprotective Serum Bottles with Collars & White Medical Labels
+        [-0.58, -0.30, -0.02].forEach((bx, idx) => {
+          const bz = -0.44;
+          const bottleBody = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.44, 20), this.m.amberGlass);
+          bottleBody.position.set(bx, -0.12, bz);
+          const bottleShoulder = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.11, 0.10, 20), this.m.amberGlass);
+          bottleShoulder.position.set(bx, 0.15, bz);
+          const bottleCap = new THREE.Mesh(new THREE.CylinderGeometry(0.058, 0.058, 0.08, 16), idx === 1 ? this.m.vaccineCapCrimson : this.m.fastenerSteel);
+          bottleCap.position.set(bx, 0.23, bz);
+          const bottleLabel = new THREE.Mesh(new THREE.CylinderGeometry(0.113, 0.113, 0.20, 20, 1, true, -Math.PI * 0.4, Math.PI * 0.8), this.m.medicalBoxWhite);
+          bottleLabel.position.set(bx, -0.11, bz);
+          const serumCore = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.32, 16), this.m.bioPackTeal);
+          serumCore.position.set(bx, -0.16, bz);
+          [bottleBody, bottleShoulder, bottleCap, bottleLabel, serumCore].forEach(part => {
+            this.registerMesh(part, 'chamber');
+            basketGroup.add(part);
+          });
+        });
+
+        // C. Rear-Right Zone: Stacked Sterile Biologics / Blood-Plasma Insulated Cassettes with Cold-Chain Indicator Stripes
+        [0, 1, 2].forEach((tier) => {
+          const boxY = -0.25 + tier * 0.17;
+          const bioBox = new THREE.Mesh(this.createBevelledBox(0.56, 0.14, 0.64, 0.02), this.m.medicalBoxWhite);
+          bioBox.position.set(0.46, boxY, -0.40);
+          const coldStripe = new THREE.Mesh(new THREE.BoxGeometry(0.57, 0.035, 0.65), tier === 2 ? this.m.vaccineCapEmerald : this.m.coldBlueAnodized);
+          coldStripe.position.set(0.46, boxY, -0.40);
+          const topSeal = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.145, 0.24), this.m.bioPackTeal);
+          topSeal.position.set(0.46, boxY, -0.40);
+          this.registerMesh(bioBox, 'chamber');
+          this.registerMesh(coldStripe, 'chamber');
+          this.registerMesh(topSeal, 'chamber');
+          basketGroup.add(bioBox, coldStripe, topSeal);
+        });
+
+        // D. Front-Right Zone: Chilled Phase-Change Gel Packs & Sealed Diagnostic Reagent Pouches + Digital Temp Logger Tag
+        [0.24, 0.56].forEach((gx) => {
+          const gelPack = new THREE.Mesh(this.createBevelledBox(0.26, 0.36, 0.52, 0.03), this.m.bioPackTeal);
+          gelPack.position.set(gx, -0.14, 0.42);
+          const gelHeader = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.06, 0.44), this.m.medicalBoxWhite);
+          gelHeader.position.set(gx, 0.05, 0.42);
+          const tempDot = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.07, 12), this.m.coldBlueAnodized);
+          tempDot.position.set(gx, 0.055, 0.52);
+          this.registerMesh(gelPack, 'chamber');
+          this.registerMesh(gelHeader, 'chamber');
+          this.registerMesh(tempDot, 'chamber');
+          basketGroup.add(gelPack, gelHeader, tempDot);
+        });
+
+        g.add(basketGroup);
+
+        /* =====================================================================
+         * 4. RIGHT HALF OF CHAMBER (X = -0.85 to +0.95, Center X = +0.06):
+         * Floor Air-Distribution Channels + Actively Cooled Right-Bay Medical & Clinical Payload
+         * ===================================================================== */
+        for (let chIdx = -2; chIdx <= 2; chIdx++) {
+          const floorChannel = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.025, 0.055), this.m.coldBlueAnodized);
+          floorChannel.position.set(0.06, -0.032, chIdx * 0.38);
+          const trimRail = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.03, 0.02), this.m.fastenerSteel);
+          trimRail.position.set(0.06, -0.028, chIdx * 0.38 + 0.045);
+          this.registerMesh(floorChannel, 'chamber');
+          this.registerMesh(trimRail, 'chamber');
+          g.add(floorChannel, trimRail);
+        }
+
+        const rightPayloadGroup = new THREE.Group();
+        rightPayloadGroup.position.set(0.04, 0.45, 0);
+
+        // Low-profile perforated stainless-steel organizer tray on the right chamber floor
+        const rightTrayBase = new THREE.Mesh(new THREE.BoxGeometry(1.62, 0.035, 1.82), this.m.stainlessLiner);
+        rightTrayBase.position.set(0, -0.44, 0);
+        const rightTrayRimF = new THREE.Mesh(new THREE.BoxGeometry(1.64, 0.09, 0.03), this.m.brushedAlum);
+        rightTrayRimF.position.set(0, -0.41, 0.90);
+        const rightTrayRimB = rightTrayRimF.clone();
+        rightTrayRimB.position.set(0, -0.41, -0.90);
+        const rightTrayRimL = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.09, 1.82), this.m.brushedAlum);
+        rightTrayRimL.position.set(-0.80, -0.41, 0);
+        const rightTrayRimR = rightTrayRimL.clone();
+        rightTrayRimR.position.set(0.80, -0.41, 0);
+        [rightTrayBase, rightTrayRimF, rightTrayRimB, rightTrayRimL, rightTrayRimR].forEach(p => {
+          this.registerMesh(p, 'chamber');
+          rightPayloadGroup.add(p);
+        });
+
+        // A. Rear-Left of Right Bay: Insulated mRNA Sub-Zero Cryo-Transport Box with Latches, Handle & Digital Telemetry Badge
+        const cryoBox = new THREE.Mesh(this.createBevelledBox(0.68, 0.48, 0.64, 0.035), this.m.medicalBoxWhite);
+        cryoBox.position.set(-0.38, -0.18, -0.42);
+        const cryoLid = new THREE.Mesh(this.createBevelledBox(0.70, 0.10, 0.66, 0.025), this.m.coldBlueAnodized);
+        cryoLid.position.set(-0.38, 0.09, -0.42);
+        const cryoHandle = new THREE.Mesh(new THREE.BoxGeometry(0.30, 0.05, 0.08), this.m.bumperCharcoal);
+        cryoHandle.position.set(-0.38, 0.16, -0.42);
+        const cryoBadge = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.16, 0.02), this.m.bioPackTeal);
+        cryoBadge.position.set(-0.38, -0.16, -0.095);
+        const cryoLatchL = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.12, 0.03), this.m.fastenerSteel);
+        cryoLatchL.position.set(-0.54, 0.04, -0.09);
+        const cryoLatchR = cryoLatchL.clone();
+        cryoLatchR.position.set(-0.22, 0.04, -0.09);
+        [cryoBox, cryoLid, cryoHandle, cryoBadge, cryoLatchL, cryoLatchR].forEach(p => {
+          this.registerMesh(p, 'chamber');
+          rightPayloadGroup.add(p);
+        });
+
+        // B. Rear-Right of Right Bay: 2 Large Borosilicate Saline / Blood-Plasma Carboys with Chilled Contents & Screw Caps
+        [0.18, 0.54].forEach((cx, idx) => {
+          const cz = -0.44;
+          const carboyGlass = new THREE.Mesh(new THREE.CylinderGeometry(0.145, 0.145, 0.52, 22), this.m.tankShell);
+          carboyGlass.position.set(cx, -0.16, cz);
+          const carboyNeck = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.145, 0.11, 22), this.m.tankShell);
+          carboyNeck.position.set(cx, 0.155, cz);
+          const carboyCap = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.075, 0.075, 0.08, 18),
+            idx === 0 ? this.m.coldBlueAnodized : this.m.vaccineCapEmerald
+          );
+          carboyCap.position.set(cx, 0.23, cz);
+          const carboyFluid = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.128, 0.128, 0.38, 18),
+            idx === 0 ? this.m.bioPackTeal : this.m.electrolytePos
+          );
+          carboyFluid.position.set(cx, -0.21, cz);
+          const gradBand = new THREE.Mesh(new THREE.CylinderGeometry(0.148, 0.148, 0.16, 22, 1, true, -Math.PI * 0.38, Math.PI * 0.76), this.m.medicalBoxWhite);
+          gradBand.position.set(cx, -0.14, cz);
+          [carboyGlass, carboyNeck, carboyCap, carboyFluid, gradBand].forEach(p => {
+            this.registerMesh(p, 'chamber');
+            rightPayloadGroup.add(p);
+          });
+        });
+
+        // C. Front-Left of Right Bay: Anodized 15-Tube Clinical Vacutainer Rack (5x3 Grid of Blood & Diagnostic Specimen Tubes)
+        const tubeRackBottom = new THREE.Mesh(new THREE.BoxGeometry(0.84, 0.05, 0.56), this.m.brushedAlum);
+        tubeRackBottom.position.set(-0.32, -0.39, 0.44);
+        const tubeRackUpper = new THREE.Mesh(new THREE.BoxGeometry(0.84, 0.03, 0.56), this.m.brushedAlum);
+        tubeRackUpper.position.set(-0.32, -0.16, 0.44);
+        const postFL = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.24, 10), this.m.fastenerSteel);
+        postFL.position.set(-0.70, -0.27, 0.68);
+        const postFR = postFL.clone();
+        postFR.position.set(0.06, -0.27, 0.68);
+        const postBL = postFL.clone();
+        postBL.position.set(-0.70, -0.27, 0.20);
+        const postBR = postFL.clone();
+        postBR.position.set(0.06, -0.27, 0.20);
+        [tubeRackBottom, tubeRackUpper, postFL, postFR, postBL, postBR].forEach(p => {
+          this.registerMesh(p, 'chamber');
+          rightPayloadGroup.add(p);
+        });
+
+        for (let tx = 0; tx < 5; tx++) {
+          for (let tz = 0; tz < 3; tz++) {
+            const vx = -0.60 + tx * 0.14;
+            const vz = 0.28 + tz * 0.16;
+            const tubeGlass = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.042, 0.38, 14), this.m.tankShell);
+            tubeGlass.position.set(vx, -0.19, vz);
+            const sampleMat = (tz === 0) ? this.m.electrolytePos : (tz === 1 ? this.m.bioPackTeal : this.m.coldBlueAnodized);
+            const tubeLiquid = new THREE.Mesh(new THREE.CylinderGeometry(0.033, 0.033, 0.24, 12), sampleMat);
+            tubeLiquid.position.set(vx, -0.24, vz);
+            const stopperMat = (tz === 0) ? this.m.vaccineCapCrimson : (tz === 1 ? this.m.vaccineCapEmerald : this.m.wireUvc);
+            const stopper = new THREE.Mesh(new THREE.CylinderGeometry(0.046, 0.046, 0.06, 14), stopperMat);
+            stopper.position.set(vx, 0.02, vz);
+            [tubeGlass, tubeLiquid, stopper].forEach(p => {
+              this.registerMesh(p, 'chamber');
+              rightPayloadGroup.add(p);
+            });
+          }
+        }
+
+        // D. Front-Right of Right Bay: Stacked Horizontal Phase-Change Eutectic Cold Bricks & Sealed Biologics Pouch
+        [0, 1].forEach((layerIdx) => {
+          const brickY = -0.34 + layerIdx * 0.15;
+          const coldBrick = new THREE.Mesh(this.createBevelledBox(0.54, 0.12, 0.56, 0.025), layerIdx === 0 ? this.m.coldBlueAnodized : this.m.bioPackTeal);
+          coldBrick.position.set(0.44, brickY, 0.44);
+          const brickLabel = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.126, 0.34), this.m.medicalBoxWhite);
+          brickLabel.position.set(0.44, brickY, 0.44);
+          const plugCap = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.04, 14), this.m.fastenerSteel);
+          plugCap.position.set(0.44, brickY + 0.065, 0.64);
+          [coldBrick, brickLabel, plugCap].forEach(p => {
+            this.registerMesh(p, 'chamber');
+            rightPayloadGroup.add(p);
+          });
+        });
+
+        g.add(rightPayloadGroup);
+
+        // 5. Temperature & Humidity Sensor Probe (mounted on inner right wall of the chamber)
+        const sensorHousing = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.36, 0.24), this.m.bumperCharcoal);
+        sensorHousing.position.set(0.90, 1.05, -0.45);
+        const sensorProbeTip = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.22, 12), this.m.wireSensor);
+        sensorProbeTip.position.set(0.88, 0.82, -0.45);
+        this.registerMesh(sensorHousing, 'chamber');
+        this.registerMesh(sensorProbeTip, 'chamber');
+        g.add(sensorHousing, sensorProbeTip);
+
+        // 6. Cold-Air Circulation Slotted Plenum in Chamber Floor (centered at X = -0.90 above the Peltier stack)
+        const airGrille = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.06, 0.95), this.m.coldBlueAnodized);
+        airGrille.position.set(chCenterX, -0.05, 0);
+        this.registerMesh(airGrille, 'chamber');
+        g.add(airGrille);
+      }
+
+      /* F & G. PELTIER THERMOELECTRIC COOLING STACK & EXHAUST FANS (STRICT TOP-TO-BOTTOM ORDER) */
+      buildPeltierCoolingStack() {
+        const g = this.groups.cooling;
+        // Centered beneath the expanded rectangular storage chamber at X = -0.90, Z = 0
+        const cx = -0.90, cz = 0;
+
+        // LAYER 1 (TOP): Upper Cold-Side Heat Exchanger — Blue/Cyan Finned Assembly (Y = -0.14 to -0.38)
+        const coldBasePlate = new THREE.Mesh(new THREE.BoxGeometry(1.95, 0.06, 1.30), this.m.coldBlueAnodized);
+        coldBasePlate.position.set(cx, -0.35, cz);
+        this.registerMesh(coldBasePlate, 'cooling');
+        g.add(coldBasePlate);
+
+        // 15 Upper Blue Fins extending upward toward chamber cold air loop
+        for (let i = -7; i <= 7; i++) {
+          const fin = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.22, 1.24), this.m.coldBlueAnodized);
+          fin.position.set(cx + i * 0.12, -0.21, cz);
+          this.registerMesh(fin, 'cooling');
+          g.add(fin);
+        }
+
+        // LAYER 2: Cold-Side Thermal Spreader — Machined Aluminium Plate (Y = -0.43)
+        const coldSpreader = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.1, 1.10), this.m.brushedAlum);
+        coldSpreader.position.set(cx, -0.43, cz);
+        this.registerMesh(coldSpreader, 'cooling');
+        g.add(coldSpreader);
+
+        // LAYER 3 (MIDDLE): Peltier Thermoelectric Module — Thin Ceramic Solid-State Element (Y = -0.52)
+        const peltierWafer = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.08, 0.84), this.m.peltierCeramic);
+        peltierWafer.position.set(cx, -0.52, cz);
+        this.registerMesh(peltierWafer, 'cooling');
+        g.add(peltierWafer);
+
+        // Clamping Brackets securing cold spreader to hot spreader around Peltier
+        [-0.62, 0.62].forEach(bx => {
+          const clamp = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.26, 0.94), this.m.fastenerSteel);
+          clamp.position.set(cx + bx, -0.52, cz);
+          this.registerMesh(clamp, 'cooling');
+          g.add(clamp);
+        });
+
+        // LAYER 4: Hot-Side Copper Spreader — Amber/Orange Heat-Transfer Plate (Y = -0.61)
+        const hotCopperPlate = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.1, 1.26), this.m.hotCopper);
+        hotCopperPlate.position.set(cx, -0.61, cz);
+        this.registerMesh(hotCopperPlate, 'cooling');
+        g.add(hotCopperPlate);
+
+        // LAYER 5: Lower Hot-Side Heat Sink — Dense Amber/Copper Finned Assembly (Y = -0.68 to -1.06)
+        const hotSinkBase = new THREE.Mesh(new THREE.BoxGeometry(2.10, 0.07, 1.38), this.m.hotCopper);
+        hotSinkBase.position.set(cx, -0.69, cz);
+        this.registerMesh(hotSinkBase, 'cooling');
+        g.add(hotSinkBase);
+
+        for (let i = -8; i <= 8; i++) {
+          const hFin = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.34, 1.34), this.m.hotSinkDark);
+          hFin.position.set(cx + i * 0.115, -0.89, cz);
+          this.registerMesh(hFin, 'cooling');
+          g.add(hFin);
+        }
+
+        // Copper Heat-Pipe Loops linking the Hot Spreader into the Finned Heat Sink Array
+        [-0.48, 0.48].forEach(hpZ => {
+          const hpPts = [
+            new THREE.Vector3(cx - 0.75, -0.61, hpZ),
+            new THREE.Vector3(cx - 0.98, -0.75, hpZ),
+            new THREE.Vector3(cx - 0.72, -0.94, hpZ),
+            new THREE.Vector3(cx + 0.72, -0.94, hpZ),
+            new THREE.Vector3(cx + 0.98, -0.75, hpZ),
+            new THREE.Vector3(cx + 0.75, -0.61, hpZ)
+          ];
+          g.add(this.createTubeBetween(hpPts, 0.032, this.m.hotCopper, 'cooling', 28));
+        });
+
+        // LAYER 6 (BOTTOM): Dual Rotary Exhaust Fans with Shrouds, Hubs, Curved Blades & Protective Grilles (Y = -1.24)
+        [-0.55, 0.55].forEach((offsetX) => {
+          const fanX = cx + offsetX;
+          const fanY = -1.22;
+
+          // Outer square mounting frame
+          const shroud = new THREE.Mesh(new THREE.BoxGeometry(0.90, 0.16, 0.90), this.m.fanDark);
+          shroud.position.set(fanX, fanY, cz);
+          this.registerMesh(shroud, 'cooling');
+          g.add(shroud);
+
+          // Protective wire grille ring
+          const grilleRing = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.015, 8, 24), this.m.fastenerSteel);
+          grilleRing.rotation.x = Math.PI / 2;
+          grilleRing.position.set(fanX, fanY - 0.09, cz);
+          this.registerMesh(grilleRing, 'cooling');
+          g.add(grilleRing);
+
+          // Rotating rotor hub + 7 angled blades
+          const rotorGroup = new THREE.Group();
+          rotorGroup.position.set(fanX, fanY, cz);
+          const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.14, 16), this.m.brushedAlum);
+          this.registerMesh(hub, 'cooling');
+          rotorGroup.add(hub);
+
+          const bladeCount = 7;
+          for (let b = 0; b < bladeCount; b++) {
+            const angle = (b / bladeCount) * Math.PI * 2;
+            const bladePivot = new THREE.Group();
+            bladePivot.rotation.y = angle;
+            const blade = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.025, 0.11), this.m.hotCopper);
+            blade.position.set(0.23, 0, 0);
+            blade.rotation.x = 0.48;
+            this.registerMesh(blade, 'cooling');
+            bladePivot.add(blade);
+            rotorGroup.add(bladePivot);
+          }
+
+          g.add(rotorGroup);
+          this.fanBlades.push(rotorGroup);
+        });
+      }
+
+      /* E. VANADIUM REDOX FLOW BATTERY (VRFB) — COMPACTED IN RIGHT UTILITY BAY */
+      buildVRFBPowerSubsystem() {
+        const g = this.groups.vrfb;
+        // Positioned in Right Lower/Rear Utility Compartment: X = 1.20 to 2.82 (Center X = 2.02)
+        const vx = 2.02;
+
+        // Structural mounting tray
+        const tray = new THREE.Mesh(new THREE.BoxGeometry(1.58, 0.08, 2.34), this.m.brushedAlum);
+        tray.position.set(vx, -1.46, 0);
+        this.registerMesh(tray, 'vrfb');
+        g.add(tray);
+
+        // 1. Paired Positive (Red) & Negative (Blue) Electrolyte Reservoirs
+        const tankConfigs = [
+          { x: 1.64, z: -0.66, matLiq: this.m.electrolytePos, capMat: this.m.hosePosRed, label: 'pos' },
+          { x: 2.40, z: -0.66, matLiq: this.m.electrolyteNeg, capMat: this.m.hoseNegBlue, label: 'neg' }
+        ];
+
+        tankConfigs.forEach(cfg => {
+          const tankOuter = new THREE.Mesh(new THREE.CylinderGeometry(0.31, 0.31, 1.38, 24), this.m.tankShell);
+          tankOuter.position.set(cfg.x, -0.72, cfg.z);
+          this.registerMesh(tankOuter, 'vrfb');
+          g.add(tankOuter);
+
+          const liqLevel = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.27, 1.05, 20), cfg.matLiq);
+          liqLevel.position.set(cfg.x, -0.84, cfg.z);
+          this.registerMesh(liqLevel, 'vrfb');
+          g.add(liqLevel);
+
+          const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.21, 0.12, 16), cfg.capMat);
+          cap.position.set(cfg.x, 0.02, cfg.z);
+          this.registerMesh(cap, 'vrfb');
+          g.add(cap);
+
+          const strap = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.025, 8, 24), this.m.fastenerSteel);
+          strap.rotation.x = Math.PI / 2;
+          strap.position.set(cfg.x, -0.55, cfg.z);
+          this.registerMesh(strap, 'vrfb');
+          g.add(strap);
+        });
+
+        // 2. Two Circulation Micro-Pumps (mounted forward of the tanks)
+        const pumpPos = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.34, 16), this.m.flowStackBody);
+        pumpPos.rotation.z = Math.PI / 2;
+        pumpPos.position.set(1.64, -1.22, 0.12);
+        const pumpNeg = pumpPos.clone();
+        pumpNeg.position.set(2.40, -1.22, 0.12);
+        this.registerMesh(pumpPos, 'vrfb');
+        this.registerMesh(pumpNeg, 'vrfb');
+        g.add(pumpPos, pumpNeg);
+
+        // 3. Central Electrochemical Flow-Cell Stack
+        const stackGroup = new THREE.Group();
+        stackGroup.position.set(vx, -0.68, 0.62);
+        const stackCore = new THREE.Mesh(new THREE.BoxGeometry(0.94, 0.68, 0.62), this.m.flowStackBody);
+        this.registerMesh(stackCore, 'vrfb');
+        stackGroup.add(stackCore);
+
+        for (let p = -4; p <= 4; p++) {
+          const plate = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.72, 0.025), this.m.brushedAlum);
+          plate.position.set(0, 0, p * 0.065);
+          this.registerMesh(plate, 'vrfb');
+          stackGroup.add(plate);
+        }
+
+        // 4 Polished Stainless Tie-Rods & Copper Busbar Terminals on the VRFB Stack
+        [[-0.45, 0.32], [0.45, 0.32], [-0.45, -0.32], [0.45, -0.32]].forEach(([tx, ty]) => {
+          const tieRod = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.72, 10), this.m.fastenerSteel);
+          tieRod.rotation.x = Math.PI / 2;
+          tieRod.position.set(tx, ty, 0);
+          this.registerMesh(tieRod, 'vrfb');
+          stackGroup.add(tieRod);
+        });
+        [-0.26, 0.26].forEach(bx => {
+          const busbar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.16, 0.08), this.m.hotCopper);
+          busbar.position.set(bx, 0.38, 0.15);
+          this.registerMesh(busbar, 'vrfb');
+          stackGroup.add(busbar);
+        });
+
+        g.add(stackGroup);
+
+        // 4. Continuous Curved Supply & Return Electrolyte Hoses with Collar Fittings
+        const posSupplyPts = [
+          new THREE.Vector3(1.64, -1.32, -0.46),
+          new THREE.Vector3(1.64, -1.22, -0.15),
+          new THREE.Vector3(1.64, -1.22, 0.12),
+          new THREE.Vector3(1.68, -0.95, 0.38),
+          new THREE.Vector3(1.74, -0.75, 0.58)
+        ];
+        g.add(this.createTubeBetween(posSupplyPts, 0.036, this.m.hosePosRed, 'vrfb'));
+        this.createFittingCollar(posSupplyPts[0], 'z', 0.036, this.m.fastenerSteel, 'vrfb', g);
+        this.createFittingCollar(posSupplyPts[4], 'z', 0.036, this.m.fastenerSteel, 'vrfb', g);
+
+        const posReturnPts = [
+          new THREE.Vector3(1.74, -0.36, 0.56),
+          new THREE.Vector3(1.68, -0.05, 0.35),
+          new THREE.Vector3(1.64, 0.14, -0.15),
+          new THREE.Vector3(1.64, 0.04, -0.66)
+        ];
+        g.add(this.createTubeBetween(posReturnPts, 0.036, this.m.hosePosRed, 'vrfb'));
+        this.createFittingCollar(posReturnPts[0], 'y', 0.036, this.m.fastenerSteel, 'vrfb', g);
+        this.createFittingCollar(posReturnPts[3], 'y', 0.036, this.m.fastenerSteel, 'vrfb', g);
+
+        const negSupplyPts = [
+          new THREE.Vector3(2.40, -1.32, -0.46),
+          new THREE.Vector3(2.40, -1.22, -0.15),
+          new THREE.Vector3(2.40, -1.22, 0.12),
+          new THREE.Vector3(2.36, -0.95, 0.38),
+          new THREE.Vector3(2.30, -0.75, 0.58)
+        ];
+        g.add(this.createTubeBetween(negSupplyPts, 0.036, this.m.hoseNegBlue, 'vrfb'));
+        this.createFittingCollar(negSupplyPts[0], 'z', 0.036, this.m.fastenerSteel, 'vrfb', g);
+        this.createFittingCollar(negSupplyPts[4], 'z', 0.036, this.m.fastenerSteel, 'vrfb', g);
+
+        const negReturnPts = [
+          new THREE.Vector3(2.30, -0.36, 0.56),
+          new THREE.Vector3(2.36, -0.05, 0.35),
+          new THREE.Vector3(2.40, 0.14, -0.15),
+          new THREE.Vector3(2.40, 0.04, -0.66)
+        ];
+        g.add(this.createTubeBetween(negReturnPts, 0.036, this.m.hoseNegBlue, 'vrfb'));
+        this.createFittingCollar(negReturnPts[0], 'y', 0.036, this.m.fastenerSteel, 'vrfb', g);
+        this.createFittingCollar(negReturnPts[3], 'y', 0.036, this.m.fastenerSteel, 'vrfb', g);
+      }
+
+      /* H. AI CONTROL ELECTRONICS & FRONT DISPLAY (IN RIGHT UTILITY BAY X = 2.02) */
+      buildAIControlElectronics() {
+        const g = this.groups.electronics;
+        const ex = 2.02;
+
+        // Mounting chassis carrier
+        const carrier = new THREE.Mesh(new THREE.BoxGeometry(1.54, 0.06, 1.92), this.m.brushedAlum);
+        carrier.position.set(ex, 0.22, 0.15);
+        this.registerMesh(carrier, 'electronics');
+        g.add(carrier);
+
+        // Main Printed Circuit Board (PCB)
+        const pcb = new THREE.Mesh(new THREE.BoxGeometry(1.42, 0.05, 1.72), this.m.pcbBoard);
+        pcb.position.set(ex, 0.28, 0.15);
+        this.registerMesh(pcb, 'electronics');
+        g.add(pcb);
+
+        // AI Microcontroller IC, DC-DC Converter Block, Peltier Driver Heatsink, Capacitors
+        const mcuChip = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.06, 0.38), this.m.icPackage);
+        mcuChip.position.set(ex - 0.10, 0.33, 0.1);
+        const dcdcBlock = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.18, 0.52), this.m.flowStackBody);
+        dcdcBlock.position.set(ex + 0.24, 0.39, -0.25);
+        const pwmHeatsink = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.22, 0.42), this.m.brushedAlum);
+        pwmHeatsink.position.set(ex - 0.34, 0.41, -0.25);
+        this.registerMesh(mcuChip, 'electronics');
+        this.registerMesh(dcdcBlock, 'electronics');
+        this.registerMesh(pwmHeatsink, 'electronics');
+        g.add(mcuChip, dcdcBlock, pwmHeatsink);
+
+        for (let c = 0; c < 4; c++) {
+          const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.18, 12), this.m.coldBlueAnodized);
+          cap.position.set(ex - 0.40 + c * 0.18, 0.39, 0.55);
+          this.registerMesh(cap, 'electronics');
+          g.add(cap);
+        }
+
+        // Front-Mounted Digital Control Display Bezel & Live Screen
+        const bezel = new THREE.Mesh(new THREE.BoxGeometry(1.44, 0.78, 0.12), this.m.bumperCharcoal);
+        bezel.position.set(ex, 0.96, 1.46);
+        this.registerMesh(bezel, 'electronics');
+        g.add(bezel);
+
+        const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.16, 0.54), this.m.displayScreen);
+        screenMesh.userData.sharedSpecialMat = true;
+        screenMesh.userData.subsystem = 'electronics';
+        screenMesh.position.set(ex, 1.01, 1.525);
+        this.selectableMeshes.push(screenMesh);
+        g.add(screenMesh);
+
+        // Front Tactile Control Buttons beneath screen
+        for (let b = -2; b <= 2; b++) {
+          const btn = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.04, 12), this.m.brushedAlum);
+          btn.rotation.x = Math.PI / 2;
+          btn.position.set(ex + b * 0.2, 0.67, 1.52);
+          this.registerMesh(btn, 'electronics');
+          g.add(btn);
+        }
+
+        // Internal Ribbon Harness from PCB to Front Display
+        const dispHarnessPts = [
+          new THREE.Vector3(ex, 0.32, 0.88),
+          new THREE.Vector3(ex, 0.55, 1.24),
+          new THREE.Vector3(ex, 0.88, 1.42)
+        ];
+        g.add(this.createTubeBetween(dispHarnessPts, 0.03, this.m.wirePower, 'electronics'));
+      }
+
+      /* B & D. WIDE RECTANGULAR INSULATED LID & UNDER-LID GLOBAL 369 UV-C STERILISATION MODULE */
+      buildInsulatedLidAndUVC() {
+        // Lid Pivot is at (0, 1.72, -1.46). All lid coordinates are relative to hinge pivot!
+        const lidParent = this.lidHingePivot;
+        const oz = 1.46; // Offset to center of rectangular freezer Z = 0
+
+        // 1. 4 Rear Hinge Brackets across the wide rectangular rear edge
+        [-2.25, -0.75, 0.75, 2.25].forEach(hx => {
+          const knuckleFixed = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.24, 0.22), this.m.bumperCharcoal);
+          knuckleFixed.position.set(hx, 1.64, -1.48);
+          this.registerMesh(knuckleFixed, 'enclosure');
+          this.groups.enclosure.add(knuckleFixed);
+
+          const knuckleLid = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.26, 0.24), this.m.fastenerSteel);
+          knuckleLid.position.set(hx, 0.06, 0.02);
+          this.registerMesh(knuckleLid, 'lid');
+          lidParent.add(knuckleLid);
+
+          const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.34, 12), this.m.brushedAlum);
+          pin.rotation.z = Math.PI / 2;
+          pin.position.set(hx, 0, 0);
+          this.registerMesh(pin, 'lid');
+          lidParent.add(pin);
+        });
+
+        // 2. Wide Rectangular Lid Layered Construction (W = 6.12, D = 2.96)
+        const lidOuter = new THREE.Mesh(this.createBevelledBox(6.12, 0.22, 2.96, 0.05), this.m.shellOuter);
+        lidOuter.position.set(0, 0.22, oz);
+        const lidInsulation = new THREE.Mesh(new THREE.BoxGeometry(5.82, 0.14, 2.66), this.m.insulationFoam);
+        lidInsulation.position.set(0, 0.12, oz);
+        const lidInnerLiner = new THREE.Mesh(new THREE.BoxGeometry(5.64, 0.06, 2.52), this.m.stainlessLiner);
+        lidInnerLiner.position.set(0, 0.05, oz);
+
+        // Continuous dark perimeter sealing gasket around underside of rectangular lid
+        const gasketF = new THREE.Mesh(new THREE.BoxGeometry(5.86, 0.06, 0.12), this.m.gasketRubber);
+        gasketF.position.set(0, 0.01, oz + 1.30);
+        const gasketB = gasketF.clone();
+        gasketB.position.set(0, 0.01, oz - 1.30);
+        const gasketL = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.06, 2.68), this.m.gasketRubber);
+        gasketL.position.set(-2.88, 0.01, oz);
+        const gasketR = gasketL.clone();
+        gasketR.position.set(2.88, 0.01, oz);
+
+        // Wide Front Lid Grip Handle
+        const lidGrip = new THREE.Mesh(new THREE.BoxGeometry(1.65, 0.1, 0.18), this.m.bumperCharcoal);
+        lidGrip.position.set(-0.90, 0.18, oz + 1.52);
+
+        [lidOuter, lidInsulation, lidInnerLiner, gasketF, gasketB, gasketL, gasketR, lidGrip].forEach(m => {
+          this.registerMesh(m, 'lid');
+          lidParent.add(m);
+        });
+
+        // 3. D. GLOBAL 369 UV-C STERILISATION MODULE (Centered beneath lid over the expanded rectangular chamber X = -0.90)
+        // Spans both the left basket half and right empty half!
+        const uvcG = this.uvcSubGroup;
+        const ux = -0.90;
+
+        // Wide protective reflector housing & quartz cage
+        const uvcReflector = new THREE.Mesh(new THREE.BoxGeometry(2.76, 0.08, 0.48), this.m.brushedAlum);
+        uvcReflector.position.set(ux, -0.02, oz);
+        this.registerMesh(uvcReflector, 'uvc');
+        uvcG.add(uvcReflector);
+
+        // End sockets & mounting brackets
+        [-1.26, 1.26].forEach(sx => {
+          const socket = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.15, 14), this.m.bumperCharcoal);
+          socket.position.set(ux + sx, -0.08, oz);
+          this.registerMesh(socket, 'uvc');
+          uvcG.add(socket);
+        });
+
+        // Luminous Violet UV-C Emitter Core Tube
+        this.uvEmitterMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 2.42, 24), this.m.uvTubeEmitter);
+        this.uvEmitterMesh.userData.sharedSpecialMat = true;
+        this.uvEmitterMesh.userData.subsystem = 'uvc';
+        this.uvEmitterMesh.rotation.z = Math.PI / 2;
+        this.uvEmitterMesh.position.set(ux, -0.09, oz);
+        this.selectableMeshes.push(this.uvEmitterMesh);
+        uvcG.add(this.uvEmitterMesh);
+
+        // Outer Luminous Violet Halo Tube surrounding the emitter core (visibly bright even when lid is open)
+        this.uvHaloMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 2.38, 24), this.m.uvHaloOuter);
+        this.uvHaloMesh.userData.sharedSpecialMat = true;
+        this.uvHaloMesh.userData.subsystem = 'uvc';
+        this.uvHaloMesh.rotation.z = Math.PI / 2;
+        this.uvHaloMesh.position.set(ux, -0.09, oz);
+        uvcG.add(this.uvHaloMesh);
+
+        // Protective Metal Wire Guard Bars across Wide UV-C Lamp
+        for (let gIdx = -7; gIdx <= 7; gIdx++) {
+          const guardRing = new THREE.Mesh(new THREE.TorusGeometry(0.125, 0.01, 6, 16, Math.PI), this.m.fastenerSteel);
+          guardRing.rotation.y = Math.PI / 2;
+          guardRing.rotation.x = Math.PI;
+          guardRing.position.set(ux + gIdx * 0.16, -0.05, oz);
+          this.registerMesh(guardRing, 'uvc');
+          uvcG.add(guardRing);
+        }
+
+        // Routed UV-C Power Lead running along under-lid channel back to the rear hinge umbilical
+        const uvcLeadPts = [
+          new THREE.Vector3(ux + 1.26, -0.06, oz),
+          new THREE.Vector3(1.15, -0.02, oz - 0.65),
+          new THREE.Vector3(1.72, 0.02, 0.06)
+        ];
+        uvcG.add(this.createTubeBetween(uvcLeadPts, 0.025, this.m.wireUvc, 'uvc', 24));
+
+        // Downward Volumetric Irradiation Cone & Concentric Wave Rings attached to the lid underside
+        this.uvIrradiationGroup = new THREE.Group();
+        this.uvIrradiationGroup.position.set(ux, -0.86, oz);
+
+        const coneGeo = new THREE.ConeGeometry(1.55, 1.52, 36, 1, true);
+        this.uvIrradiationCone = new THREE.Mesh(coneGeo, this.m.uvConeGlow);
+        this.uvIrradiationCone.userData.sharedSpecialMat = true;
+        this.uvIrradiationCone.scale.set(1.22, 1.0, 0.72); // Rectangular-proportioned irradiation beam
+        this.uvIrradiationGroup.add(this.uvIrradiationCone);
+
+        // Subtle glowing wave rings along the UV-C beam so irradiation is unmistakable when lid is open or closed
+        this.uvWaveRings = [];
+        [-0.35, 0.05, 0.45].forEach((ry, idx) => {
+          const radius = 0.55 + (idx + 1) * 0.28;
+          const ringGeo = new THREE.TorusGeometry(radius, 0.014, 8, 36);
+          const ringMat = new THREE.MeshBasicMaterial({
+            color: 0xa855f7,
+            transparent: true,
+            opacity: 0.42,
+            depthWrite: false
+          });
+          const ring = new THREE.Mesh(ringGeo, ringMat);
+          ring.userData.sharedSpecialMat = true;
+          ring.rotation.x = Math.PI / 2;
+          ring.scale.set(1.2, 0.72, 1.0);
+          ring.position.y = -ry;
+          this.uvIrradiationGroup.add(ring);
+          this.uvWaveRings.push(ring);
+        });
+
+        uvcG.add(this.uvIrradiationGroup);
+
+        // Dedicated PointLight inside UV-C Emitter
+        this.uvPointLight = new THREE.PointLight(0x9333ea, 2.8, 4.5);
+        this.uvPointLight.position.set(ux, -0.20, oz);
+        uvcG.add(this.uvPointLight);
+      }
+
+      /* 5. CONTINUOUS INTER-SUBSYSTEM CABLE HARNESSES (UPDATED FOR RECTANGULAR LAYOUT) */
+      buildInterSubsystemHarnesses() {
+        const g = this.groups.electronics;
+
+        // 1. Sensor Cable: Chamber Temp/RH Probe (X = 0.90) -> Partition Gland (X = 1.10) -> AI PCB (X = 1.72)
+        const sensorCablePts = [
+          new THREE.Vector3(0.90, 1.05, -0.45),
+          new THREE.Vector3(1.10, 0.95, -0.45),
+          new THREE.Vector3(1.38, 0.62, -0.35),
+          new THREE.Vector3(1.72, 0.31, -0.05)
+        ];
+        g.add(this.createTubeBetween(sensorCablePts, 0.022, this.m.wireSensor, 'electronics', 24));
+        this.createFittingCollar(new THREE.Vector3(1.10, 0.95, -0.45), 'x', 0.03, this.m.fastenerSteel, 'electronics', g);
+
+        // 2. Peltier & Fan Power Harness: AI PCB (X = 1.68) -> Partition Gland (X = 1.10) -> Peltier Module (X = -0.42)
+        const peltierCablePts = [
+          new THREE.Vector3(1.68, 0.28, -0.25),
+          new THREE.Vector3(1.32, -0.15, -0.22),
+          new THREE.Vector3(1.10, -0.52, -0.15),
+          new THREE.Vector3(0.25, -0.52, -0.08),
+          new THREE.Vector3(-0.42, -0.52, 0)
+        ];
+        g.add(this.createTubeBetween(peltierCablePts, 0.028, this.m.wirePower, 'electronics', 28));
+        this.createFittingCollar(new THREE.Vector3(1.10, -0.52, -0.15), 'x', 0.035, this.m.fastenerSteel, 'electronics', g);
+
+        // Fan branch harness
+        const fanCablePts = [
+          new THREE.Vector3(0.55, -0.52, -0.10),
+          new THREE.Vector3(0.25, -1.15, -0.10),
+          new THREE.Vector3(-0.35, -1.22, 0)
+        ];
+        g.add(this.createTubeBetween(fanCablePts, 0.022, this.m.wirePower, 'electronics', 20));
+
+        // 3. VRFB Main Power Trunk: Flow Stack Terminals (X = 2.02) -> AI Controller DC-DC Block (X = 2.26)
+        const vrfbPowerPts = [
+          new THREE.Vector3(2.02, -0.35, 0.62),
+          new THREE.Vector3(2.26, -0.05, 0.35),
+          new THREE.Vector3(2.26, 0.28, -0.25)
+        ];
+        g.add(this.createTubeBetween(vrfbPowerPts, 0.034, this.m.wirePower, 'electronics', 20));
+
+        // 4. Lid Umbilical UV-C Feed: AI PCB -> Rear Hinge Axis (X = 1.72, Y = 1.72, Z = -1.44)
+        const uvcBodyFeedPts = [
+          new THREE.Vector3(1.88, 0.32, -0.45),
+          new THREE.Vector3(1.80, 1.05, -1.24),
+          new THREE.Vector3(1.72, 1.72, -1.44)
+        ];
+        g.add(this.createTubeBetween(uvcBodyFeedPts, 0.025, this.m.wireUvc, 'electronics', 24));
+      }
+
+      setupPinAnchors() {
+        // Local positions within each group for 3D-to-2D HTML annotation markers
+        this.pinAnchors = {
+          enclosure:   { group: this.groups.enclosure,   localPos: new THREE.Vector3(-3.00, 0.95, 0.55) },
+          lid:         { group: this.lidHingePivot,      localPos: new THREE.Vector3(0.95, 0.28, 1.50) },
+          chamber:     { group: this.groups.chamber,     localPos: new THREE.Vector3(-0.90, 0.85, 0.35) },
+          uvc:         { group: this.uvcSubGroup,        localPos: new THREE.Vector3(-0.90, -0.12, 1.46) },
+          vrfb:        { group: this.groups.vrfb,        localPos: new THREE.Vector3(2.02, -0.58, 0.72) },
+          cooling:     { group: this.groups.cooling,     localPos: new THREE.Vector3(-0.90, -0.62, 0.75) },
+          electronics: { group: this.groups.electronics, localPos: new THREE.Vector3(2.02, 1.02, 1.52) }
+        };
+      }
+
+      /* Update Exploded View & Lid Rotation */
+      updateTransforms(lidDeg, explodeFactor, uvcActive, coolingActive, dt) {
+        // 1. Rotate Insulated Lid smoothly around true rear hinge axis
+        const rad = THREE.MathUtils.degToRad(lidDeg);
+        this.lidHingePivot.rotation.x = -rad;
+
+        // 2. Apply Exploded View translation vectors
+        Object.entries(this.groups).forEach(([key, grp]) => {
+          const vec = this.explodeVectors[key];
+          grp.position.set(
+            vec.x * explodeFactor,
+            vec.y * explodeFactor,
+            vec.z * explodeFactor
+          );
+        });
+
+        // 3. Update UV-C emitter glow, halo tube, and irradiation cone/rings (lights up even when lid is open!)
+        if (this.uvEmitterMesh && this.uvIrradiationGroup && this.uvPointLight) {
+          const pulse = uvcActive ? (0.92 + 0.16 * Math.sin(AppState.simTime * 4.0)) : 0;
+          this.uvEmitterMesh.material.emissiveIntensity = uvcActive ? 3.2 * pulse : 0.08;
+          if (this.uvHaloMesh) {
+            this.uvHaloMesh.visible = uvcActive;
+            this.uvHaloMesh.material.opacity = 0.36 * pulse;
+          }
+          this.uvIrradiationGroup.visible = uvcActive;
+          this.uvPointLight.intensity = uvcActive ? 2.8 * pulse : 0.0;
+        }
+
+        // 4. Rotate Exhaust Fans when cooling is active
+        if (coolingActive && !AppState.reducedMotion) {
+          this.fanBlades.forEach((rotor, idx) => {
+            rotor.rotation.y += dt * (idx === 0 ? 11.0 : -11.0);
+          });
+        }
+      }
+
+      /* Apply Selective Focus (Sharp/High-Contrast Active Subsystem, Softened Others) */
+      applySelectiveFocus(focusedSubsystemKey) {
+        Object.entries(this.matLib.subsystemMeshes).forEach(([subKey, meshes]) => {
+          const isTarget = !focusedSubsystemKey || (subKey === focusedSubsystemKey);
+          meshes.forEach(mesh => {
+            const mat = mesh.material;
+            if (!mat || mesh.userData.sharedSpecialMat) return;
+
+            if (!focusedSubsystemKey) {
+              // Full integrated clarity
+              mat.opacity = mesh.userData.baseOpacity;
+              mat.transparent = mesh.userData.baseTransparent;
+              if (mat.emissiveIntensity !== undefined) {
+                mat.emissiveIntensity = mesh.userData.baseEmissiveIntensity;
+              }
+            } else if (isTarget) {
+              // Highlighted subsystem
+              mat.opacity = mesh.userData.baseOpacity;
+              mat.transparent = mesh.userData.baseTransparent;
+              if (mat.emissiveIntensity !== undefined) {
+                mat.emissiveIntensity = Math.max(mesh.userData.baseEmissiveIntensity, 0.2);
+              }
+            } else {
+              // Softened context assembly (keeps silhouette and connections legible without clutter)
+              mat.transparent = true;
+              mat.opacity = Math.min(mesh.userData.baseOpacity, 0.26);
+              if (mat.emissiveIntensity !== undefined) {
+                mat.emissiveIntensity = mesh.userData.baseEmissiveIntensity * 0.25;
+              }
+            }
+            mat.needsUpdate = true;
+          });
+        });
+      }
+    }
+
+    /*************************************************************************
+     * MODULE 4: DUAL THERMAL AIRFLOW PARTICLE SYSTEM (COLD BLUE vs HOT AMBER)
+     *************************************************************************/
+    class ThermalAirflowSystem {
+      constructor(coolingGroup) {
+        this.parent = coolingGroup;
+        this.coldParticles = [];
+        this.hotParticles = [];
+        this.coldGroup = new THREE.Group();
+        this.hotGroup = new THREE.Group();
+        this.parent.add(this.coldGroup, this.hotGroup);
+
+        this.buildColdAirflow();
+        this.buildHotAirflow();
+      }
+
+      buildColdAirflow() {
+        // Upper Cold-Side Circulation: Blue/Cyan particles moving between storage chamber and upper cold exchanger
+        const dotGeo = new THREE.SphereGeometry(0.032, 8, 8);
+        const coneGeo = new THREE.ConeGeometry(0.055, 0.14, 10);
+        const coldMat = new THREE.MeshBasicMaterial({
+          color: 0x00a8e8,
+          transparent: true,
+          opacity: 0.85
+        });
+
+        for (let i = 0; i < 28; i++) {
+          const isArrow = i % 7 === 0;
+          const mesh = new THREE.Mesh(isArrow ? coneGeo : dotGeo, coldMat.clone());
+          this.coldGroup.add(mesh);
+          this.coldParticles.push({
+            mesh,
+            isArrow,
+            phase: i / 28,
+            lane: (i % 4) - 1.5
+          });
+        }
+      }
+
+      buildHotAirflow() {
+        // Lower Hot-Side Rejection: Amber/Orange particles originating STRICTLY at lower hot-side heat sink (-0.85 Y)
+        // moving downward through the dual exhaust fans (-1.22 Y) and outward toward the side/bottom vents
+        const dotGeo = new THREE.SphereGeometry(0.035, 8, 8);
+        const coneGeo = new THREE.ConeGeometry(0.058, 0.15, 10);
+        const hotMat = new THREE.MeshBasicMaterial({
+          color: 0xf97316,
+          transparent: true,
+          opacity: 0.88
+        });
+
+        for (let i = 0; i < 32; i++) {
+          const isArrow = i % 6 === 0;
+          const mesh = new THREE.Mesh(isArrow ? coneGeo : dotGeo, hotMat.clone());
+          this.hotGroup.add(mesh);
+          this.hotParticles.push({
+            mesh,
+            isArrow,
+            phase: i / 32,
+            fanSide: i % 2 === 0 ? -1 : 1,
+            zOffset: ((i % 4) - 1.5) * 0.25
+          });
+        }
+      }
+
+      update(dt, coolingActive) {
+        this.coldGroup.visible = coolingActive;
+        this.hotGroup.visible = coolingActive;
+        if (!coolingActive) return;
+
+        const speed = AppState.reducedMotion ? 0.08 : 0.42;
+
+        // 1. Animate Upper Cold Loop across both the left and right halves of the wider rectangular chamber (X centered at -0.90)
+        this.coldParticles.forEach(p => {
+          p.phase = (p.phase + dt * speed) % 1.0;
+          const angle = p.phase * Math.PI * 2;
+          const rx = 1.62;
+          const ry = 0.42;
+          const x = -0.90 + Math.cos(angle) * rx;
+          const y = 0.18 + Math.sin(angle) * ry;
+          const z = p.lane * 0.32;
+          p.mesh.position.set(x, y, z);
+          if (p.isArrow) {
+            p.mesh.rotation.z = angle + Math.PI / 2;
+          }
+          p.mesh.material.opacity = 0.35 + 0.6 * Math.sin(p.phase * Math.PI);
+        });
+
+        // 2. Animate Lower Hot Exhaust (Originates strictly at lower hot-side heat sink Y = -0.78, X = -0.90)
+        this.hotParticles.forEach(p => {
+          p.phase = (p.phase + dt * (speed * 1.25)) % 1.0;
+          const t = p.phase;
+          const startX = -0.90 + p.fanSide * (0.32 + t * 1.15);
+          const curY = -0.78 - t * 0.72;
+          const curZ = p.zOffset * (1 + t * 0.5);
+          p.mesh.position.set(startX, curY, curZ);
+          if (p.isArrow) {
+            p.mesh.rotation.z = p.fanSide * 0.85 + Math.PI;
+          }
+          p.mesh.material.opacity = Math.sin(t * Math.PI) * 0.9;
+        });
+      }
+    }
+
+    /*************************************************************************
+     * MODULE 5: CAMERA CONTROLLER & CONDITIONAL RAYCAST INTERACTION
+     *************************************************************************/
+    class CameraAndInteractionManager {
+      constructor(canvas, camera, anatomyBuilder, onSelectSubsystem) {
+        this.canvas = canvas;
+        this.camera = camera;
+        this.builder = anatomyBuilder;
+        this.onSelectSubsystem = onSelectSubsystem;
+
+        // Spherical orbit coordinates tuned so the entire rectangular freezer fits between left & right sidebars
+        this.target = new THREE.Vector3(0, -0.05, 0);
+        this.currentTarget = new THREE.Vector3(0, -0.05, 0);
+        this.spherical = new THREE.Spherical(11.6, Math.PI / 2.45, 0.36);
+        this.targetSpherical = new THREE.Spherical(11.6, Math.PI / 2.45, 0.36);
+
+        this.raycaster = new THREE.Raycaster();
+        this.pointerNDC = new THREE.Vector2();
+        this.isDragging = false;
+        this.dragStart = { x: 0, y: 0 };
+        this.pointerDownPos = { x: 0, y: 0 };
+
+        this.bindEvents();
+      }
+
+      updatePointerNDC(clientX, clientY) {
+        const rect = this.canvas.getBoundingClientRect();
+        this.pointerNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        this.pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+      }
+
+      raycastMachine(clientX, clientY) {
+        this.updatePointerNDC(clientX, clientY);
+        this.raycaster.setFromCamera(this.pointerNDC, this.camera);
+        const hits = this.raycaster.intersectObjects(this.builder.selectableMeshes, false);
+        return hits.length > 0 ? hits[0] : null;
+      }
+
+      bindEvents() {
+        // 1. CONDITIONAL MOUSE WHEEL ZOOM: Intercept wheel when cursor is over any part of the 3D machine
+        window.addEventListener('wheel', (e) => {
+          // If cursor is over any UI card, header, dock, or modal, never intercept scroll
+          const targetEl = e.target;
+          if (targetEl && targetEl !== this.canvas && !targetEl.closest('.anatomy-pin')) {
+            return;
+          }
+
+          const hit = this.raycastMachine(e.clientX, e.clientY);
+          if (hit || (targetEl && targetEl.closest('.anatomy-pin'))) {
+            e.preventDefault();
+            // Smooth proportional zoom for both mouse wheels and trackpads (zooms both IN and OUT up to 26.0 units)
+            const delta = THREE.MathUtils.clamp(e.deltaY, -120, 120);
+            const zoomFactor = Math.exp(delta * 0.0018);
+            this.targetSpherical.radius = THREE.MathUtils.clamp(
+              this.targetSpherical.radius * zoomFactor,
+              3.8,
+              26.0
+            );
+          }
+          // Otherwise, allow normal browser page scrolling!
+        }, { passive: false });
+
+        // 2. DRAG ON MODEL TO ROTATE & CLICK TO FOCUS SUBSYSTEM
+        this.canvas.addEventListener('pointerdown', (e) => {
+          if (e.button !== 0) return;
+          this.isDragging = true;
+          this.dragStart.x = e.clientX;
+          this.dragStart.y = e.clientY;
+          this.pointerDownPos.x = e.clientX;
+          this.pointerDownPos.y = e.clientY;
+          this.canvas.setPointerCapture(e.pointerId);
+        });
+
+        this.canvas.addEventListener('pointermove', (e) => {
+          if (this.isDragging) {
+            const dx = e.clientX - this.dragStart.x;
+            const dy = e.clientY - this.dragStart.y;
+            this.dragStart.x = e.clientX;
+            this.dragStart.y = e.clientY;
+
+            this.targetSpherical.theta -= dx * 0.0065;
+            this.targetSpherical.phi = THREE.MathUtils.clamp(
+              this.targetSpherical.phi - dy * 0.0065,
+              0.2,
+              Math.PI / 2 + 0.25
+            );
+          } else {
+            const hit = this.raycastMachine(e.clientX, e.clientY);
+            this.canvas.style.cursor = hit ? 'pointer' : 'grab';
+          }
+        });
+
+        this.canvas.addEventListener('pointerup', (e) => {
+          if (!this.isDragging) return;
+          this.isDragging = false;
+          this.canvas.releasePointerCapture(e.pointerId);
+
+          const distMoved = Math.hypot(
+            e.clientX - this.pointerDownPos.x,
+            e.clientY - this.pointerDownPos.y
+          );
+          // Treat as a deliberate click if pointer barely moved
+          if (distMoved < 6) {
+            const hit = this.raycastMachine(e.clientX, e.clientY);
+            if (hit && hit.object.userData.subsystem) {
+              this.focusSubsystem(hit.object.userData.subsystem);
+              this.onSelectSubsystem(hit.object.userData.subsystem);
+            }
+          }
+        });
+      }
+
+      zoomBy(factor) {
+        this.targetSpherical.radius = THREE.MathUtils.clamp(
+          this.targetSpherical.radius * factor,
+          3.8,
+          26.0
+        );
+      }
+
+      setPreset(presetName) {
+        this.target.set(0, -0.05, 0);
+        switch (presetName) {
+          case 'iso':
+            this.targetSpherical.set(11.6, Math.PI / 2.45, 0.36);
+            break;
+          case 'front':
+            this.targetSpherical.set(11.2, Math.PI / 2.08, 0);
+            break;
+          case 'top':
+            this.targetSpherical.set(11.8, 0.24, 0);
+            break;
+          case 'rear':
+            this.targetSpherical.set(11.4, Math.PI / 2.18, Math.PI);
+            break;
+          case 'cooling':
+            this.focusSubsystem('cooling');
+            this.onSelectSubsystem('cooling');
+            return;
+          case 'vrfb':
+            this.focusSubsystem('vrfb');
+            this.onSelectSubsystem('vrfb');
+            return;
+          default:
+            this.targetSpherical.set(11.6, Math.PI / 2.45, 0.36);
+        }
+      }
+
+      focusSubsystem(subKey) {
+        if (!subKey) {
+          this.setPreset('iso');
+          return;
+        }
+        const anchor = this.builder.pinAnchors[subKey];
+        if (anchor) {
+          const worldPos = anchor.localPos.clone();
+          anchor.group.localToWorld(worldPos);
+          this.target.copy(worldPos).multiplyScalar(0.5);
+        }
+
+        const viewConfigs = {
+          enclosure:   { r: 11.4, phi: 1.22, theta: -0.48 },
+          lid:         { r: 10.2, phi: 0.96, theta: 0.35 },
+          chamber:     { r: 8.8,  phi: 0.92, theta: -0.24 },
+          uvc:         { r: 8.5,  phi: 1.26, theta: -0.18 },
+          vrfb:        { r: 8.2,  phi: 1.22, theta: 0.65 },
+          cooling:     { r: 8.2,  phi: 1.32, theta: -0.32 },
+          electronics: { r: 8.0,  phi: 1.18, theta: 0.38 }
+        };
+        const cfg = viewConfigs[subKey] || { r: 10.0, phi: 1.2, theta: 0.38 };
+        this.targetSpherical.set(cfg.r, cfg.phi, cfg.theta);
+      }
+
+      update(dt) {
+        const damp = Math.min(1, dt * 7.5);
+        this.spherical.radius += (this.targetSpherical.radius - this.spherical.radius) * damp;
+        this.spherical.phi += (this.targetSpherical.phi - this.spherical.phi) * damp;
+        this.spherical.theta += (this.targetSpherical.theta - this.spherical.theta) * damp;
+        this.currentTarget.lerp(this.target, damp);
+
+        const offset = new THREE.Vector3().setFromSpherical(this.spherical);
+        this.camera.position.copy(this.currentTarget).add(offset);
+        this.camera.lookAt(this.currentTarget);
+      }
+    }
+
+    /*************************************************************************
+     * MODULE 6: ZIP PROJECT ARCHIVE GENERATOR (DELIVERABLES PACKAGER)
+     *************************************************************************/
+    class ProjectZipGenerator {
+      static crc32(bytes) {
+        let c = -1;
+        for (let i = 0; i < bytes.length; i++) {
+          c = (c >>> 8) ^ ProjectZipGenerator.crcTable[(c ^ bytes[i]) & 0xff];
+        }
+        return (c ^ -1) >>> 0;
+      }
+
+      static buildZipBlob(files) {
+        const encoder = new TextEncoder();
+        const fileRecords = [];
+        let offset = 0;
+
+        files.forEach(f => {
+          const nameBytes = encoder.encode(f.name);
+          const dataBytes = encoder.encode(f.content);
+          const crc = ProjectZipGenerator.crc32(dataBytes);
+
+          // Local file header (30 bytes + name)
+          const lfh = new Uint8Array(30 + nameBytes.length);
+          const lfhView = new DataView(lfh.buffer);
+          lfhView.setUint32(0, 0x04034b50, true); // Signature
+          lfhView.setUint16(4, 20, true);         // Version needed
+          lfhView.setUint16(6, 0, true);          // Flags
+          lfhView.setUint16(8, 0, true);          // Compression (0 = store)
+          lfhView.setUint16(10, 0, true);         // Mod time
+          lfhView.setUint16(12, 0, true);         // Mod date
+          lfhView.setUint32(14, crc, true);       // CRC-32
+          lfhView.setUint32(18, dataBytes.length, true); // Compressed size
+          lfhView.setUint32(22, dataBytes.length, true); // Uncompressed size
+          lfhView.setUint16(26, nameBytes.length, true); // File name length
+          lfhView.setUint16(28, 0, true);         // Extra field length
+          lfh.set(nameBytes, 30);
+
+          fileRecords.push({
+            nameBytes,
+            dataBytes,
+            crc,
+            lfh,
+            offset
+          });
+          offset += lfh.length + dataBytes.length;
+        });
+
+        // Central directory headers
+        const cdChunks = [];
+        let cdSize = 0;
+        fileRecords.forEach(r => {
+          const cdh = new Uint8Array(46 + r.nameBytes.length);
+          const cdView = new DataView(cdh.buffer);
+          cdView.setUint32(0, 0x02014b50, true);
+          cdView.setUint16(4, 20, true);
+          cdView.setUint16(6, 20, true);
+          cdView.setUint16(8, 0, true);
+          cdView.setUint16(10, 0, true);
+          cdView.setUint16(12, 0, true);
+          cdView.setUint16(14, 0, true);
+          cdView.setUint32(16, r.crc, true);
+          cdView.setUint32(20, r.dataBytes.length, true);
+          cdView.setUint32(24, r.dataBytes.length, true);
+          cdView.setUint16(28, r.nameBytes.length, true);
+          cdView.setUint16(30, 0, true);
+          cdView.setUint16(32, 0, true);
+          cdView.setUint16(34, 0, true);
+          cdView.setUint16(36, 0, true);
+          cdView.setUint32(38, 0, true);
+          cdView.setUint32(42, r.offset, true);
+          cdh.set(r.nameBytes, 46);
+          cdChunks.push(cdh);
+          cdSize += cdh.length;
+        });
+
+        // End of central directory record (22 bytes)
+        const eocd = new Uint8Array(22);
+        const eocdView = new DataView(eocd.buffer);
+        eocdView.setUint32(0, 0x06054b50, true);
+        eocdView.setUint16(4, 0, true);
+        eocdView.setUint16(6, 0, true);
+        eocdView.setUint16(8, fileRecords.length, true);
+        eocdView.setUint16(10, fileRecords.length, true);
+        eocdView.setUint32(12, cdSize, true);
+        eocdView.setUint32(16, offset, true);
+        eocdView.setUint16(20, 0, true);
+
+        const blobParts = [];
+        fileRecords.forEach(r => {
+          blobParts.push(r.lfh, r.dataBytes);
+        });
+        cdChunks.forEach(c => blobParts.push(c));
+        blobParts.push(eocd);
+
+        return new Blob(blobParts, { type: 'application/zip' });
+      }
+
+      static downloadCompletePackage() {
+        const htmlSource = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const readmeContent = `# Enfibio Technologies Private Limited — AI Smart Portable Freezer
+## Interactive 3D Product Anatomy Website
+
+### Overview
+This package contains the complete, production-quality interactive 3D WebGL/Three.js machine anatomy experience for the **AI Smart Portable Freezer** by **Enfibio Technologies Private Limited**.
+
+### Quick Launch Instructions
+1. **macOS / Linux**:
+   Open a terminal in this folder and run:
+   \`\`\`bash
+   chmod +x launch.sh
+   ./launch.sh
+   \`\`\`
+2. **Windows**:
+   Double-click \`launch.bat\` or run it from Command Prompt.
+3. **Alternative (Any HTTP Server)**:
+   Serve the directory using Python (\`python3 -m http.server 8080\`), Node (\`npx serve\`), or VS Code Live Server, and open \`http://localhost:8080\`.
+   *(Note: An active internet connection is required on first load to fetch Three.js from the jsDelivr CDN).*
+
+### Mouse & Keyboard Interactions
+- **Rotate Model**: Click and drag directly on the 3D machine.
+- **Conditional Mouse-Wheel Zoom**: Scroll the mouse wheel while hovering directly over any 3D component of the freezer. Scrolling outside the 3D machine scrolls the narrative chapters smoothly without moving the camera.
+- **Inspect Component**: Click any 3D subsystem or floating annotation marker to focus the camera and view subsystem details.
+- **Keyboard Shortcuts**:
+  - \`L\`: Toggle Insulated Lid Open/Closed (trips UV-C safety interlock when > 5°)
+  - \`E\`: Toggle Exploded Assembly View (0% / 100%)
+  - \`U\`: Toggle Global 369 UV-C Module
+  - \`C\`: Toggle Peltier Cooling & Dual Airflow Simulation
+  - \`T\`: Toggle Light / Dark Engineering Theme
+  - \`R\` or \`0\`: Reset Camera View
+`;
+
+        const launchSh = `#!/usr/bin/env bash
+echo "Starting Enfibio AI Smart Portable Freezer 3D Anatomy Server at http://localhost:8080 ..."
+python3 -m http.server 8080
+`;
+
+        const launchBat = `@echo off
+echo Starting Enfibio AI Smart Portable Freezer 3D Anatomy Server at http://localhost:8080 ...
+python -m http.server 8080
+pause
+`;
+
+        const blob = ProjectZipGenerator.buildZipBlob([
+          { name: 'index.html', content: htmlSource },
+          { name: 'README.md', content: readmeContent },
+          { name: 'launch.sh', content: launchSh },
+          { name: 'launch.bat', content: launchBat }
+        ]);
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'enfibio-ai-smart-portable-freezer-3d.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      }
+    }
+
+    // Initialize CRC32 lookup table
+    ProjectZipGenerator.crcTable = (() => {
+      const table = new Uint32Array(256);
+      for (let i = 0; i < 256; i++) {
+        let c = i;
+        for (let k = 0; k < 8; k++) {
+          c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+        }
+        table[i] = c >>> 0;
+      }
+      return table;
+    })();
+
+    /*************************************************************************
+     * MODULE 7: MAIN APPLICATION INITIALIZATION, UI & ANIMATION LOOP
+     *************************************************************************/
+    function initApp() {
+      const canvas = document.getElementById('webgl-canvas');
+      let renderer;
+      try {
+        renderer = new THREE.WebGLRenderer({
+          canvas,
+          antialias: true,
+          powerPreference: 'high-performance'
+        });
+      } catch (err) {
+        document.getElementById('webgl-fallback').style.display = 'grid';
+        return;
+      }
+
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.18;
+
+      const scene = new THREE.Scene();
+
+      // Generate High-Dynamic-Range Studio Reflection Environment (PMREM RoomEnvironment)
+      // Gives all stainless steel, brushed aluminium, copper, and clearcoat surfaces authentic specular shine!
+      const pmremGenerator = new THREE.PMREMGenerator(renderer);
+      pmremGenerator.compileEquirectangularShader();
+      const studioEnvTexture = pmremGenerator.fromScene(new RoomEnvironment(), 0.035).texture;
+      scene.environment = studioEnvTexture;
+
+      const camera = new THREE.PerspectiveCamera(
+        32, // Refined engineering perspective FOV
+        window.innerWidth / window.innerHeight,
+        0.1,
+        100
+      );
+
+      // Multi-Point Studio Product Lighting Setup for Specular Highlights
+      const ambientLight = new THREE.HemisphereLight(0xffffff, 0x94a3b8, 0.85);
+      scene.add(ambientLight);
+
+      const keyLight = new THREE.DirectionalLight(0xfffbeb, 2.35);
+      keyLight.position.set(6.5, 11, 8.5);
+      keyLight.castShadow = true;
+      keyLight.shadow.mapSize.width = 2048;
+      keyLight.shadow.mapSize.height = 2048;
+      keyLight.shadow.camera.near = 1;
+      keyLight.shadow.camera.far = 26;
+      const d = 5.6;
+      keyLight.shadow.camera.left = -d;
+      keyLight.shadow.camera.right = d;
+      keyLight.shadow.camera.top = d;
+      keyLight.shadow.camera.bottom = -d;
+      keyLight.shadow.bias = -0.0005;
+      scene.add(keyLight);
+
+      const fillLight = new THREE.DirectionalLight(0xe0f2fe, 1.15);
+      fillLight.position.set(-8, 5, 4);
+      scene.add(fillLight);
+
+      const rimLight = new THREE.DirectionalLight(0xf8fafc, 1.45);
+      rimLight.position.set(0, 7, -9);
+      scene.add(rimLight);
+
+      // Dedicated internal chamber showcase light so brushed stainless steel & vials gleam inside
+      const chamberStudioLight = new THREE.PointLight(0xe0f2fe, 1.35, 6.5);
+      chamberStudioLight.position.set(-0.90, 1.25, 0.55);
+      scene.add(chamberStudioLight);
+
+      // Soft Contact Shadow Catcher Plane (ShadowMaterial blends seamlessly into uniform page background without any visible box)
+      const shadowPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(20, 20),
+        new THREE.ShadowMaterial({ opacity: 0.18 })
+      );
+      shadowPlane.rotation.x = -Math.PI / 2;
+      shadowPlane.position.y = -1.96;
+      shadowPlane.receiveShadow = true;
+      scene.add(shadowPlane);
+
+      // Build Materials, Machine Geometry & Airflow
+      const matLib = new MaterialsLibrary();
+      const anatomyBuilder = new FreezerAnatomyBuilder(scene, matLib);
+      const airflowSystem = new ThermalAirflowSystem(anatomyBuilder.groups.cooling);
+
+      // Build 3D Floating Callout Pins in DOM
+      const labelsLayer = document.getElementById('labels-layer');
+      const pinElements = {};
+      Object.entries(SUBSYSTEM_META).forEach(([key, meta]) => {
+        const pin = document.createElement('button');
+        pin.className = 'anatomy-pin';
+        pin.dataset.accent = meta.accent;
+        pin.innerHTML = `<span class="pin-dot"></span><span class="pin-code">${meta.code}</span><span>${meta.name}</span>`;
+        pin.addEventListener('click', () => {
+          camManager.focusSubsystem(key);
+          selectSubsystemUI(key);
+        });
+        labelsLayer.appendChild(pin);
+        pinElements[key] = pin;
+      });
+
+      // UI Sync Helper when a subsystem is clicked/focused
+      function selectSubsystemUI(subKey) {
+        AppState.focusedSubsystem = subKey;
+        anatomyBuilder.applySelectiveFocus(subKey);
+
+        Object.entries(pinElements).forEach(([k, el]) => {
+          el.classList.toggle('active', k === subKey);
+        });
+
+        const codeEl = document.getElementById('inspector-code');
+        const titleEl = document.getElementById('inspector-title');
+        const descEl = document.getElementById('inspector-desc');
+
+        if (!subKey) {
+          codeEl.textContent = 'SYS-ALL';
+          titleEl.textContent = 'Complete Integrated System';
+          descEl.textContent = 'Click any 3D component or callout marker to inspect its physical construction and focus the camera.';
+        } else {
+          const info = SUBSYSTEM_META[subKey];
+          codeEl.textContent = info.code;
+          titleEl.textContent = info.name;
+          descEl.textContent = info.desc;
+        }
+      }
+
+      const camManager = new CameraAndInteractionManager(
+        canvas,
+        camera,
+        anatomyBuilder,
+        selectSubsystemUI
+      );
+
+      // Exact Responsive Framing Offset so the 3D machine sits centered in the open corridor between the left narrative column and right control dock
+      function updateCameraViewportOffset() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        if (w > 900) {
+          const navEl = document.getElementById('narrative-track');
+          const dockEl = document.querySelector('.controls-dock');
+          const leftOccupied = navEl ? (navEl.offsetWidth + 24) : 335;
+          const rightOccupied = dockEl ? (dockEl.offsetWidth + 24) : 268;
+          // Shift the camera optical center to the exact midpoint of the unobstructed center canvas area
+          const freeCenterX = (leftOccupied + (w - rightOccupied)) * 0.5;
+          const shiftX = (w * 0.5) - freeCenterX;
+          camera.setViewOffset(w, h, Math.round(shiftX), -14, w, h);
+        } else {
+          camera.clearViewOffset();
+        }
+        camera.updateProjectionMatrix();
+      }
+      updateCameraViewportOffset();
+      window.addEventListener('resize', updateCameraViewportOffset);
+
+      // Theme Synchronization (Uniform Page & WebGL Scene Background)
+      function applyTheme(theme) {
+        AppState.theme = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('enfibio_theme', theme);
+
+        const bgHex = theme === 'dark' ? 0x111316 : 0xf4f3ef;
+        scene.background = new THREE.Color(bgHex);
+        shadowPlane.material.opacity = theme === 'dark' ? 0.36 : 0.14;
+
+        const btnTheme = document.getElementById('btn-theme-toggle');
+        btnTheme.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+      }
+      applyTheme(AppState.theme);
+
+      // UV-C State Evaluation (Remains actively lit when toggled ON even when the lid is open!)
+      function updateUVCInterlockState() {
+        const lidOpen = AppState.lidAngleDeg > 5;
+        // User requested that UV-C lights up even when the lid is open
+        AppState.uvcEffective = AppState.uvcRequested;
+
+        const banner = document.getElementById('uvc-interlock-banner');
+        const btnUvc = document.getElementById('btn-toggle-uvc');
+
+        if (AppState.uvcRequested) {
+          banner.className = 'interlock-banner uv-active';
+          banner.textContent = lidOpen
+            ? `GLOBAL 369 UV-C ACTIVE (LID OPEN ${AppState.lidAngleDeg}°): Continuous violet irradiation & under-lid emitter glow active.`
+            : 'GLOBAL 369 UV-C ACTIVE (LID SEALED): Continuous violet chamber irradiation active.';
+          btnUvc.textContent = 'UV-C: ON';
+          btnUvc.classList.add('active');
+        } else {
+          banner.className = 'interlock-banner';
+          banner.textContent = 'UV-C STANDBY: Global 369 UV-C module manually switched off.';
+          btnUvc.textContent = 'UV-C: OFF';
+          btnUvc.classList.remove('active');
+        }
+      }
+
+      // Bind UI Controls
+      const sliderLid = document.getElementById('slider-lid');
+      const valLid = document.getElementById('val-lid-angle');
+      sliderLid.addEventListener('input', (e) => {
+        AppState.lidAngleDeg = parseFloat(e.target.value);
+        valLid.textContent = AppState.lidAngleDeg === 0 ? '0° (Closed)' : `${AppState.lidAngleDeg}° (Open)`;
+        updateUVCInterlockState();
+      });
+
+      const sliderExplode = document.getElementById('slider-explode');
+      const valExplode = document.getElementById('val-explode');
+      sliderExplode.addEventListener('input', (e) => {
+        const pct = parseFloat(e.target.value);
+        AppState.explodeFactor = pct / 100;
+        valExplode.textContent = `${pct}%`;
+      });
+
+      const sliderSetpoint = document.getElementById('slider-setpoint');
+      const valSetpoint = document.getElementById('val-setpoint');
+      const uiTempTarget = document.getElementById('ui-temp-target');
+      sliderSetpoint.addEventListener('input', (e) => {
+        AppState.tempTarget = parseFloat(e.target.value);
+        const formatted = `${AppState.tempTarget.toFixed(1)}°C`;
+        valSetpoint.textContent = formatted;
+        uiTempTarget.textContent = formatted;
+      });
+
+      const btnCooling = document.getElementById('btn-toggle-cooling');
+      btnCooling.addEventListener('click', () => {
+        AppState.coolingActive = !AppState.coolingActive;
+        btnCooling.textContent = `Cooling: ${AppState.coolingActive ? 'ON' : 'OFF'}`;
+        btnCooling.classList.toggle('active', AppState.coolingActive);
+      });
+
+      const btnUvc = document.getElementById('btn-toggle-uvc');
+      btnUvc.addEventListener('click', () => {
+        AppState.uvcRequested = !AppState.uvcRequested;
+        updateUVCInterlockState();
+      });
+
+      const btnLabels = document.getElementById('btn-toggle-labels');
+      btnLabels.addEventListener('click', () => {
+        AppState.labelsVisible = !AppState.labelsVisible;
+        btnLabels.textContent = `Labels: ${AppState.labelsVisible ? 'ON' : 'OFF'}`;
+        btnLabels.classList.toggle('active', AppState.labelsVisible);
+        labelsLayer.classList.toggle('labels-hidden', !AppState.labelsVisible);
+      });
+
+      const btnCutaway = document.getElementById('btn-toggle-cutaway');
+      btnCutaway.addEventListener('click', () => {
+        AppState.frontCutawayGhost = !AppState.frontCutawayGhost;
+        anatomyBuilder.frontGhostPanel.visible = AppState.frontCutawayGhost;
+        btnCutaway.textContent = AppState.frontCutawayGhost ? 'Front Shell: Ghost' : 'Front Shell: Open';
+      });
+
+      document.getElementById('btn-reset-view').addEventListener('click', () => {
+        camManager.setPreset('iso');
+        selectSubsystemUI(null);
+      });
+
+      document.getElementById('btn-zoom-in').addEventListener('click', () => {
+        camManager.zoomBy(0.84);
+      });
+
+      document.getElementById('btn-zoom-out').addEventListener('click', () => {
+        camManager.zoomBy(1.18);
+      });
+
+      document.querySelectorAll('[data-cam]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          camManager.setPreset(btn.dataset.cam);
+        });
+      });
+
+      document.querySelectorAll('[data-focus-group]').forEach(card => {
+        card.addEventListener('click', () => {
+          const key = card.dataset.focusGroup;
+          camManager.focusSubsystem(key);
+          selectSubsystemUI(key);
+        });
+      });
+
+      document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+        applyTheme(AppState.theme === 'light' ? 'dark' : 'light');
+      });
+
+      document.getElementById('btn-download-zip').addEventListener('click', () => {
+        ProjectZipGenerator.downloadCompletePackage();
+      });
+
+      // Modal Dialog Controls
+      const docsModal = document.getElementById('docs-modal');
+      document.getElementById('btn-docs').addEventListener('click', () => docsModal.classList.add('open'));
+      document.getElementById('btn-close-modal').addEventListener('click', () => docsModal.classList.remove('open'));
+      docsModal.addEventListener('click', (e) => {
+        if (e.target === docsModal) docsModal.classList.remove('open');
+      });
+
+      // Keyboard Shortcuts
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') docsModal.classList.remove('open');
+        if (e.target.tagName === 'INPUT') return;
+        const k = e.key.toLowerCase();
+        if (k === 'l') {
+          AppState.lidAngleDeg = AppState.lidAngleDeg > 0 ? 0 : 58;
+          sliderLid.value = AppState.lidAngleDeg;
+          valLid.textContent = AppState.lidAngleDeg === 0 ? '0° (Closed)' : `${AppState.lidAngleDeg}° (Open)`;
+          updateUVCInterlockState();
+        } else if (k === 'e') {
+          AppState.explodeFactor = AppState.explodeFactor > 0.1 ? 0 : 1;
+          sliderExplode.value = AppState.explodeFactor * 100;
+          valExplode.textContent = `${Math.round(AppState.explodeFactor * 100)}%`;
+        } else if (k === 'u') {
+          btnUvc.click();
+        } else if (k === 'c') {
+          btnCooling.click();
+        } else if (k === 't') {
+          applyTheme(AppState.theme === 'light' ? 'dark' : 'light');
+        } else if (k === 'r' || k === '0') {
+          camManager.setPreset('iso');
+          selectSubsystemUI(null);
+        } else if (e.key === '+' || e.key === '=') {
+          camManager.zoomBy(0.84);
+        } else if (e.key === '-' || e.key === '_') {
+          camManager.zoomBy(1.18);
+        }
+      });
+
+      // Scroll-Driven Narrative Observer (Updates active chapter & selective focus WITHOUT moving camera)
+      const chapterSteps = document.querySelectorAll('.chapter-step');
+      const chapterNavBtns = document.querySelectorAll('.chapter-dot-btn');
+
+      chapterNavBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.chapter, 10);
+          const targetEl = document.getElementById(`chapter-${idx}`);
+          if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      });
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const idx = parseInt(entry.target.dataset.chapterIndex, 10);
+            AppState.activeChapter = idx;
+
+            chapterSteps.forEach((s, i) => s.classList.toggle('active', i === idx));
+            chapterNavBtns.forEach((b, i) => b.classList.toggle('active', i === idx));
+
+            // Apply selective focus to highlight the chapter's subsystem without moving or zooming the camera
+            const subKey = CHAPTER_SUBSYSTEM_MAP[idx];
+            selectSubsystemUI(subKey);
+          }
+        });
+      }, { threshold: 0.55 });
+
+      chapterSteps.forEach(step => observer.observe(step));
+
+      // Project 3D Callout Anchor Coordinates to 2D Screen Pixels
+      const tempProjVec = new THREE.Vector3();
+      function updateCalloutPins() {
+        if (!AppState.labelsVisible) return;
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+
+        Object.entries(anatomyBuilder.pinAnchors).forEach(([key, anchor]) => {
+          tempProjVec.copy(anchor.localPos);
+          anchor.group.localToWorld(tempProjVec);
+          tempProjVec.project(camera);
+
+          const pinEl = pinElements[key];
+          if (tempProjVec.z > 1) {
+            pinEl.style.display = 'none';
+            return;
+          }
+          pinEl.style.display = 'inline-flex';
+          const x = (tempProjVec.x * 0.5 + 0.5) * w;
+          const y = (-(tempProjVec.y * 0.5) + 0.5) * h;
+          pinEl.style.left = `${x}px`;
+          pinEl.style.top = `${y}px`;
+        });
+      }
+
+      // Smooth Bounded Temperature Simulation (Strictly within 5.0°C to 10.0°C)
+      const uiTempCurrent = document.getElementById('ui-temp-current');
+      let lastDisplayUpdate = 0;
+
+      function updateSimulatedTemperature(elapsedSec) {
+        // Smooth multi-harmonic wave drifting gently around target set-point, strictly clamped to [5.0, 10.0]
+        const wave = Math.sin(elapsedSec * 0.35) * 0.95 + Math.cos(elapsedSec * 0.13) * 0.65;
+        const center = THREE.MathUtils.clamp(AppState.tempTarget + 0.4, 6.2, 8.6);
+        AppState.tempCurrent = THREE.MathUtils.clamp(center + wave, 5.0, 10.0);
+
+        if (elapsedSec - lastDisplayUpdate > 0.25) {
+          lastDisplayUpdate = elapsedSec;
+          uiTempCurrent.textContent = `${AppState.tempCurrent.toFixed(1)}°C`;
+          matLib.updateDisplayCanvas(
+            AppState.tempCurrent,
+            AppState.tempTarget,
+            AppState.coolingActive,
+            AppState.uvcEffective,
+            AppState.lidAngleDeg > 5
+          );
+        }
+      }
+
+      // Main Delta-Time Animation Loop
+      let lastFrameTime = performance.now();
+      function animate(now) {
+        requestAnimationFrame(animate);
+        if (document.hidden) {
+          lastFrameTime = now;
+          return;
+        }
+
+        const dt = Math.min((now - lastFrameTime) / 1000, 0.1);
+        lastFrameTime = now;
+        AppState.simTime += dt;
+
+        updateSimulatedTemperature(AppState.simTime);
+
+        anatomyBuilder.updateTransforms(
+          AppState.lidAngleDeg,
+          AppState.explodeFactor,
+          AppState.uvcEffective,
+          AppState.coolingActive,
+          dt
+        );
+
+        airflowSystem.update(dt, AppState.coolingActive);
+        camManager.update(dt);
+        updateCalloutPins();
+
+        renderer.render(scene, camera);
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>

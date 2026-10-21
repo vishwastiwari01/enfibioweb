@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import { Mail, Globe, MapPin } from 'lucide-react';
+import Link from 'next/link';
+import { Mail, Globe } from 'lucide-react';
 
 const LinkedinIcon = ({ size = 24 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -31,16 +32,15 @@ const GitHubIcon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-
 export default function Footer() {
   return (
     <footer className="bg-[#062f32] text-white py-16 md:py-20 pb-8">
-      <div className="container mx-auto w-[min(1180px,calc(100%-40px))]">
+      <div className="container mx-auto w-[min(1280px,calc(100%-40px))]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-12 border-b border-white/10">
           
           <div className="lg:col-span-1">
-            <a href="#hero" className="inline-flex items-center gap-3 font-black tracking-tight text-white mb-5">
-              <div className="relative w-11 h-11 bg-white rounded-[12px] overflow-hidden grid place-items-center p-1.5">
+            <Link href="/" className="inline-flex items-center gap-3 font-black tracking-tight text-white mb-5">
+              <div className="relative w-10 h-10 bg-white rounded-[12px] overflow-hidden flex items-center justify-center p-1.5 shadow-sm">
                 <Image 
                   src="/logo.jpeg" 
                   alt="Enfibio Technologies Logo" 
@@ -53,49 +53,48 @@ export default function Footer() {
                 <strong className="block text-[1.1rem]">enfibio</strong>
                 <small className="block text-[0.45rem] tracking-[0.24em] mt-1 text-[#9ebdb9]">TECHNOLOGIES</small>
               </span>
-            </a>
+            </Link>
             <p className="text-[#b4d0ce] text-[0.8rem] m-0 mb-6 leading-relaxed">
               Engineering intelligent systems and emerging technologies for a more resilient future.
             </p>
             
             <div className="flex items-center gap-2">
-              <a href="https://linkedin.com/company/enfibio" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 border border-white/10 grid place-items-center text-[#b4d0ce] hover:bg-teal-700 hover:text-white transition-all hover:-translate-y-1" aria-label="Visit Enfibio on LinkedIn">
+              <a href="https://linkedin.com/company/enfibio" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#b4d0ce] hover:bg-teal-700 hover:text-white transition-all hover:-translate-y-1" aria-label="Visit Enfibio on LinkedIn">
                 <LinkedinIcon size={14} />
               </a>
-              <a href="https://twitter.com/enfibio" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 border border-white/10 grid place-items-center text-[#b4d0ce] hover:bg-teal-700 hover:text-white transition-all hover:-translate-y-1" aria-label="Visit Enfibio on Twitter">
+              <a href="https://twitter.com/enfibio" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#b4d0ce] hover:bg-teal-700 hover:text-white transition-all hover:-translate-y-1" aria-label="Visit Enfibio on Twitter">
                 <TwitterIcon size={14} />
               </a>
-              <a href="https://instagram.com/enfibio" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 border border-white/10 grid place-items-center text-[#b4d0ce] hover:bg-teal-700 hover:text-white transition-all hover:-translate-y-1" aria-label="Visit Enfibio on Instagram">
+              <a href="https://instagram.com/enfibio" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#b4d0ce] hover:bg-teal-700 hover:text-white transition-all hover:-translate-y-1" aria-label="Visit Enfibio on Instagram">
                 <InstagramIcon size={14} />
               </a>
-              <a href="https://youtube.com/@enfibio" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 border border-white/10 grid place-items-center text-[#b4d0ce] hover:bg-teal-700 hover:text-white transition-all hover:-translate-y-1" aria-label="Visit Enfibio on YouTube">
+              <a href="https://youtube.com/@enfibio" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#b4d0ce] hover:bg-teal-700 hover:text-white transition-all hover:-translate-y-1" aria-label="Visit Enfibio on YouTube">
                 <YoutubeIcon size={14} />
               </a>
-              <a href="https://github.com/enfibio" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 border border-white/10 grid place-items-center text-[#b4d0ce] hover:bg-teal-700 hover:text-white transition-all hover:-translate-y-1" aria-label="View Enfibio on GitHub">
+              <a href="https://github.com/enfibio" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#b4d0ce] hover:bg-teal-700 hover:text-white transition-all hover:-translate-y-1" aria-label="View Enfibio on GitHub">
                 <GitHubIcon size={14} />
               </a>
             </div>
           </div>
 
           <div>
-            <h3 className="text-[0.95rem] tracking-tight mb-5 text-white font-bold">Company</h3>
+            <h3 className="text-[0.95rem] tracking-tight mb-5 text-white font-bold">Showroom</h3>
             <div className="grid gap-3">
-              <a href="#hero" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">Home</a>
-              <a href="#about" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">About</a>
-              <a href="#projects" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">Projects</a>
-              <a href="#research" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">Research</a>
-              <a href="#milestones" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">Milestones</a>
-              <a href="#contact" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">Contact</a>
+              <Link href="/#hero" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">Featured Showcase</Link>
+              <Link href="/#catalog" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">All Projects</Link>
+              <Link href="/projects/thandai" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">THAND.AI 3D Anatomy</Link>
+              <Link href="/projects/enfibio-v2x" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">Enfibio V2X Simulation</Link>
+              <Link href="/projects/bharatmaps" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">BharatMaps (DRDO)</Link>
             </div>
           </div>
 
           <div>
             <h3 className="text-[0.95rem] tracking-tight mb-5 text-white font-bold">Domains</h3>
             <div className="grid gap-3">
-              <a href="#about" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">AgriTech & Climate</a>
-              <a href="#about" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">Intelligent Hardware</a>
-              <a href="#about" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">AI Systems</a>
-              <a href="#about" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">Nanobiotechnology</a>
+              <Link href="/#about" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">AgriTech & Climate</Link>
+              <Link href="/#about" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">Intelligent Hardware</Link>
+              <Link href="/#about" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">AI & Autonomous Systems</Link>
+              <Link href="/#about" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">Nanobiotechnology</Link>
             </div>
           </div>
 
@@ -104,8 +103,12 @@ export default function Footer() {
             <div className="grid gap-3">
               <span className="text-white font-bold text-[0.85rem]">THAND.AI</span>
               <span className="text-[#b4d0ce] text-[0.8rem] block -mt-2">Smart Portable Freezer</span>
-              <a href="#products" className="text-teal-400 font-bold text-[0.8rem] hover:text-teal-300 transition-colors mt-1">Explore THAND.AI →</a>
-              <a href="#products" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">Join Waitlist</a>
+              <Link href="/projects/thandai" className="text-teal-400 font-bold text-[0.8rem] hover:text-teal-300 transition-colors mt-1">
+                Explore THAND.AI →
+              </Link>
+              <Link href="/projects/thandai#interactive" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors">
+                Launch 3D Anatomy
+              </Link>
             </div>
           </div>
 
@@ -115,9 +118,9 @@ export default function Footer() {
               Open to research collaboration, incubation opportunities, and industry partnerships.
             </p>
             <div className="grid gap-3 mb-6">
-              <a href="#contact" className="btn bg-teal-500 hover:bg-teal-400 text-[#062f32] text-[0.8rem] py-2 px-4 rounded-lg font-bold inline-flex justify-center transition-colors">
+              <Link href="/#contact" className="btn bg-teal-500 hover:bg-teal-400 text-[#062f32] text-[0.8rem] py-2 px-4 rounded-lg font-bold inline-flex justify-center transition-colors">
                 Partner With Us
-              </a>
+              </Link>
             </div>
             <div className="grid gap-3">
               <a href="mailto:enfibiotechnologiespvtltd@gmail.com" className="text-[#b4d0ce] text-[0.8rem] hover:text-white transition-colors flex items-center gap-2">
@@ -134,8 +137,8 @@ export default function Footer() {
         <div className="pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-[#8fb3af] text-[0.75rem]">
           <span>© {new Date().getFullYear()} Enfibio Technologies Pvt. Ltd. All rights reserved.</span>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+            <span className="hover:text-white transition-colors cursor-pointer">Privacy Policy</span>
+            <span className="hover:text-white transition-colors cursor-pointer">Terms of Service</span>
           </div>
         </div>
       </div>
