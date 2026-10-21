@@ -9,6 +9,10 @@ import HeroShowroomCarousel from '@/components/showroom/HeroShowroomCarousel';
 import ProjectCatalog from '@/components/showroom/ProjectCatalog';
 import ImpactRibbon from '@/components/showroom/ImpactRibbon';
 
+// Deep-Tech Interactive Visual Components
+import HardwareShowcase from '@/components/sections/HardwareShowcase';
+import AtmosphericShowcase from '@/components/sections/AtmosphericShowcase';
+
 // Preserved & Integrated Company Sections
 import StatsSection from '@/components/sections/StatsSection';
 import CapabilitiesSection from '@/components/sections/CapabilitiesSection';
@@ -29,26 +33,32 @@ export default function Home() {
         {/* 2. E-Commerce Project Catalog with Filters & Search */}
         <ProjectCatalog />
 
-        {/* 3. Four-Pillar Value & Mission Ribbon */}
+        {/* 3. Interactive Container Scroll Hardware Architecture (Aceternity 3D Tilt) */}
+        <HardwareShowcase />
+
+        {/* 4. Four-Pillar Value & Mission Ribbon */}
         <ImpactRibbon />
 
-        {/* 4. Prototype Validation & Stats Strip */}
+        {/* 5. Prototype Validation & Stats Strip */}
         <StatsSection />
 
-        {/* 5. What We Build — Capabilities, Research Domains & Purpose */}
+        {/* 6. Procedural Cloud Shader Atmospheric Deep-Tech Banner */}
+        <AtmosphericShowcase />
+
+        {/* 7. What We Build — Capabilities, Research Domains & Purpose */}
         <CapabilitiesSection />
 
-        {/* 6. Milestones, Incubation & Program Traction */}
+        {/* 8. Milestones, Incubation & Program Traction */}
         <TimelineSection />
 
-        {/* 7. Engineering Leadership & Founders */}
+        {/* 9. Engineering Leadership & Founders */}
         <FoundersSection />
 
-        {/* 8. Meaningful Collaboration & Contact Inquiries */}
+        {/* 10. Meaningful Collaboration & Interactive Astronaut Social Card */}
         <ContactSection />
       </main>
 
-      {/* 9. Premium 5-Column Brand Footer */}
+      {/* 11. Premium 5-Column Brand Footer */}
       <Footer />
     </div>
   );

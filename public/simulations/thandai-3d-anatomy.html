@@ -3836,6 +3836,16 @@ pause
         const h = window.innerHeight;
         renderer.setSize(w, h);
         camera.aspect = w / h;
+
+        // Dynamic FOV adjustment to ensure full 3D object fits horizontally on mobile & narrow embeds
+        const baseFov = 32;
+        const targetAspect = 1.6;
+        if (camera.aspect < targetAspect) {
+          const hFov = 2 * Math.atan(Math.tan((baseFov * Math.PI) / 360) * targetAspect);
+          camera.fov = Math.min(56, (2 * Math.atan(Math.tan(hFov / 2) / camera.aspect) * 180) / Math.PI);
+        } else {
+          camera.fov = baseFov;
+        }
         if (w > 900) {
           const navEl = document.getElementById('narrative-track');
           const dockEl = document.querySelector('.controls-dock');

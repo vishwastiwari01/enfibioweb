@@ -2147,6 +2147,16 @@
 
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
+
+      // Dynamic FOV adjustment to ensure full 3D vehicle platform fits horizontally on mobile & narrow embeds
+      const baseFov = 30;
+      const targetAspect = 1.6;
+      if (camera.aspect < targetAspect) {
+        const hFov = 2 * Math.atan(Math.tan((baseFov * Math.PI) / 360) * targetAspect);
+        camera.fov = Math.min(54, (2 * Math.atan(Math.tan(hFov / 2) / camera.aspect) * 180) / Math.PI);
+      } else {
+        camera.fov = baseFov;
+      }
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
       applyViewOffset(true);
