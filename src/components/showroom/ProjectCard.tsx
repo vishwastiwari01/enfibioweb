@@ -2,8 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowUpRight, Box, Play, ExternalLink } from 'lucide-react';
+import { ArrowRight, Box } from 'lucide-react';
 import type { Project } from '@/types';
 
 interface ProjectCardProps {
@@ -16,7 +15,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
   const badgeStyles: Record<string, string> = {
     'FLAGSHIP': 'bg-teal-900 text-white',
-    'FEATURED': 'bg-[#0284c7] text-white',
+    'FEATURED': 'bg-[#006699] text-white',
     'DRDO WINNER': 'bg-amber-600 text-white',
     'LIVE DEMO': 'bg-emerald-600 text-white',
     'LIVE': 'bg-emerald-600 text-white',
@@ -92,17 +91,12 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </Link>
         </h3>
 
-        {/* Subtitle */}
-        <p className="text-xs font-semibold text-teal-900/80 mb-2">
-          {project.subtitle}
-        </p>
-
         {/* Description */}
         <p className="text-xs text-muted leading-relaxed line-clamp-2 mb-4 flex-1">
           {project.desc}
         </p>
 
-        {/* Specs highlights */}
+        {/* Specs Highlights */}
         {project.specs && Object.keys(project.specs).length > 0 && (
           <div className="pt-3 border-t border-line/60 grid grid-cols-2 gap-2 mb-4">
             {Object.entries(project.specs).slice(0, 2).map(([k, v]) => (
@@ -128,9 +122,9 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <Link
             href={`/projects/${project.slug}`}
             aria-label={`View ${project.title} details`}
-            className="w-8 h-8 rounded-full border border-line bg-white flex items-center justify-center text-ink group-hover:bg-teal-900 group-hover:text-white group-hover:border-teal-900 transition-all duration-200"
+            className="w-8 h-8 rounded-full border border-line bg-surface hover:bg-teal-900 hover:text-white hover:border-teal-900 flex items-center justify-center text-ink transition-all duration-200"
           >
-            <ArrowUpRight size={15} />
+            <ArrowRight size={14} />
           </Link>
         </div>
 

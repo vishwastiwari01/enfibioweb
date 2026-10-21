@@ -19,6 +19,7 @@ import NavBar from '@/components/layout/NavBar';
 import Footer from '@/components/layout/Footer';
 import SimulationEmbed from '@/components/showroom/SimulationEmbed';
 import ProjectCard from '@/components/showroom/ProjectCard';
+import ProjectActionPanel from '@/components/showroom/ProjectActionPanel';
 
 interface PageProps {
   params: Promise<{ id: string }> | { id: string };
@@ -153,12 +154,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     </a>
                   )}
 
-                  <Link
-                    href="/#contact"
+                  <a
+                    href="#pilot-interest"
                     className="btn btn-secondary"
                   >
                     Discuss Deployment / R&D →
-                  </Link>
+                  </a>
                 </div>
               </div>
 
@@ -305,6 +306,13 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             </div>
           </section>
         )}
+
+        {/* Pilot Testing & Engagement Action Section */}
+        <section id="pilot-interest" className="py-16 bg-[#f4f8f7] border-b border-line">
+          <div className="container mx-auto w-[min(1280px,calc(100%-40px))] max-w-4xl">
+            <ProjectActionPanel projectSlug={project.slug} projectTitle={project.title} />
+          </div>
+        </section>
 
         {/* Media Gallery (if additional images/video exist) */}
         {project.gallery && project.gallery.length > 0 && (

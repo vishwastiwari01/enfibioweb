@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -16,7 +16,8 @@ import {
   Cpu, 
   Leaf, 
   Zap, 
-  Layers 
+  Layers,
+  Sparkles
 } from 'lucide-react';
 import { PROJECTS } from '@/lib/data/projects';
 
@@ -24,7 +25,6 @@ export default function HeroShowroomCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const thandai = PROJECTS.find(p => p.slug === 'thandai') || PROJECTS[0];
   const v2x = PROJECTS.find(p => p.slug === 'enfibio-v2x') || PROJECTS[1];
@@ -56,7 +56,7 @@ export default function HeroShowroomCarousel() {
       tagColor: 'bg-cyan-50 text-cyan-800 border-cyan-200',
       icon: Radio,
       title: 'Enfibio V2X',
-      subtitle: 'Cooperative Road-Safety & Mobility',
+      subtitle: 'Cooperative Road-Safety and Intelligent Mobility',
       description: 'Vehicle-to-vehicle communication and AI systems for safer, smarter roads.',
       image: '/assets/autonomoustruck.png',
       alt: 'Enfibio V2X Autonomous Connected Fleet',
@@ -113,11 +113,9 @@ export default function HeroShowroomCarousel() {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const active = slides[currentSlide];
-
   return (
-    <section id="hero" className="relative w-full pt-8 pb-16 md:py-16 overflow-hidden bg-[#FAFCFB]">
-      {/* Background Engineering Accent Lines */}
+    <section id="hero" className="relative w-full pt-6 pb-14 md:py-16 overflow-hidden bg-[#FAFCFB]">
+      {/* Background Engineering Subtle Accents */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-40"
         style={{
@@ -129,10 +127,10 @@ export default function HeroShowroomCarousel() {
       />
 
       <div className="container mx-auto w-[min(1280px,calc(100%-40px))]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Left Hero Column: Editorial Typography */}
-          <div className="lg:col-span-5 flex flex-col justify-center">
+          <div className="lg:col-span-5 flex flex-col justify-center z-10">
             
             <div className="inline-flex items-center gap-2 mb-4 text-[11px] font-extrabold tracking-[0.2em] uppercase text-teal-800">
               <span className="w-2 h-2 rounded-full bg-teal-700 animate-pulse" />
@@ -190,137 +188,181 @@ export default function HeroShowroomCarousel() {
 
           </div>
 
-          {/* Right Hero Column: Large Horizontally Swipeable Showroom Card */}
+          {/* Right Hero Column: Horizontally Sliding Carousel with Peek Effect */}
           <div 
             className="lg:col-span-7 relative"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
           >
             {/* Carousel Navigation Arrow Controls */}
-            <button
-              onClick={prevSlide}
-              aria-label="Previous Project"
-              className="absolute -left-3 sm:-left-5 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-white/95 border border-line shadow-md text-ink flex items-center justify-center hover:bg-surface hover:scale-105 active:scale-95 transition-all"
-            >
-              <ChevronLeft size={20} />
-            </button>
+            <div className="absolute -top-12 right-0 hidden sm:flex items-center gap-2 z-30">
+              <button
+                onClick={prevSlide}
+                aria-label="Previous Project"
+                className="w-9 h-9 rounded-full bg-white border border-line shadow-xs text-ink flex items-center justify-center hover:bg-surface hover:border-teal-700/40 transition-all"
+              >
+                <ChevronLeft size={16} />
+              </button>
 
-            <button
-              onClick={nextSlide}
-              aria-label="Next Project"
-              className="absolute -right-3 sm:-right-5 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-white/95 border border-line shadow-md text-ink flex items-center justify-center hover:bg-surface hover:scale-105 active:scale-95 transition-all"
-            >
-              <ChevronRight size={20} />
-            </button>
+              <button
+                onClick={nextSlide}
+                aria-label="Next Project"
+                className="w-9 h-9 rounded-full bg-white border border-line shadow-xs text-ink flex items-center justify-center hover:bg-surface hover:border-teal-700/40 transition-all"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
 
-            {/* The Main Showcase Card Container */}
-            <div className="relative rounded-[28px] sm:rounded-[36px] bg-white border border-line/80 shadow-[0_22px_65px_rgba(8,54,57,0.08)] overflow-hidden transition-all duration-500">
-              
-              {/* Card Header Row */}
-              <div className="p-6 sm:p-8 pb-4 flex items-center justify-between border-b border-line/50">
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-mono font-bold text-muted tracking-widest">
-                    {active.number}
-                  </span>
-                  <span className={`text-[10px] font-black tracking-wider uppercase px-2.5 py-1 rounded-full border ${active.tagColor}`}>
-                    {active.tag}
-                  </span>
-                </div>
+            {/* Sliding Track Wrapper with Peek Overflow */}
+            <div className="relative overflow-visible lg:-mr-20 xl:-mr-32">
+              <div 
+                className="flex gap-6 transition-transform duration-500 ease-out"
+                style={{
+                  transform: `translateX(-${currentSlide * 92}%)`
+                }}
+              >
+                {slides.map((slide, idx) => {
+                  const isActive = idx === currentSlide;
 
-                <div className="flex items-center gap-1.5">
-                  {slides.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentSlide(idx)}
-                      aria-label={`Go to slide ${idx + 1}`}
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        idx === currentSlide ? 'w-6 bg-teal-900' : 'w-2 bg-line hover:bg-muted'
+                  return (
+                    <div
+                      key={slide.id}
+                      className={`w-full lg:w-[90%] shrink-0 rounded-[28px] sm:rounded-[36px] bg-white border border-line/80 shadow-[0_22px_65px_rgba(8,54,57,0.08)] overflow-hidden transition-all duration-300 ${
+                        isActive ? 'opacity-100 scale-100 ring-1 ring-teal-900/10' : 'opacity-65 hover:opacity-90 cursor-pointer scale-[0.98]'
                       }`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Card Body: Info + Large Visual Area */}
-              <div className="p-6 sm:p-8 pt-5 grid grid-cols-1 md:grid-cols-12 gap-6 items-center min-h-[380px] sm:min-h-[420px]">
-                
-                {/* Left Meta Description */}
-                <div className="md:col-span-6 flex flex-col justify-center">
-                  <div className="flex items-center gap-2 mb-2 text-teal-800">
-                    <active.icon size={22} className="shrink-0" />
-                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink">
-                      {active.title}
-                    </h2>
-                  </div>
-
-                  <p className="text-sm font-semibold text-teal-900/80 mb-3">
-                    {active.subtitle}
-                  </p>
-
-                  <p className="text-xs sm:text-sm text-muted leading-relaxed mb-6">
-                    {active.description}
-                  </p>
-
-                  <div className="flex flex-wrap items-center gap-3">
-                    <Link
-                      href={`/projects/${active.slug}`}
-                      className="btn btn-primary btn-small text-xs py-2 px-4 shadow-sm"
+                      onClick={() => !isActive && setCurrentSlide(idx)}
                     >
-                      Explore Project <ArrowRight size={14} />
-                    </Link>
+                      {/* Card Header Row */}
+                      <div className="p-6 sm:p-7 pb-4 flex items-center justify-between border-b border-line/50">
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs font-mono font-bold text-muted tracking-widest">
+                            {slide.number}
+                          </span>
+                          <span className={`text-[10px] font-black tracking-wider uppercase px-2.5 py-1 rounded-full border ${slide.tagColor}`}>
+                            {slide.tag}
+                          </span>
+                        </div>
 
-                    <Link
-                      href={`/projects/${active.slug}#interactive`}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-800 hover:text-teal-600 transition-colors px-2 py-2"
-                    >
-                      <Box size={14} /> View 3D Anatomy
-                    </Link>
-                  </div>
-                </div>
+                        <div className="flex items-center gap-1.5">
+                          {slides.map((_, i) => (
+                            <button
+                              key={i}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCurrentSlide(i);
+                              }}
+                              aria-label={`Go to slide ${i + 1}`}
+                              className={`h-2 rounded-full transition-all duration-300 ${
+                                i === currentSlide ? 'w-6 bg-teal-900' : 'w-2 bg-line hover:bg-muted'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
 
-                {/* Right Interactive/Image Showcase Stage */}
-                <div className="md:col-span-6 relative flex items-center justify-center p-2">
-                  <div className="relative w-full aspect-square max-w-[320px] rounded-2xl bg-gradient-to-tr from-[#edf5f3] to-white border border-line/60 flex items-center justify-center p-4 overflow-hidden group">
-                    
-                    {/* Subtle Radar/Orbit Pulse */}
-                    <div className="absolute inset-4 rounded-full border border-teal-700/10 animate-ping opacity-20 pointer-events-none" />
+                      {/* Card Body: Info + Visual */}
+                      <div className="p-6 sm:p-7 pt-5 grid grid-cols-1 md:grid-cols-12 gap-6 items-center min-h-[360px] sm:min-h-[390px]">
+                        
+                        {/* Meta Info */}
+                        <div className="md:col-span-6 flex flex-col justify-center">
+                          <div className="flex items-center gap-2 mb-2 text-teal-800">
+                            <slide.icon size={22} className="shrink-0" />
+                            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+                              {slide.title}
+                            </h2>
+                          </div>
 
-                    <Image
-                      src={active.image}
-                      alt={active.alt}
-                      width={380}
-                      height={380}
-                      priority
-                      className="w-full h-full object-contain drop-shadow-md transition-transform duration-500 group-hover:scale-105"
-                    />
+                          <p className="text-xs sm:text-sm font-semibold text-teal-900/80 mb-3">
+                            {slide.subtitle}
+                          </p>
 
-                    {/* Interactive 3D Badge Overlay */}
-                    <Link
-                      href={`/projects/${active.slug}#interactive`}
-                      className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md border border-line rounded-lg px-2.5 py-1 text-[11px] font-bold text-teal-900 shadow-sm flex items-center gap-1.5 hover:bg-teal-900 hover:text-white transition-all"
-                    >
-                      <Box size={12} />
-                      3D Interactive
-                    </Link>
-                  </div>
-                </div>
+                          <p className="text-xs sm:text-sm text-muted leading-relaxed mb-6">
+                            {slide.description}
+                          </p>
 
-              </div>
+                          <div className="flex flex-wrap items-center gap-3">
+                            <Link
+                              href={`/projects/${slide.slug}`}
+                              className="btn btn-primary btn-small text-xs py-2 px-4 shadow-sm"
+                            >
+                              Explore Project <ArrowRight size={14} />
+                            </Link>
 
-              {/* Card Footer: Key Verified Features Strip */}
-              <div className="bg-[#f7faf9] border-t border-line/60 px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center sm:text-left">
-                {active.features.map((feat, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-white border border-line flex items-center justify-center text-teal-800 shrink-0">
-                      <feat.icon size={13} />
+                            <Link
+                              href={`/projects/${slide.slug}#interactive`}
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-800 hover:text-teal-600 transition-colors px-2 py-2"
+                            >
+                              <Box size={14} /> View 3D Anatomy
+                            </Link>
+                          </div>
+                        </div>
+
+                        {/* Visual Stage */}
+                        <div className="md:col-span-6 relative flex items-center justify-center p-2">
+                          <div className="relative w-full aspect-square max-w-[310px] rounded-2xl bg-gradient-to-tr from-[#edf5f3] to-white border border-line/60 flex items-center justify-center p-4 overflow-hidden group">
+                            
+                            <div className="absolute inset-4 rounded-full border border-teal-700/10 animate-ping opacity-20 pointer-events-none" />
+
+                            <Image
+                              src={slide.image}
+                              alt={slide.alt}
+                              width={360}
+                              height={360}
+                              priority={idx === 0}
+                              className="w-full h-full object-contain drop-shadow-md transition-transform duration-500 group-hover:scale-105"
+                            />
+
+                            <Link
+                              href={`/projects/${slide.slug}#interactive`}
+                              className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md border border-line rounded-lg px-2.5 py-1 text-[11px] font-bold text-teal-900 shadow-sm flex items-center gap-1.5 hover:bg-teal-900 hover:text-white transition-all"
+                            >
+                              <Box size={12} />
+                              3D Interactive
+                            </Link>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      {/* Card Footer: Verified Features */}
+                      <div className="bg-[#f7faf9] border-t border-line/60 px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center sm:text-left">
+                        {slide.features.map((feat, i) => (
+                          <div key={i} className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-lg bg-white border border-line flex items-center justify-center text-teal-800 shrink-0">
+                              <feat.icon size={13} />
+                            </div>
+                            <span className="text-[11px] font-semibold text-ink/80 leading-tight">
+                              {feat.label}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
                     </div>
-                    <span className="text-[11px] font-semibold text-ink/80 leading-tight">
-                      {feat.label}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
+            </div>
 
+            {/* Mobile Navigation Arrows (visible under the card on mobile) */}
+            <div className="flex sm:hidden items-center justify-center gap-4 mt-4">
+              <button
+                onClick={prevSlide}
+                aria-label="Previous Slide"
+                className="w-9 h-9 rounded-full bg-white border border-line flex items-center justify-center text-ink shadow-xs"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="text-xs font-mono font-bold text-muted">
+                {currentSlide + 1} / {totalSlides}
+              </span>
+              <button
+                onClick={nextSlide}
+                aria-label="Next Slide"
+                className="w-9 h-9 rounded-full bg-white border border-line flex items-center justify-center text-ink shadow-xs"
+              >
+                <ChevronRight size={16} />
+              </button>
             </div>
 
           </div>
