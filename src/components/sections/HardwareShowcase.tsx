@@ -10,7 +10,7 @@ export default function HardwareShowcase() {
   const [activeTab, setActiveTab] = useState<'thandai' | 'v2x'>('thandai');
 
   return (
-    <section className="relative w-full overflow-hidden bg-gradient-to-b from-[#FAFCFB] via-[#F3F7F6] to-[#FAFCFB] border-y border-line/60">
+    <section id="hardware" className="relative w-full overflow-hidden bg-gradient-to-b from-[#FAFCFB] via-[#F3F7F6] to-[#FAFCFB] border-y border-line/60">
       <ContainerScroll
         titleComponent={
           <div className="flex flex-col items-center justify-center px-4">

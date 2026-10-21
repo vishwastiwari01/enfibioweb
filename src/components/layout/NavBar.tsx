@@ -7,15 +7,16 @@ import { Search, ArrowRight, Menu, X } from 'lucide-react';
 import SearchModal from '@/components/showroom/SearchModal';
 
 const NAV_LINKS = [
-  { href: '/#catalog', label: 'Projects' },
-  { href: '/#about', label: 'Solutions' },
-  { href: '/#about', label: 'About' },
-  { href: '/#milestones', label: 'Impact' },
+  { href: '/#flagships', label: 'Flagships' },
+  { href: '/#hardware', label: 'Hardware' },
+  { href: '/#capabilities', label: 'Capabilities' },
+  { href: '/#milestones', label: 'Milestones' },
+  { href: '/#founders', label: 'Founders' },
   { href: '/#contact', label: 'Contact' },
 ];
 
 export default function NavBar() {
-  const [activeSection, setActiveSection] = useState('catalog');
+  const [activeSection, setActiveSection] = useState('flagships');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
@@ -25,7 +26,7 @@ export default function NavBar() {
   useEffect(() => {
     if (!isHome) return;
 
-    const sections = ['hero', 'catalog', 'about', 'milestones', 'contact'];
+    const sections = ['hero', 'flagships', 'hardware', 'capabilities', 'milestones', 'founders', 'contact'];
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {

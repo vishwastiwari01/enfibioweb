@@ -132,28 +132,28 @@ export default function HeroShowroomCarousel() {
           {/* Left Hero Column: Editorial Typography */}
           <div className="lg:col-span-5 flex flex-col justify-center z-10">
             
-            <div className="inline-flex items-center gap-2 mb-4 text-[11px] font-extrabold tracking-[0.2em] uppercase text-teal-800">
+            <div className="inline-flex items-center gap-2 mb-4 text-[11px] font-mono font-bold tracking-[0.2em] uppercase text-teal-800 bg-teal-50 px-3.5 py-1.5 rounded-full border border-teal-200/80 w-fit">
               <span className="w-2 h-2 rounded-full bg-teal-700 animate-pulse" />
-              Engineering a Better Tomorrow
+              SIIC IIT Kanpur Incubated • Deep-Tech Hardware
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-[4.2rem] font-bold tracking-tight text-ink leading-[1.05] mb-5">
-              Real<br />
-              <span className="text-teal-900">Technology.</span><br />
-              Real Impact.
+            <h1 className="text-4xl sm:text-5xl lg:text-[4.1rem] font-black tracking-tight text-ink leading-[1.06] mb-5">
+              Deep-Tech <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-900 via-teal-800 to-cyan-700">Engineering for</span><br />
+              Real-World Impact.
             </h1>
 
             <p className="text-base sm:text-lg text-muted leading-relaxed mb-8 max-w-lg">
-              Innovative engineering solutions for food security, safer mobility, and a more resilient world.
+              Pioneering solid-state cold chains and autonomous cooperative mobility systems engineered from first principles for extreme resilience.
             </p>
 
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-3.5 mb-10">
               <button
-                onClick={() => scrollTo('catalog')}
+                onClick={() => scrollTo('flagships')}
                 className="btn btn-primary"
               >
-                Explore Projects <ArrowRight size={16} />
+                Explore Flagships <ArrowRight size={16} />
               </button>
 
               <button
@@ -167,22 +167,22 @@ export default function HeroShowroomCarousel() {
             {/* Metrics Ticker */}
             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-line/80 max-w-md">
               <div>
-                <strong className="block text-2xl sm:text-3xl font-bold tracking-tight text-ink">
-                  2+
+                <strong className="block text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">
+                  ~3°C
                 </strong>
-                <span className="text-xs text-muted font-medium">Flagship Projects</span>
+                <span className="text-xs text-muted font-medium">Observed Cryo</span>
               </div>
               <div className="border-l border-line/80 pl-4">
-                <strong className="block text-2xl sm:text-3xl font-bold tracking-tight text-ink">
-                  3
+                <strong className="block text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">
+                  &lt;10ms
                 </strong>
-                <span className="text-xs text-muted font-medium">Focus Areas</span>
+                <span className="text-xs text-muted font-medium">V2X Telemetry</span>
               </div>
               <div className="border-l border-line/80 pl-4">
-                <strong className="block text-2xl sm:text-3xl font-bold tracking-tight text-ink">
-                  1
+                <strong className="block text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">
+                  DRDO
                 </strong>
-                <span className="text-xs text-muted font-medium">Core Mission</span>
+                <span className="text-xs text-muted font-medium">Award Winner</span>
               </div>
             </div>
 
