@@ -240,6 +240,86 @@
     html.dark .border-stone-300 { border-color: #4a4b51; }
     /* Accent-coloured tags: lighten so they stay readable on dark cards */
     html.dark .tint { color: color-mix(in srgb, var(--tag) 45%, white) !important; }
+
+    /* Responsive Mobile & Embed Breakpoints */
+    @media (max-width: 900px) {
+      .anatomy-frame {
+        inset: 8px !important;
+      }
+      #chapter-scroll-pane {
+        width: 320px !important;
+        right: 12px !important;
+      }
+      #btn-style-mode, #btn-blur-mode {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .anatomy-frame {
+        inset: 6px !important;
+      }
+      .anatomy-frame > div:first-child {
+        top: 6px !important;
+        left: 6px !important;
+        right: 6px !important;
+        gap: 4px !important;
+      }
+      #hovered-part-readout {
+        font-size: 10px !important;
+        max-width: 140px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+      }
+      #btn-style-mode, #btn-blur-mode, #btn-theme {
+        display: none !important;
+      }
+      #btn-labels, #btn-panel-toggle {
+        padding: 3px 8px !important;
+        font-size: 10px !important;
+      }
+      #chapter-scroll-pane {
+        top: auto !important;
+        bottom: 48px !important;
+        left: 8px !important;
+        right: 8px !important;
+        width: auto !important;
+        max-width: 100% !important;
+        max-height: 220px !important;
+        padding: 8px !important;
+        display: none;
+        background: rgba(251, 250, 246, 0.98) !important;
+        border-radius: 14px !important;
+        border: 1px solid #d5d3cc !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+        z-index: 50 !important;
+      }
+      #chapter-dots {
+        display: none !important;
+      }
+      .anatomy-frame > div.bottom-3\.5 {
+        bottom: 6px !important;
+      }
+      .anatomy-frame > div:nth-child(2) span {
+        display: none !important;
+      }
+      #btn-rf-plume {
+        padding: 3px 8px !important;
+        font-size: 10px !important;
+      }
+      #explode-slider {
+        width: 55px !important;
+      }
+      .anatomy-frame > div:last-child .font-mono-tech.text-xs {
+        display: none !important;
+      }
+      .pin-badge {
+        padding: 2px 6px !important;
+        font-size: 9px !important;
+        transform: translate(-50%, -50%) scale(0.85) !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -2075,6 +2155,13 @@
     window.onload = () => {
       applyTheme(document.documentElement.classList.contains('dark'), false);
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(applyMaterialStyle);
+      if (window.innerWidth < 768) {
+        leftPanelVisible = false;
+        scrollPane.style.display = 'none';
+        const panelBtn = document.getElementById('btn-panel-toggle');
+        if (panelBtn) panelBtn.textContent = 'Specs';
+        camera.position.set(16, 12, 22);
+      }
       viewShift = 0; applyViewOffset(true);
       selectChapter(0, false);
       animate();

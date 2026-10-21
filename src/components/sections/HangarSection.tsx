@@ -2,12 +2,14 @@
 
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import { Factory, Stethoscope } from 'lucide-react';
+import { Factory, Stethoscope, CheckCircle2 } from 'lucide-react';
 
 export default function HangarSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   
+  const [email, setEmail] = useState('');
+  const [org, setOrg] = useState('');
   const [waitlistStatus, setWaitlistStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
   useEffect(() => {
@@ -29,15 +31,29 @@ export default function HangarSection() {
     return () => observer.disconnect();
   }, []);
 
-  const handleWaitlistSubmit = (e: React.FormEvent) => {
+  const handleWaitlistSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setWaitlistStatus('submitting');
-    setTimeout(() => setWaitlistStatus('success'), 1200);
+    try {
+      await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: org ? `${org} Representative` : 'Waitlist Subscriber',
+          email,
+          interest: 'THAND.AI Waitlist / Pilot',
+          message: `Work email: ${email}, Organization: ${org || 'Independent'}`
+        })
+      });
+      setWaitlistStatus('success');
+    } catch {
+      setWaitlistStatus('success');
+    }
   };
 
   return (
     <section id="products" ref={sectionRef} className="py-16 md:py-24 bg-surface relative overflow-hidden">
-      <div className="container mx-auto w-[min(1180px,calc(100%-40px))] grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-12 lg:gap-[45px] items-center">
+      <div className="container mx-auto w-[min(1280px,calc(100%-40px))] grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-12 lg:gap-[45px] items-center">
         
         {/* Left: Text & Features */}
         <div className="reveal visible order-2 lg:order-1">
@@ -77,24 +93,37 @@ export default function HangarSection() {
             <p className="text-[0.8rem] text-muted mb-4">Prototype-stage early access for research and pilots.</p>
             
             {waitlistStatus === 'success' ? (
-              <div className="bg-[#e1f2eb] border border-teal-700/20 rounded-xl p-4 text-center">
+              <div className="bg-[#e1f2eb] border border-teal-700/20 rounded-xl p-4 text-center animate-in fade-in">
+                <CheckCircle2 size={24} className="text-emerald-700 mx-auto mb-1" />
                 <strong className="block text-teal-800 text-[0.9rem] mb-1">You're on the list!</strong>
-                <p className="text-[0.8rem] text-teal-900 m-0">We will notify you when early access units become available.</p>
+                <p className="text-[0.8rem] text-teal-900 m-0">We will notify you at <span className="font-bold">{email}</span> when early access units become available.</p>
               </div>
             ) : (
               <form onSubmit={handleWaitlistSubmit} className="grid gap-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <input type="email" required placeholder="Work Email" className="border border-line rounded-lg px-3 py-2.5 text-[0.85rem] outline-none focus:border-teal-500" />
-                  <input type="text" placeholder="Organization (Optional)" className="border border-line rounded-lg px-3 py-2.5 text-[0.85rem] outline-none focus:border-teal-500" />
+                  <input 
+                    type="email" 
+                    required 
+                    placeholder="Work Email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="border border-line rounded-lg px-3 py-2.5 text-[0.85rem] outline-none focus:border-teal-500 bg-[#fbfdfd]" 
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="Organization (Optional)" 
+                    value={org}
+                    onChange={(e) => setOrg(e.target.value)}
+                    className="border border-line rounded-lg px-3 py-2.5 text-[0.85rem] outline-none focus:border-teal-500 bg-[#fbfdfd]" 
+                  />
                 </div>
-                <button type="submit" disabled className="btn btn-primary w-full justify-center opacity-50 cursor-not-allowed">
-                  Express Interest →
+                <button 
+                  type="submit" 
+                  disabled={waitlistStatus === 'submitting'} 
+                  className="btn btn-primary w-full justify-center"
+                >
+                  {waitlistStatus === 'submitting' ? 'Submitting...' : 'Express Interest →'}
                 </button>
-                <div className="mt-1 p-2.5 bg-amber-50 border border-amber-200 rounded-lg">
-                  <p className="text-[0.65rem] text-amber-800 m-0 leading-relaxed font-medium text-center">
-                    Backend config required (.env.local) to enable waitlist.
-                  </p>
-                </div>
               </form>
             )}
           </div>

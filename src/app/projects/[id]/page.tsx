@@ -208,7 +208,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 simulationUrl={project.simulationUrl}
                 title={project.title}
                 projectCode={project.code}
-                minHeight="min-h-[580px] lg:min-h-[640px]"
               />
             </div>
           </section>
