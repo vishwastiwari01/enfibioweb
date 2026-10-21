@@ -56,16 +56,16 @@ export default function HeroShowroomCarousel() {
       tagColor: 'bg-cyan-50 text-cyan-800 border-cyan-200',
       icon: Radio,
       title: 'Enfibio V2X',
-      subtitle: 'Cooperative Road-Safety and Intelligent Mobility',
-      description: 'Vehicle-to-vehicle communication and AI systems for safer, smarter roads.',
-      image: '/assets/autonomoustruck.png',
-      alt: 'Enfibio V2X Autonomous Connected Fleet',
+      subtitle: 'Cooperative Road-Safety Platform',
+      description: 'Model-trained AI and autonomous simulations for real-time hazard prevention beyond line of sight.',
+      image: '/assets/v2x_platform.jpg',
+      alt: 'Enfibio V2X AI Cooperative Road-Safety Intelligence Platform',
       slug: v2x.slug,
       features: [
-        { icon: Radio, label: 'DSRC & C-V2X Mesh' },
+        { icon: Radio, label: 'V2V, V2I, V2P & V2N' },
         { icon: Zap, label: 'Sub-10ms Latency' },
-        { icon: Layers, label: 'Non-Line-Of-Sight Warning' },
-        { icon: Cpu, label: 'Decentralized Edge Inference' }
+        { icon: Layers, label: 'Trained AI Models' },
+        { icon: Cpu, label: 'Autonomous Sim Validated' }
       ]
     }
   ];

@@ -41,32 +41,32 @@ export const PROJECTS: Project[] = [
     cat: 'mobility',
     code: 'ENFIBIO-V2X',
     title: 'Enfibio V2X',
-    subtitle: 'Cooperative Road-Safety and Intelligent Mobility',
+    subtitle: 'Cooperative Road-Safety Intelligence Platform',
     domain: 'INTELLIGENT MOBILITY',
     category: 'Mobility',
     badge: 'FEATURED',
-    desc: 'Vehicle-to-vehicle (V2V) and vehicle-to-everything (V2X) communication platform integrating low-latency telemetry with edge AI for safer road decisions.',
-    image: '/assets/autonomoustruck.png',
+    desc: 'Cooperative Road-Safety Intelligence Platform with completed model training and autonomous simulations for real-time hazard prevention beyond line of sight.',
+    image: '/assets/v2x_platform.jpg',
     simulationUrl: '/simulations/v2x-3d-anatomy.html',
-    overview: 'Enfibio V2X combines high-speed 5.9 GHz DSRC and Cellular-V2X transceivers with real-time trajectory prediction. By enabling vehicles to continuously exchange situational telemetry, the system detects unseen roadway hazards and coordinates collective emergency reactions.',
+    overview: 'Enfibio V2X AI is a cooperative road-safety intelligence platform engineered for real-time vehicle-to-vehicle (V2V), vehicle-to-infrastructure (V2I), vehicle-to-pedestrian (V2P), and vehicle-to-cloud (V2N) communication. We have completed extensive model training and high-fidelity autonomous simulations, proving sub-10ms non-line-of-sight hazard mitigation across complex urban and highway scenarios.',
     problem: 'Onboard visual cameras and lidars suffer from severe blind spots caused by large cargo trucks, curves, dense fog, and adverse weather, leaving drivers and autonomous systems incapable of detecting multi-vehicle pileups until it is too late.',
     solution: 'Enfibio V2X establishes an ad-hoc vehicle mesh network that shares location, velocity, and deceleration vectors with sub-10ms packet delivery, providing non-line-of-sight collision alerts well before human or camera detection.',
     features: [
-      'Sub-10ms low-latency vehicular telemetry broadcast',
-      'Non-line-of-sight (NLOS) intersection and rear-end hazard prediction',
-      'Hardware-accelerated edge inference engine with zero baseline cloud dependency',
-      'Cooperative Adaptive Cruise Control (CACC) and platooning support',
-      'Rugged automotive-grade hardware architecture with multi-layer thermal sinks'
+      'Completed AI Model Training & High-Fidelity Autonomous Simulations',
+      'Unified V2V, V2I, V2P (Pedestrian) & V2N (Cloud/Network) cooperative telemetry',
+      'Sub-10ms low-latency vehicular telemetry broadcast for emergency braking',
+      'Non-line-of-sight (NLOS) intersection, roadwork, and blind-corner hazard prediction',
+      'Automotive standards compliance: AIS-230, AIS-189, AIS-190, and TRAI 2026 (5.875–5.905 GHz)'
     ],
     specs: {
+      'Stage': 'Model Trained & Autonomous Simulation Validated',
       'Latency': '< 10 ms',
-      'Spectrum': '5.9 GHz DSRC / C-V2X',
-      'Safety Range': 'Up to 300m NLOS',
-      'Architecture': 'Decentralized Edge AI',
-      'Stage': '3D Hardware Anatomy & Sim'
+      'Spectrum': '5.875–5.905 GHz (TRAI 2026)',
+      'Standards': 'AIS-230 / AIS-189 / AIS-190',
+      'Protocols': 'V2V, V2I, V2P, V2N'
     },
-    tags: ['V2X', 'Mobility', 'Connected Vehicles', 'Road Safety', 'Edge AI'],
-    gallery: ['/assets/autonomoustruck.png']
+    tags: ['V2X', 'Mobility', 'Connected Vehicles', 'Road Safety', 'Edge AI', 'Autonomous Sim'],
+    gallery: ['/assets/v2x_platform.jpg']
   },
   {
     id: 'PROJ-BHARATMAPS',
