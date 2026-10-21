@@ -16,7 +16,7 @@ export default function SimulationEmbed({
   title,
   projectCode,
   className = '',
-  minHeight = 'min-h-[560px]'
+  minHeight = 'h-[680px] sm:h-[760px] lg:h-[840px]'
 }: SimulationEmbedProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -52,72 +52,70 @@ export default function SimulationEmbed({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full rounded-2xl md:rounded-3xl border border-line bg-[#f5f7f6] overflow-hidden shadow-lg transition-all ${
+      style={isFullscreen ? { height: '100vh', width: '100vw' } : {}}
+      className={`relative w-full rounded-2xl md:rounded-3xl border border-line bg-[#f6f5f0] overflow-hidden shadow-xl transition-all ${
         isFullscreen ? 'fixed inset-0 z-[9999] rounded-none border-none' : minHeight
       } ${className}`}
     >
-      {/* Top Simulation Toolbar */}
-      <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 bg-white/90 backdrop-blur-md border-b border-line/80">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-          <div className="flex items-center gap-2">
-            <Box size={16} className="text-teal-800" />
-            <span className="text-xs font-bold text-ink tracking-tight uppercase">
-              Interactive 3D Hardware Anatomy
-            </span>
-          </div>
-          <span className="hidden sm:inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-surface border border-line text-muted">
-            {projectCode}
-          </span>
+      {/* Floating Top Header Badges */}
+      <div className="absolute top-4 left-4 z-20 pointer-events-none flex items-center gap-2">
+        <div className="pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-line shadow-sm text-xs font-bold text-ink">
+          <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <Box size={13} className="text-teal-800" />
+          <span>Interactive 3D Anatomy</span>
         </div>
+        <span className="pointer-events-auto text-[11px] font-mono px-2.5 py-1 rounded-full bg-white/80 backdrop-blur-md border border-line text-muted shadow-xs">
+          {projectCode}
+        </span>
+      </div>
 
-        <div className="flex items-center gap-2">
-          <span className="hidden md:inline-block text-[11px] text-muted mr-2">
-            Drag to rotate • Scroll to zoom
-          </span>
+      {/* Floating Action Controls on Top Right */}
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+        <span className="hidden lg:inline-flex items-center text-[11px] font-medium text-muted bg-white/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-line shadow-xs">
+          Rotate: Drag • Zoom: Scroll
+        </span>
 
-          <button
-            onClick={reloadSimulation}
-            className="p-1.5 rounded-lg border border-line bg-white hover:bg-surface text-ink transition-colors"
-            title="Reload 3D Scene"
-            aria-label="Reload Simulation"
-          >
-            <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />
-          </button>
+        <button
+          onClick={reloadSimulation}
+          className="w-8 h-8 rounded-full border border-line bg-white/90 backdrop-blur-md hover:bg-white text-ink flex items-center justify-center shadow-sm transition-colors cursor-pointer"
+          title="Reload 3D Scene"
+          aria-label="Reload Simulation"
+        >
+          <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
+        </button>
 
-          <a
-            href={simulationUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-line bg-white hover:bg-surface text-xs font-semibold text-ink transition-colors"
-            title="Open standalone experience in full window"
-          >
-            <span className="hidden sm:inline">Standalone</span>
-            <ExternalLink size={13} />
-          </a>
+        <a
+          href={simulationUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-line bg-white/90 backdrop-blur-md hover:bg-white text-xs font-semibold text-ink shadow-sm transition-colors cursor-pointer"
+          title="Open standalone experience in new tab"
+        >
+          <span>Standalone</span>
+          <ExternalLink size={12} />
+        </a>
 
-          <button
-            onClick={toggleFullscreen}
-            className="p-1.5 rounded-lg border border-line bg-teal-900 text-white hover:bg-teal-800 transition-colors"
-            title={isFullscreen ? 'Exit Fullscreen' : 'View Fullscreen'}
-            aria-label={isFullscreen ? 'Exit Fullscreen' : 'View Fullscreen'}
-          >
-            {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-          </button>
-        </div>
+        <button
+          onClick={toggleFullscreen}
+          className="w-8 h-8 rounded-full border border-teal-900 bg-teal-900 text-white hover:bg-teal-800 flex items-center justify-center shadow-sm transition-colors cursor-pointer"
+          title={isFullscreen ? 'Exit Fullscreen' : 'View Fullscreen'}
+          aria-label={isFullscreen ? 'Exit Fullscreen' : 'View Fullscreen'}
+        >
+          {isFullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+        </button>
       </div>
 
       {/* Loading Overlay */}
       {isLoading && !hasError && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#f8faf9] gap-4">
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#f6f5f0] gap-4">
           <div className="relative w-12 h-12 flex items-center justify-center">
             <div className="absolute inset-0 rounded-full border-2 border-teal-200 animate-ping opacity-25" />
             <div className="w-10 h-10 rounded-full border-2 border-t-teal-700 border-teal-100 animate-spin" />
             <Box size={18} className="text-teal-800" />
           </div>
           <div className="text-center">
-            <p className="text-sm font-bold text-ink">Initializing 3D Anatomy Engine</p>
-            <p className="text-xs text-muted">Loading procedural CAD layers, shaders & telemetry...</p>
+            <p className="text-sm font-bold text-ink">Rendering 3D System Anatomy</p>
+            <p className="text-xs text-muted">Initializing WebGL shaders, CAD geometry & callout pins...</p>
           </div>
         </div>
       )}
@@ -128,7 +126,7 @@ export default function SimulationEmbed({
           <AlertCircle size={36} className="text-amber-600 mb-3" />
           <h4 className="text-base font-bold text-ink mb-1">Interactive Simulation Loading Paused</h4>
           <p className="text-xs text-muted max-w-md mb-4">
-            The interactive WebGL simulation could not be embedded directly in this context. You can still inspect it in full standalone mode.
+            The interactive WebGL simulation could not be rendered inside this frame. Launch it directly in standalone mode for the complete hardware experience.
           </p>
           <a
             href={simulationUrl}
@@ -141,12 +139,13 @@ export default function SimulationEmbed({
         </div>
       )}
 
-      {/* Embedded Iframe */}
+      {/* The Iframe Filling the Container */}
       <iframe
         ref={iframeRef}
         src={simulationUrl}
         title={`${title} 3D Hardware Simulation`}
-        className="w-full h-full pt-12 border-none bg-transparent"
+        className="w-full h-full border-none block bg-transparent"
+        style={{ width: '100%', height: '100%' }}
         allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         loading="lazy"
         onLoad={() => setIsLoading(false)}
