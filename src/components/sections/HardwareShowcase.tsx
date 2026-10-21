@@ -96,7 +96,11 @@ export default function HardwareShowcase() {
                 src={activeTab === 'thandai' ? '/thandai.png' : '/assets/v2x_platform.jpg'}
                 alt={activeTab === 'thandai' ? 'THAND.AI 3D Model' : 'Enfibio V2X Hardware'}
                 fill
-                className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                className={
+                  activeTab === 'thandai'
+                    ? 'object-contain p-4 group-hover:scale-105 transition-transform duration-500'
+                    : 'object-cover group-hover:scale-105 transition-transform duration-500'
+                }
               />
               <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-[11px] font-mono text-teal-300 flex items-center gap-2">
                 <Box size={13} />

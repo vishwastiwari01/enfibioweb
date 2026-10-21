@@ -5,13 +5,12 @@ import NavBar from '@/components/layout/NavBar';
 import Footer from '@/components/layout/Footer';
 
 // Showroom Core Components
-import HeroShowroomCarousel from '@/components/showroom/HeroShowroomCarousel';
+import DeepTechHero from '@/components/showroom/DeepTechHero';
 import ProjectCatalog from '@/components/showroom/ProjectCatalog';
 import ImpactRibbon from '@/components/showroom/ImpactRibbon';
 
 // Deep-Tech Interactive Visual Components
 import HardwareShowcase from '@/components/sections/HardwareShowcase';
-import AtmosphericShowcase from '@/components/sections/AtmosphericShowcase';
 
 // Preserved & Integrated Company Sections
 import StatsSection from '@/components/sections/StatsSection';
@@ -27,10 +26,10 @@ export default function Home() {
       <NavBar />
 
       <main className="w-full flex-1">
-        {/* 1. Large Two-Project Interactive Hero Showcase (THAND.AI & Enfibio V2X) */}
-        <HeroShowroomCarousel />
+        {/* 1. High-Impact Deep-Tech Hero with Clean Interactive Console */}
+        <DeepTechHero />
 
-        {/* 2. E-Commerce Project Catalog with Filters & Search */}
+        {/* 2. Flagship Spotlight & Interactive R&D Project Explorer Card */}
         <ProjectCatalog />
 
         {/* 3. Interactive Container Scroll Hardware Architecture (Aceternity 3D Tilt) */}
@@ -42,23 +41,20 @@ export default function Home() {
         {/* 5. Prototype Validation & Stats Strip */}
         <StatsSection />
 
-        {/* 6. Procedural Cloud Shader Atmospheric Deep-Tech Banner */}
-        <AtmosphericShowcase />
-
-        {/* 7. What We Build — Capabilities, Research Domains & Purpose */}
+        {/* 6. What We Build — Capabilities, Research Domains & Purpose */}
         <CapabilitiesSection />
 
-        {/* 8. Milestones, Incubation & Program Traction */}
+        {/* 7. Milestones, Incubation & Program Traction */}
         <TimelineSection />
 
-        {/* 9. Engineering Leadership & Founders */}
+        {/* 8. Engineering Leadership & Founders */}
         <FoundersSection />
 
-        {/* 10. Meaningful Collaboration & Interactive Astronaut Social Card */}
+        {/* 9. Meaningful Collaboration & Institutional Contact Channels */}
         <ContactSection />
       </main>
 
-      {/* 11. Premium 5-Column Brand Footer */}
+      {/* 10. Premium 5-Column Brand Footer */}
       <Footer />
     </div>
   );

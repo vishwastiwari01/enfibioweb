@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, Send, CheckCircle2, AlertCircle } from 'lucide-react';
-import AstronautSocialCard from '@/components/ui/astronaut-social-card';
+import { Mail, Send, CheckCircle2, AlertCircle, MapPin, Building, Globe, ArrowUpRight } from 'lucide-react';
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -51,58 +50,97 @@ export default function ContactSection() {
 
   return (
     <section id="contact" className="py-16 md:py-24 bg-surface relative overflow-hidden">
-      <div className="container mx-auto w-[min(1280px,calc(100%-40px))] grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-12 lg:gap-14 items-start">
+      <div className="container mx-auto w-[min(1280px,calc(100%-40px))] grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-12 lg:gap-16 items-start">
         
-        {/* Left Column: Context, Direct Email & Interactive Astronaut Social Card */}
-        <div className="reveal visible flex flex-col justify-between h-full">
+        {/* Left Column: Context, Institutional Details & Direct Channels */}
+        <div className="reveal visible flex flex-col justify-between space-y-8">
           <div>
             <div className="eyebrow mb-4">Let's build what's next</div>
-            <h2 className="text-3xl lg:text-4xl font-bold tracking-tight mb-4 text-ink">
+            <h2 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-4 text-ink">
               Open to meaningful collaboration.
             </h2>
             <p className="lead mb-4">
-              We welcome conversations around incubation, research collaboration,
-              strategic partnerships, grants, and technology development.
+              We welcome conversations around institutional incubation, academic & research collaboration, strategic partnerships, pilot deployments, and deep-tech grants.
             </p>
-            <p className="text-muted text-sm leading-relaxed mb-6">
-              Use the form to share what you are interested in. We will review
-              your message and connect through the appropriate channel.
+            <p className="text-muted text-sm leading-relaxed">
+              Share details about your research requirements or proposed partnership. Our engineering leadership reviews every submission directly.
             </p>
+          </div>
 
-            <div className="p-5 rounded-2xl bg-white border border-line flex items-center gap-3.5 max-w-sm shadow-xs mb-8">
+          {/* Institutional Contact Detail Cards */}
+          <div className="space-y-3.5">
+            {/* Direct Email */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-line flex items-center gap-4 shadow-xs">
               <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-800 shrink-0">
                 <Mail size={18} />
               </div>
-              <div>
-                <span className="block text-[11px] font-bold uppercase text-muted tracking-wider">Direct Email</span>
+              <div className="min-w-0">
+                <span className="block text-[11px] font-mono font-bold uppercase text-muted tracking-wider">Direct Email</span>
                 <a
                   href="mailto:enfibiotechnologiespvtltd@gmail.com"
-                  className="text-xs font-semibold text-teal-900 hover:text-teal-700 transition-colors"
+                  className="text-xs sm:text-sm font-semibold text-teal-950 hover:text-teal-700 transition-colors truncate block"
                 >
                   enfibiotechnologiespvtltd@gmail.com
                 </a>
               </div>
             </div>
-          </div>
 
-          {/* Interactive Astronaut Social Media Card */}
-          <div className="pt-2 flex flex-col items-start">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted mb-3">
-              Explore Our Digital Community
-            </span>
-            <div className="scale-90 origin-top-left sm:scale-100">
-              <AstronautSocialCard
-                heading="We're on Social Media"
-                instagramUrl="https://www.instagram.com/enfibio_tech?igsh=MXMwdnRrMGhkNDA3aQ=="
-                twitterUrl="https://x.com/Enfibio_Tech"
-                discordUrl="https://discord.gg/KD8ba2uUpT"
-              />
+            {/* Incubation Location */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-line flex items-center gap-4 shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-800 shrink-0">
+                <Building size={18} />
+              </div>
+              <div>
+                <span className="block text-[11px] font-mono font-bold uppercase text-muted tracking-wider">Incubation Center</span>
+                <span className="text-xs sm:text-sm font-semibold text-ink block">
+                  SIIC, Indian Institute of Technology (IIT) Kanpur
+                </span>
+                <span className="text-[11px] text-muted">Uttar Pradesh, India</span>
+              </div>
+            </div>
+
+            {/* Social / Web Links */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-line flex flex-wrap items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-2">
+                <Globe size={16} className="text-teal-800" />
+                <span className="text-xs font-semibold text-ink">Connect Across Networks</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://www.instagram.com/enfibio_tech?igsh=MXMwdnRrMGhkNDA3aQ=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-surface hover:bg-teal-50 border border-line text-xs font-semibold text-ink hover:text-teal-900 transition-colors inline-flex items-center gap-1"
+                >
+                  <span>Instagram</span>
+                  <ArrowUpRight size={12} />
+                </a>
+                <a
+                  href="https://x.com/Enfibio_Tech"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-surface hover:bg-teal-50 border border-line text-xs font-semibold text-ink hover:text-teal-900 transition-colors inline-flex items-center gap-1"
+                >
+                  <span>X (Twitter)</span>
+                  <ArrowUpRight size={12} />
+                </a>
+                <a
+                  href="https://github.com/enfibiotech"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-surface hover:bg-teal-50 border border-line text-xs font-semibold text-ink hover:text-teal-900 transition-colors inline-flex items-center gap-1"
+                >
+                  <span>GitHub</span>
+                  <ArrowUpRight size={12} />
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Right Column: Interactive Contact Form or Success State */}
-        <div className="reveal visible bg-white border border-line rounded-[25px] p-6 sm:p-9 shadow-[0_16px_45px_rgba(7,63,67,.05)]">
+        <div className="reveal visible bg-white border border-line rounded-[28px] p-6 sm:p-10 shadow-[0_16px_45px_rgba(7,63,67,.05)]">
           {status === 'success' ? (
             <div className="py-8 text-center animate-in fade-in">
               <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto mb-4">
@@ -112,7 +150,7 @@ export default function ContactSection() {
               <p className="text-sm text-muted max-w-md mx-auto mb-6">
                 Thank you, <strong className="text-ink">{formData.name}</strong>. We have received your inquiry regarding{' '}
                 <strong className="text-ink">{formData.interest}</strong> and will follow up at{' '}
-                <strong className="text-ink">{formData.email}</strong> shortly.
+                <strong className="text-ink">{formData.email}</strong> promptly.
               </p>
               <button
                 onClick={() => {
@@ -148,7 +186,7 @@ export default function ContactSection() {
 
               <div>
                 <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-ink mb-1.5">
-                  Email Address
+                  Institutional / Corporate Email
                 </label>
                 <input
                   type="email"
@@ -163,7 +201,7 @@ export default function ContactSection() {
 
               <div>
                 <label htmlFor="interest" className="block text-xs font-bold uppercase tracking-wider text-ink mb-1.5">
-                  Primary Area of Interest
+                  Primary Area of Engagement
                 </label>
                 <div className="relative">
                   <select
@@ -186,7 +224,7 @@ export default function ContactSection() {
 
               <div>
                 <label htmlFor="message" className="block text-xs font-bold uppercase tracking-wider text-ink mb-1.5">
-                  Message Details
+                  Collaboration Scope & Details
                 </label>
                 <textarea
                   id="message"
@@ -194,7 +232,7 @@ export default function ContactSection() {
                   onChange={handleChange}
                   required
                   rows={4}
-                  placeholder="Share details about your research, partnership opportunity, or project inquiry..."
+                  placeholder="Share details about your institution, research focus, or project inquiry..."
                   className="w-full px-4 py-3 rounded-xl border border-line bg-surface/50 text-ink text-sm focus:outline-hidden focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all placeholder:text-muted/60 resize-none"
                 />
               </div>

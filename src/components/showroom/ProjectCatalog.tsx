@@ -119,12 +119,12 @@ export default function ProjectCatalog() {
             {/* 2. Enfibio V2X */}
             <div className="rounded-3xl border border-line bg-surface/40 hover:bg-white hover:border-teal-700/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group">
               <div>
-                <div className="relative h-52 w-full bg-white p-4 flex items-center justify-center border-b border-line/60 overflow-hidden">
+                <div className="relative h-52 w-full bg-slate-900 flex items-center justify-center border-b border-line/60 overflow-hidden">
                   <Image
                     src="/assets/v2x_platform.jpg"
                     alt="Enfibio V2X AI Platform"
                     fill
-                    className="object-contain p-3 group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-3 left-3">
                     <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-cyan-50 text-cyan-900 border border-cyan-200 shadow-xs">
